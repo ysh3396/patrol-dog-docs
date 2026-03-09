@@ -1,0 +1,2893 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>반려견순찰대 — 앱 프로토타입</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;900&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #1a1a2e;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-image: radial-gradient(ellipse at 30% 20%, #0d2818 0%, transparent 60%),
+                      radial-gradient(ellipse at 70% 80%, #1a3a0a 0%, transparent 60%);
+  }
+
+  /* Desktop wrapper */
+  .desktop-bg {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  /* Phone frame */
+  .phone-frame {
+    position: relative;
+    width: 375px;
+    height: 812px;
+    background: #000;
+    border-radius: 48px;
+    box-shadow:
+      0 0 0 2px #333,
+      0 0 0 4px #1a1a1a,
+      0 40px 80px rgba(0,0,0,0.7),
+      0 0 60px rgba(46,125,50,0.15);
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  .phone-screen {
+    position: absolute;
+    inset: 0;
+    border-radius: 48px;
+    overflow: hidden;
+    background: #f5f5f5;
+  }
+
+  /* Screen management */
+  .screen {
+    position: absolute;
+    inset: 0;
+    display: none;
+    flex-direction: column;
+    background: #f5f5f5;
+    overflow: hidden;
+  }
+  .screen.active { display: flex; }
+
+  /* Status bar */
+  .status-bar {
+    height: 44px;
+    background: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 10;
+  }
+  .status-time { font-size: 15px; font-weight: 600; color: #111; }
+  .status-icons { display: flex; align-items: center; gap: 5px; font-size: 14px; }
+  .status-bar.dark .status-time,
+  .status-bar.dark .status-icons { color: #fff; }
+
+  /* Nav bar */
+  .nav-bar {
+    height: 52px;
+    background: #fff;
+    border-bottom: 1px solid #e8e8e8;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    flex-shrink: 0;
+  }
+  .nav-title { font-size: 17px; font-weight: 700; color: #111; }
+  .nav-back {
+    font-size: 15px;
+    color: #2E7D32;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: none;
+    border: none;
+    padding: 4px 0;
+  }
+  .nav-action {
+    font-size: 15px;
+    color: #2E7D32;
+    font-weight: 600;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 4px 0;
+  }
+
+  /* Scroll area */
+  .scroll-area {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .scroll-area::-webkit-scrollbar { display: none; }
+
+  /* Bottom tab bar */
+  .tab-bar {
+    height: 72px;
+    background: #fff;
+    border-top: 1px solid #e8e8e8;
+    display: flex;
+    align-items: flex-start;
+    padding-top: 8px;
+    flex-shrink: 0;
+  }
+  .tab-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    cursor: pointer;
+    padding: 4px 0;
+    border: none;
+    background: none;
+  }
+  .tab-item .tab-icon { font-size: 22px; line-height: 1; }
+  .tab-item .tab-label { font-size: 10px; font-weight: 500; color: #999; }
+  .tab-item.active .tab-label { color: #2E7D32; font-weight: 700; }
+  .tab-item.active .tab-icon { filter: none; }
+
+  /* Cards */
+  .card {
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 1px 8px rgba(0,0,0,0.07), 0 0 1px rgba(0,0,0,0.05);
+    overflow: hidden;
+  }
+
+  /* Primary button */
+  .btn-primary {
+    width: 100%;
+    padding: 15px;
+    background: #2E7D32;
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+  .btn-primary:active { opacity: 0.85; }
+  .btn-primary:disabled { background: #ccc; cursor: not-allowed; }
+
+  .btn-secondary {
+    width: 100%;
+    padding: 15px;
+    background: #f0f0f0;
+    color: #333;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+  }
+
+  .btn-outline {
+    padding: 10px 20px;
+    background: transparent;
+    color: #2E7D32;
+    border: 1.5px solid #2E7D32;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+  }
+
+  /* Input */
+  .input-field {
+    width: 100%;
+    padding: 14px 16px;
+    background: #f8f8f8;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 15px;
+    font-family: inherit;
+    color: #111;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .input-field:focus { border-color: #2E7D32; background: #fff; }
+  .input-label { font-size: 13px; font-weight: 600; color: #555; margin-bottom: 6px; }
+
+  /* Map placeholder */
+  .map-area {
+    background: linear-gradient(135deg, #c8e6c9 0%, #a5d6a7 30%, #81c784 60%, #66bb6a 100%);
+    position: relative;
+    overflow: hidden;
+  }
+  .map-area::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.15) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.15) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+  .map-route {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 200px;
+    height: 120px;
+  }
+  .map-pin {
+    position: absolute;
+    font-size: 24px;
+    transform: translate(-50%, -50%);
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+    z-index: 2;
+  }
+  .map-zoom {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    z-index: 3;
+  }
+  .map-zoom button {
+    width: 32px;
+    height: 32px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    color: #444;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+  }
+
+  /* Social login buttons */
+  .social-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 13px;
+    border-radius: 10px;
+    border: none;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    margin-bottom: 10px;
+  }
+  .social-kakao { background: #FEE500; color: #3A1D1D; }
+  .social-naver { background: #03C75A; color: #fff; }
+  .social-google { background: #fff; color: #444; border: 1.5px solid #ddd; }
+  .social-apple { background: #000; color: #fff; }
+
+  /* Chip */
+  .chip {
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: 1.5px solid #ddd;
+    background: #fff;
+    font-size: 13px;
+    font-weight: 500;
+    color: #666;
+    cursor: pointer;
+    font-family: inherit;
+    white-space: nowrap;
+    transition: all 0.15s;
+  }
+  .chip.active {
+    background: #2E7D32;
+    border-color: #2E7D32;
+    color: #fff;
+    font-weight: 700;
+  }
+
+  /* Header */
+  .app-header {
+    height: 56px;
+    background: #fff;
+    border-bottom: 1px solid #e8e8e8;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    flex-shrink: 0;
+  }
+  .app-header-title {
+    font-size: 18px;
+    font-weight: 900;
+    color: #2E7D32;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* Info bar */
+  .info-bar {
+    background: #2E7D32;
+    color: #fff;
+    padding: 10px 16px;
+    display: flex;
+    gap: 16px;
+    flex-shrink: 0;
+  }
+  .info-bar-item { font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 4px; }
+
+  /* Toast */
+  .toast {
+    position: absolute;
+    bottom: 90px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.85);
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 24px;
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+    z-index: 9999;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+  }
+  .toast.show { opacity: 1; }
+
+  /* Modal overlay */
+  .modal-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9000;
+    display: none;
+  }
+  .modal-overlay.show { display: flex; }
+  .modal-box {
+    background: #fff;
+    border-radius: 20px;
+    padding: 28px 24px;
+    width: 280px;
+    text-align: center;
+  }
+  .modal-title { font-size: 17px; font-weight: 700; color: #111; margin-bottom: 8px; }
+  .modal-text { font-size: 14px; color: #666; line-height: 1.5; margin-bottom: 24px; }
+  .modal-btns { display: flex; gap: 10px; }
+  .modal-btn-cancel {
+    flex: 1; padding: 12px; background: #f0f0f0; border: none; border-radius: 10px;
+    font-size: 15px; font-weight: 600; font-family: inherit; cursor: pointer; color: #444;
+  }
+  .modal-btn-ok {
+    flex: 1; padding: 12px; background: #2E7D32; border: none; border-radius: 10px;
+    font-size: 15px; font-weight: 700; font-family: inherit; cursor: pointer; color: #fff;
+  }
+  .modal-btn-danger {
+    flex: 1; padding: 12px; background: #c62828; border: none; border-radius: 10px;
+    font-size: 15px; font-weight: 700; font-family: inherit; cursor: pointer; color: #fff;
+  }
+
+  /* Bottom sheet */
+  .bottom-sheet {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border-radius: 24px 24px 0 0;
+    padding: 16px 16px 32px;
+    z-index: 8000;
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
+  }
+  .bottom-sheet.show { transform: translateY(0); }
+  .sheet-handle {
+    width: 36px;
+    height: 4px;
+    background: #ddd;
+    border-radius: 2px;
+    margin: 0 auto 16px;
+  }
+
+  /* Toggle switch */
+  .toggle {
+    position: relative;
+    width: 48px;
+    height: 26px;
+    background: #ddd;
+    border-radius: 13px;
+    cursor: pointer;
+    transition: background 0.2s;
+    flex-shrink: 0;
+  }
+  .toggle.on { background: #2E7D32; }
+  .toggle::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 20px;
+    height: 20px;
+    background: #fff;
+    border-radius: 50%;
+    transition: transform 0.2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  }
+  .toggle.on::after { transform: translateX(22px); }
+
+  /* Splash screen specific */
+  .splash-bg {
+    background: linear-gradient(160deg, #1B5E20 0%, #2E7D32 50%, #388E3C 100%);
+    color: #fff;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 32px;
+  }
+
+  /* Point animation */
+  @keyframes countUp {
+    from { transform: scale(0.5); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+  .point-badge {
+    animation: countUp 0.5s ease-out forwards;
+    display: inline-block;
+  }
+
+  /* Loading dots */
+  @keyframes dotBounce {
+    0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+    40% { transform: scale(1); opacity: 1; }
+  }
+  .loading-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.7);
+    margin: 0 4px;
+    animation: dotBounce 1.4s infinite ease-in-out;
+  }
+  .loading-dot:nth-child(2) { animation-delay: 0.2s; }
+  .loading-dot:nth-child(3) { animation-delay: 0.4s; }
+
+  /* Slide indicator */
+  .slide-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #ddd;
+    transition: all 0.3s;
+  }
+  .slide-dot.active { background: #2E7D32; width: 24px; border-radius: 4px; }
+
+  /* Patrol active button */
+  .patrol-start-btn {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #2E7D32, #66BB6A);
+    border: none;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 800;
+    font-family: inherit;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(46,125,50,0.4), 0 0 0 8px rgba(46,125,50,0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    transition: transform 0.15s;
+    line-height: 1.2;
+  }
+  .patrol-start-btn:active { transform: scale(0.95); }
+
+  /* Menu list item */
+  .menu-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+    background: #fff;
+    border-bottom: 1px solid #f0f0f0;
+    cursor: pointer;
+    transition: background 0.1s;
+  }
+  .menu-item:last-child { border-bottom: none; }
+  .menu-item:active { background: #f9f9f9; }
+  .menu-item-left { display: flex; align-items: center; gap: 12px; font-size: 15px; color: #222; font-weight: 500; }
+  .menu-item-right { color: #bbb; font-size: 16px; }
+
+  /* Notification badge */
+  .notif-badge {
+    background: #ef5350;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 800;
+    padding: 1px 5px;
+    border-radius: 10px;
+    min-width: 18px;
+    text-align: center;
+    line-height: 16px;
+    height: 16px;
+  }
+
+  /* Post card */
+  .post-card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 16px;
+    margin: 0 16px 12px;
+    box-shadow: 0 1px 8px rgba(0,0,0,0.06);
+    cursor: pointer;
+    transition: transform 0.1s;
+  }
+  .post-card:active { transform: scale(0.99); }
+
+  /* Rank podium */
+  .podium {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 12px;
+    padding: 20px 16px 0;
+  }
+  .podium-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+  .podium-avatar {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #c8e6c9, #66bb6a);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    border: 3px solid #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+  .podium-1 .podium-avatar { width: 64px; height: 64px; font-size: 28px; border-color: #FFD700; }
+  .podium-stand {
+    width: 80px;
+    border-radius: 8px 8px 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+  }
+  .podium-1 .podium-stand { height: 64px; background: linear-gradient(180deg, #FFD700, #FFA000); }
+  .podium-2 .podium-stand { height: 50px; background: linear-gradient(180deg, #B0BEC5, #78909C); }
+  .podium-3 .podium-stand { height: 40px; background: linear-gradient(180deg, #FFCC80, #FF8F00); }
+
+  /* Stats card */
+  .stat-card {
+    background: linear-gradient(135deg, #2E7D32, #43A047);
+    border-radius: 16px;
+    padding: 20px;
+    color: #fff;
+    margin: 12px 16px;
+  }
+
+  /* Activity item */
+  .activity-item {
+    background: #fff;
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin: 0 16px 10px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transition: transform 0.1s;
+  }
+  .activity-item:active { transform: scale(0.99); }
+
+  /* Section header */
+  .section-header {
+    font-size: 12px;
+    font-weight: 700;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 16px 16px 8px;
+  }
+
+  /* Tab bar tabs (category) */
+  .cat-tabs {
+    display: flex;
+    background: #fff;
+    border-bottom: 1px solid #e8e8e8;
+    flex-shrink: 0;
+  }
+  .cat-tab {
+    flex: 1;
+    padding: 13px 8px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 500;
+    color: #999;
+    cursor: pointer;
+    border-bottom: 2.5px solid transparent;
+    background: none;
+    border-left: none;
+    border-right: none;
+    border-top: none;
+    font-family: inherit;
+    transition: all 0.2s;
+  }
+  .cat-tab.active { color: #2E7D32; border-bottom-color: #2E7D32; font-weight: 700; }
+
+  /* Video card */
+  .video-thumb {
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    border-radius: 12px;
+    aspect-ratio: 16/9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+  }
+  .video-play-icon {
+    width: 44px;
+    height: 44px;
+    background: rgba(255,255,255,0.9);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    padding-left: 4px;
+  }
+
+  /* Patrol action buttons */
+  .patrol-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 16px;
+    background: #fff;
+    border-top: 1px solid #f0f0f0;
+  }
+  .action-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    font-family: inherit;
+    padding: 8px 12px;
+    border-radius: 12px;
+    transition: background 0.1s;
+  }
+  .action-btn:active { background: #f0f0f0; }
+  .action-btn .btn-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+  }
+  .action-btn .btn-label { font-size: 12px; font-weight: 600; color: #444; }
+
+  /* Profile stats */
+  .profile-stats {
+    display: flex;
+    background: #fff;
+    border-radius: 14px;
+    overflow: hidden;
+    margin: 12px 16px;
+    box-shadow: 0 1px 8px rgba(0,0,0,0.06);
+  }
+  .profile-stat-item {
+    flex: 1;
+    padding: 16px 8px;
+    text-align: center;
+    border-right: 1px solid #f0f0f0;
+  }
+  .profile-stat-item:last-child { border-right: none; }
+  .profile-stat-value { font-size: 18px; font-weight: 800; color: #2E7D32; }
+  .profile-stat-label { font-size: 11px; color: #999; margin-top: 4px; }
+
+  /* Notification card */
+  .notif-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin: 0 16px 10px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+    cursor: pointer;
+    display: flex;
+    gap: 12px;
+    position: relative;
+  }
+  .notif-card.unread { background: #E8F5E9; }
+  .notif-unread-dot {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 8px;
+    height: 8px;
+    background: #ef5350;
+    border-radius: 50%;
+  }
+
+  /* My rank bar */
+  .my-rank-bar {
+    background: #E8F5E9;
+    border-top: 2px solid #2E7D32;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+  .my-rank-num {
+    width: 32px;
+    height: 32px;
+    background: #2E7D32;
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 800;
+  }
+
+  /* Checkbox */
+  .checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 0;
+    cursor: pointer;
+  }
+  .checkbox-box {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #2E7D32;
+    border-radius: 4px;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.15s;
+  }
+  .checkbox-box.checked { background: #2E7D32; }
+  .checkbox-box.checked::after {
+    content: '✓';
+    color: #fff;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  /* Photo grid */
+  .photo-grid { display: flex; gap: 8px; }
+  .photo-slot {
+    width: 72px;
+    height: 72px;
+    border-radius: 10px;
+    border: 2px dashed #ccc;
+    background: #f8f8f8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    cursor: pointer;
+    color: #aaa;
+    flex-shrink: 0;
+    transition: background 0.1s;
+  }
+  .photo-slot:active { background: #f0f0f0; }
+  .photo-slot.filled { border-style: solid; border-color: #e0e0e0; background: #e8f5e9; }
+
+  /* Rank list item */
+  .rank-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    border-bottom: 1px solid #f5f5f5;
+    background: #fff;
+  }
+  .rank-num { width: 28px; text-align: center; font-size: 14px; font-weight: 700; color: #555; }
+  .rank-avatar {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: linear-gradient(135deg, #c8e6c9, #66bb6a);
+    display: flex; align-items: center; justify-content: center; font-size: 18px;
+    flex-shrink: 0;
+  }
+  .rank-info { flex: 1; }
+  .rank-name { font-size: 14px; font-weight: 600; color: #222; }
+  .rank-detail { font-size: 12px; color: #999; margin-top: 2px; }
+  .rank-pts { font-size: 13px; font-weight: 700; color: #2E7D32; }
+
+  /* Mini route map */
+  .mini-route {
+    background: linear-gradient(135deg, #c8e6c9, #a5d6a7);
+    border-radius: 10px;
+    height: 90px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #2E7D32;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .mini-route::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.2) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.2) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+
+  /* Point history item */
+  .point-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    border-bottom: 1px solid #f5f5f5;
+    background: #fff;
+  }
+  .point-plus { color: #2E7D32; font-weight: 700; font-size: 15px; }
+  .point-minus { color: #ef5350; font-weight: 700; font-size: 15px; }
+
+  /* Settings section */
+  .settings-section {
+    background: #fff;
+    border-radius: 14px;
+    overflow: hidden;
+    margin: 0 16px 16px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+  }
+  .settings-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+    border-bottom: 1px solid #f0f0f0;
+    cursor: pointer;
+  }
+  .settings-item:last-child { border-bottom: none; }
+
+  /* FAB */
+  .fab {
+    position: absolute;
+    bottom: 80px;
+    right: 16px;
+    width: 52px;
+    height: 52px;
+    background: linear-gradient(135deg, #2E7D32, #43A047);
+    border-radius: 50%;
+    border: none;
+    color: #fff;
+    font-size: 22px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(46,125,50,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.15s;
+    z-index: 100;
+  }
+  .fab:active { transform: scale(0.93); }
+
+  /* Onboarding illustration */
+  .onboard-illus {
+    background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+    border-radius: 24px;
+    height: 220px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 64px;
+    margin: 0 16px 24px;
+  }
+
+  /* Divider */
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 16px 0;
+    color: #bbb;
+    font-size: 13px;
+  }
+  .divider::before,
+  .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #e8e8e8;
+  }
+
+  /* Nav label (screen title on desktop) */
+  .screen-label {
+    position: absolute;
+    top: -28px;
+    left: 0;
+    font-size: 11px;
+    color: rgba(255,255,255,0.5);
+    font-family: monospace;
+    letter-spacing: 0.5px;
+  }
+
+  /* Desktop sidebar */
+  .desktop-sidebar {
+    position: fixed;
+    left: 24px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    z-index: 100;
+  }
+  .sidebar-btn {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: rgba(255,255,255,0.7);
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 11px;
+    cursor: pointer;
+    font-family: monospace;
+    white-space: nowrap;
+    transition: all 0.15s;
+    text-align: left;
+  }
+  .sidebar-btn:hover {
+    background: rgba(46,125,50,0.3);
+    color: #fff;
+    border-color: rgba(46,125,50,0.5);
+  }
+  .sidebar-btn.active-nav {
+    background: rgba(46,125,50,0.5);
+    color: #fff;
+    border-color: #66bb6a;
+  }
+  .sidebar-section {
+    font-size: 9px;
+    color: rgba(255,255,255,0.3);
+    font-family: monospace;
+    padding: 4px 12px 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  /* Scroll fade for long screens */
+  .scroll-area { scroll-behavior: smooth; }
+
+  /* Video player mockup */
+  .video-player-mock {
+    background: #000;
+    aspect-ratio: 16/9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    flex-shrink: 0;
+  }
+  .video-controls {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0,0,0,0.8));
+    padding: 16px 16px 12px;
+  }
+  .seek-bar {
+    height: 3px;
+    background: rgba(255,255,255,0.3);
+    border-radius: 2px;
+    margin-bottom: 8px;
+    position: relative;
+  }
+  .seek-fill {
+    height: 100%;
+    width: 35%;
+    background: #fff;
+    border-radius: 2px;
+    position: relative;
+  }
+  .seek-fill::after {
+    content: '';
+    position: absolute;
+    right: -4px;
+    top: -4px;
+    width: 11px;
+    height: 11px;
+    background: #fff;
+    border-radius: 50%;
+  }
+</style>
+</head>
+<body>
+
+<!-- Desktop navigation sidebar -->
+<div class="desktop-sidebar" id="sidebar">
+  <div class="sidebar-section">온보딩</div>
+  <button class="sidebar-btn active-nav" onclick="showScreen('u00')">U00 스플래시</button>
+  <button class="sidebar-btn" onclick="showScreen('u00a')">U00a 온보딩</button>
+  <button class="sidebar-btn" onclick="showScreen('u00b')">U00b 로그인</button>
+  <button class="sidebar-btn" onclick="showScreen('u00c')">U00c 회원가입</button>
+  <button class="sidebar-btn" onclick="showScreen('u00d')">U00d 비밀번호</button>
+  <div class="sidebar-section">홈/순찰</div>
+  <button class="sidebar-btn" onclick="showScreen('u02')">U02 홈/지도</button>
+  <button class="sidebar-btn" onclick="showScreen('u03')">U03 순찰중</button>
+  <button class="sidebar-btn" onclick="showScreen('u04')">U04 일시정지</button>
+  <div class="sidebar-section">순찰 상세</div>
+  <button class="sidebar-btn" onclick="showScreen('u05')">U05 현장마킹</button>
+  <button class="sidebar-btn" onclick="showScreen('u06')">U06 신고작성</button>
+  <button class="sidebar-btn" onclick="showScreen('u07')">U07 순찰결과</button>
+  <button class="sidebar-btn" onclick="showScreen('u08')">U08 기록상세</button>
+  <div class="sidebar-section">커뮤니티</div>
+  <button class="sidebar-btn" onclick="showScreen('u10')">U10 피드</button>
+  <button class="sidebar-btn" onclick="showScreen('u11')">U11 게시글</button>
+  <button class="sidebar-btn" onclick="showScreen('u12')">U12 글작성</button>
+  <button class="sidebar-btn" onclick="showScreen('u13a')">U13 영상목록</button>
+  <button class="sidebar-btn" onclick="showScreen('u13b')">U13b 영상재생</button>
+  <div class="sidebar-section">랭킹</div>
+  <button class="sidebar-btn" onclick="showScreen('u14')">U14 랭킹</button>
+  <div class="sidebar-section">마이페이지</div>
+  <button class="sidebar-btn" onclick="showScreen('u15')">U15 프로필</button>
+  <button class="sidebar-btn" onclick="showScreen('u16')">U16 활동내역</button>
+  <button class="sidebar-btn" onclick="showScreen('u17')">U17 순찰목록</button>
+  <button class="sidebar-btn" onclick="showScreen('u18')">U18 포인트</button>
+  <button class="sidebar-btn" onclick="showScreen('u19')">U19 편집</button>
+  <div class="sidebar-section">설정/알림</div>
+  <button class="sidebar-btn" onclick="showScreen('u20')">U20 설정</button>
+  <button class="sidebar-btn" onclick="showScreen('u09')">U09 알림</button>
+</div>
+
+<div class="desktop-bg">
+  <div class="phone-frame">
+    <div class="phone-screen">
+
+      <!-- ============================================================
+           U00: SPLASH
+      ============================================================ -->
+      <div class="screen active" id="screen-u00">
+        <div class="status-bar dark" style="background:transparent; position:absolute; top:0; left:0; right:0; z-index:10;">
+          <span class="status-time">9:41</span>
+          <div class="status-icons"><span>📶</span><span>🔋</span></div>
+        </div>
+        <div class="splash-bg">
+          <div style="display:flex; flex-direction:column; align-items:center; gap:16px;">
+            <div style="width:100px; height:100px; background:rgba(255,255,255,0.15); border-radius:28px; display:flex; align-items:center; justify-content:center; font-size:52px; backdrop-filter:blur(10px);">🐕‍🦺</div>
+            <div style="text-align:center;">
+              <div style="font-size:26px; font-weight:900; letter-spacing:-0.5px;">반려견순찰대</div>
+              <div style="font-size:14px; opacity:0.7; margin-top:4px; font-weight:400;">우리 동네를 함께 지켜요</div>
+            </div>
+          </div>
+          <div style="display:flex; flex-direction:column; align-items:center; gap:12px;">
+            <div>
+              <span class="loading-dot"></span>
+              <span class="loading-dot"></span>
+              <span class="loading-dot"></span>
+            </div>
+            <div style="font-size:12px; opacity:0.5; font-weight:500;">로딩 중...</div>
+          </div>
+          <button class="btn-primary" style="background:rgba(255,255,255,0.2); width:200px; backdrop-filter:blur(8px); font-size:15px; border:1px solid rgba(255,255,255,0.3);" onclick="showScreen('u00a')">
+            앱 시작하기 →
+          </button>
+        </div>
+      </div>
+
+      <!-- ============================================================
+           U00a: ONBOARDING CAROUSEL
+      ============================================================ -->
+      <div class="screen" id="screen-u00a">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons"><span>📶</span><span>🔋</span></div>
+        </div>
+        <div style="display:flex; justify-content:flex-end; padding:8px 20px;">
+          <button style="background:none; border:none; color:#2E7D32; font-size:14px; font-weight:600; cursor:pointer; font-family:inherit;" onclick="showScreen('u00b')">건너뛰기 &gt;</button>
+        </div>
+        <div style="flex:1; display:flex; flex-direction:column; padding:0 0 24px;">
+          <div class="onboard-illus" id="onboard-illus">🐕 🚶 🗺️</div>
+          <div style="text-align:center; padding:0 24px; flex:1;">
+            <div id="onboard-title" style="font-size:22px; font-weight:900; color:#1B5E20; margin-bottom:12px; line-height:1.3;">우리 동네를 함께 지켜요</div>
+            <div id="onboard-desc" style="font-size:15px; color:#777; line-height:1.6;">반려견과 함께 산책하며<br>안전한 동네를 만들어요</div>
+          </div>
+          <div style="display:flex; justify-content:center; gap:8px; margin:24px 0;">
+            <div class="slide-dot active" id="dot0"></div>
+            <div class="slide-dot" id="dot1"></div>
+            <div class="slide-dot" id="dot2"></div>
+          </div>
+          <div style="padding:0 24px;">
+            <button class="btn-primary" id="onboard-btn" onclick="nextSlide()">다음</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================================
+           U00b: LOGIN
+      ============================================================ -->
+      <div class="screen" id="screen-u00b" style="background:#fff;">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons"><span>📶</span><span>🔋</span></div>
+        </div>
+        <div class="scroll-area" style="padding:24px 20px;">
+          <div style="display:flex; flex-direction:column; align-items:center; gap:8px; margin-bottom:32px;">
+            <div style="width:72px; height:72px; background:linear-gradient(135deg,#2E7D32,#66BB6A); border-radius:20px; display:flex; align-items:center; justify-content:center; font-size:36px;">🐕‍🦺</div>
+            <div style="font-size:20px; font-weight:900; color:#1B5E20;">반려견순찰대</div>
+          </div>
+          <div style="margin-bottom:14px;">
+            <div class="input-label">이메일</div>
+            <input class="input-field" type="email" placeholder="이메일을 입력하세요" id="login-email">
+          </div>
+          <div style="margin-bottom:6px;">
+            <div class="input-label">비밀번호</div>
+            <div style="position:relative;">
+              <input class="input-field" type="password" placeholder="비밀번호를 입력하세요" id="login-pw" style="padding-right:44px;">
+              <span style="position:absolute; right:14px; top:50%; transform:translateY(-50%); font-size:18px; cursor:pointer;">👁️</span>
+            </div>
+          </div>
+          <div style="text-align:right; margin-bottom:20px;">
+            <button style="background:none; border:none; color:#2E7D32; font-size:13px; cursor:pointer; font-family:inherit; font-weight:500;" onclick="showScreen('u00d')">비밀번호 찾기</button>
+          </div>
+          <button class="btn-primary" onclick="showScreen('u02')" style="margin-bottom:20px;">로그인</button>
+          <div class="divider">또는</div>
+          <div style="margin-bottom:20px;">
+            <button class="social-btn social-kakao" onclick="showScreen('u02')">
+              <span style="font-weight:900;">K</span> 카카오로 로그인
+            </button>
+            <button class="social-btn social-naver" onclick="showScreen('u02')">
+              <span style="font-weight:900; font-size:16px;">N</span> 네이버로 로그인
+            </button>
+            <button class="social-btn social-google" onclick="showScreen('u02')">
+              <span style="font-weight:900; color:#4285F4; font-size:16px;">G</span> Google로 로그인
+            </button>
+            <button class="social-btn social-apple" onclick="showScreen('u02')">
+              <span style="font-size:18px;">🍎</span> Apple로 로그인
+            </button>
+          </div>
+          <div style="text-align:center; font-size:14px; color:#999;">
+            아직 회원이 아니신가요?
+            <button style="background:none; border:none; color:#2E7D32; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; margin-left:4px;" onclick="showScreen('u00c')">회원가입</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================================
+           U00c: SIGNUP
+      ============================================================ -->
+      <div class="screen" id="screen-u00c" style="background:#fff;">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons"><span>📶</span><span>🔋</span></div>
+        </div>
+        <div class="nav-bar">
+          <button class="nav-back" onclick="showScreen('u00b')">← 뒤로</button>
+          <span class="nav-title">회원가입</span>
+          <span style="width:48px;"></span>
+        </div>
+        <div class="scroll-area" style="padding:20px;">
+          <div style="display:flex; justify-content:center; margin-bottom:24px;">
+            <div style="width:80px; height:80px; background:#e8f5e9; border-radius:50%; border:2.5px dashed #2E7D32; display:flex; align-items:center; justify-content:center; font-size:32px; cursor:pointer;">👤</div>
+          </div>
+          <div style="margin-bottom:14px;">
+            <div class="input-label">이메일 *</div>
+            <input class="input-field" type="email" placeholder="example@email.com">
+            <div style="font-size:12px; color:#4CAF50; margin-top:4px;">✓ 사용 가능한 이메일입니다</div>
+          </div>
+          <div style="margin-bottom:14px;">
+            <div class="input-label">비밀번호 *</div>
+            <div style="position:relative;">
+              <input class="input-field" type="password" placeholder="8자 이상, 영문+숫자+특수문자" style="padding-right:44px;">
+              <span style="position:absolute; right:14px; top:50%; transform:translateY(-50%); cursor:pointer;">👁️</span>
+            </div>
+          </div>
+          <div style="margin-bottom:14px;">
+            <div class="input-label">비밀번호 확인 *</div>
+            <div style="position:relative;">
+              <input class="input-field" type="password" placeholder="비밀번호를 다시 입력하세요" style="padding-right:44px; border-color:#4CAF50;">
+              <span style="position:absolute; right:14px; top:50%; transform:translateY(-50%); cursor:pointer;">👁️</span>
+            </div>
+            <div style="font-size:12px; color:#4CAF50; margin-top:4px;">✓ 비밀번호가 일치합니다</div>
+          </div>
+          <div style="margin-bottom:14px;">
+            <div class="input-label">닉네임 *</div>
+            <input class="input-field" type="text" placeholder="2~10자 닉네임" value="순찰대원1">
+          </div>
+          <div style="margin-bottom:20px;">
+            <div class="input-label">휴대폰 번호 *</div>
+            <input class="input-field" type="tel" placeholder="010-0000-0000">
+          </div>
+          <div style="background:#f8f8f8; border-radius:12px; padding:16px; margin-bottom:20px; display:flex; flex-direction:column; gap:10px;">
+            <div class="checkbox-row">
+              <div class="checkbox-box checked" onclick="this.classList.toggle('checked')"></div>
+              <div style="font-size:13px; color:#333; flex:1;">[필수] 이용약관 동의 <span style="color:#2E7D32; font-weight:600;">보기 &gt;</span></div>
+            </div>
+            <div class="checkbox-row">
+              <div class="checkbox-box checked" onclick="this.classList.toggle('checked')"></div>
+              <div style="font-size:13px; color:#333; flex:1;">[필수] 개인정보 처리방침 동의 <span style="color:#2E7D32; font-weight:600;">보기 &gt;</span></div>
+            </div>
+            <div class="checkbox-row">
+              <div class="checkbox-box" onclick="this.classList.toggle('checked')"></div>
+              <div style="font-size:13px; color:#999; flex:1;">[선택] 마케팅 수신 동의</div>
+            </div>
+          </div>
+          <button class="btn-primary" onclick="showToast('가입 완료! 환영합니다 🎉'); setTimeout(()=>showScreen('u02'),1500)">가입하기</button>
+        </div>
+      </div>
+
+      <!-- ============================================================
+           U00d: PASSWORD RESET
+      ============================================================ -->
+      <div class="screen" id="screen-u00d" style="background:#fff;">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons"><span>📶</span><span>🔋</span></div>
+        </div>
+        <div class="nav-bar">
+          <button class="nav-back" onclick="showScreen('u00b')">← 뒤로</button>
+          <span class="nav-title">비밀번호 찾기</span>
+          <span style="width:48px;"></span>
+        </div>
+        <div style="padding:32px 20px;" id="pw-reset-form">
+          <div style="background:#e8f5e9; border-radius:14px; padding:16px; margin-bottom:28px; text-align:center;">
+            <div style="font-size:32px; margin-bottom:8px;">🔐</div>
+            <div style="font-size:14px; color:#2E7D32; font-weight:600; line-height:1.5;">가입 시 사용한 이메일을 입력해주세요.<br>비밀번호 재설정 링크를 보내드립니다.</div>
+          </div>
+          <div style="margin-bottom:20px;">
+            <div class="input-label">이메일</div>
+            <input class="input-field" type="email" placeholder="example@email.com" id="reset-email">
+          </div>
+          <button class="btn-primary" onclick="showPwSent()">재설정 링크 발송</button>
+        </div>
+        <div style="padding:20px; display:none;" id="pw-sent">
+          <div style="text-align:center; padding:24px; background:#e8f5e9; border-radius:16px; margin-bottom:20px;">
+            <div style="font-size:48px; margin-bottom:12px;">✉️</div>
+            <div style="font-size:17px; font-weight:700; color:#1B5E20; margin-bottom:8px;">이메일이 발송되었습니다</div>
+            <div style="font-size:14px; color:#555; line-height:1.6;">이메일에서 재설정 링크를<br>클릭해 새 비밀번호를 설정해주세요.</div>
+          </div>
+          <div style="text-align:center; margin-bottom:20px; font-size:13px; color:#999;">
+            메일이 오지 않나요?
+            <button style="background:none; border:none; color:#2E7D32; font-size:13px; font-weight:600; cursor:pointer; font-family:inherit;">재발송</button>
+          </div>
+          <button class="btn-primary" onclick="showScreen('u00b')">로그인으로 돌아가기</button>
+        </div>
+      </div>
+
+      <!-- ============================================================
+           U02: HOME / MAP
+      ============================================================ -->
+      <div class="screen" id="screen-u02">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons"><span>📶</span><span>🔋</span></div>
+        </div>
+        <div class="app-header">
+          <div class="app-header-title">🐕‍🦺 <span>순찰대앱</span></div>
+          <button style="background:none; border:none; cursor:pointer; font-size:22px; position:relative;" onclick="showScreen('u09')">
+            🔔<span class="notif-badge" style="position:absolute; top:-2px; right:-4px; font-size:9px; height:14px; padding:0 4px; line-height:14px;">3</span>
+          </button>
+        </div>
+        <!-- Map -->
+        <div class="map-area" style="flex:1; min-height:0;">
+          <div class="map-pin" style="top:52%; left:50%;">📍</div>
+          <div class="map-zoom">
+            <button>+</button>
+            <button>−</button>
+          </div>
+          <!-- Event banner -->
+          <div style="position:absolute; top:12px; left:12px; right:12px; background:rgba(255,255,255,0.95); border-radius:12px; padding:10px 14px; box-shadow:0 2px 8px rgba(0,0,0,0.15); display:flex; align-items:center; gap:10px; cursor:pointer;">
+            <span style="font-size:22px;">🎉</span>
+            <div style="flex:1; min-width:0;">
+              <div style="font-size:13px; font-weight:700; color:#1B5E20;">봄맞이 순찰 이벤트 진행중!</div>
+              <div style="font-size:11px; color:#777; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">3월 한달간 포인트 1.5배 적립</div>
+            </div>
+            <span style="font-size:16px; color:#bbb;">›</span>
+          </div>
+        </div>
+        <!-- Recent patrol card -->
+        <div style="padding:12px 16px; background:#f5f5f5; flex-shrink:0;">
+          <div class="card" style="padding:14px 16px; cursor:pointer; margin-bottom:12px;" onclick="showScreen('u08')">
+            <div style="font-size:12px; font-weight:700; color:#999; margin-bottom:6px;">최근 순찰</div>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <div style="font-size:14px; font-weight:600; color:#222;">2024.03.07 &nbsp;·&nbsp; 2.3km</div>
+                <div style="font-size:13px; color:#999; margin-top:2px;">45분 &nbsp;·&nbsp; 💎 230pt</div>
+              </div>
+              <span style="color:#2E7D32; font-size:13px; font-weight:600;">상세 ›</span>
+            </div>
+          </div>
+          <div style="display:flex; justify-content:center;">
+            <button class="patrol-start-btn" onclick="showScreen('u03')">
+              <span style="font-size:28px;">🐾</span>
+              <span>순찰 시작</span>
+            </button>
+          </div>
+        </div>
+        <div class="tab-bar">
+          <button class="tab-item active" onclick="showTab('u02', this)"><span class="tab-icon">🏠</span><span class="tab-label">홈</span></button>
+          <button class="tab-item" onclick="showTab('u10', this)"><span class="tab-icon">💬</span><span class="tab-label">커뮤니티</span></button>
+          <button class="tab-item" onclick="showTab('u14', this)"><span class="tab-icon">🏆</span><span class="tab-label">랭킹</span></button>
+          <button class="tab-item" onclick="showTab('u15', this)"><span class="tab-icon">👤</span><span class="tab-label">마이</span></button>
+        </div>
+      </div>
+
+      <!-- ============================================================
+           U03: PATROL ACTIVE
+      ============================================================ -->
+      <div class="screen" id="screen-u03">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons"><span>📶</span><span>🔋</span></div>
+        </div>
+        <div class="nav-bar">
+          <span style="width:48px;"></span>
+          <span class="nav-title">순찰 진행 중 🟢</span>
+          <span style="width:48px;"></span>
+        </div>
+        <div class="info-bar">
+          <div class="info-bar-item">🕐 <span id="patrol-time">00:23:45</span></div>
+          <div class="info-bar-item">📏 1.2km</div>
+          <div class="info-bar-item">🏃 4.2km/h</div>
+          <div class="info-bar-item">💎 ~120pt</div>
+        </div>
+        <div class="map-area" style="flex:1; min-height:0; position:relative;">
+          <svg style="position:absolute; inset:0; width:100%; height:100%; z-index:1;" viewBox="0 0 375 300" preserveAspectRatio="none">
+            <path d="M80 240 C100 200 120 180 150 160 C180 140 200 160 220 140 C240 120 260 130 280 120" fill="none" stroke="#1565C0" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <div class="map-pin" style="top:40%; left:75%;">📍</div>
+          <div style="position:absolute; top:50%; left:40%; transform:translate(-50%,-50%); font-size:18px; z-index:2;">🔵</div>
+          <div class="map-zoom">
+            <button>+</button>
+            <button>−</button>
+          </div>
+        </div>
+        <div class="patrol-actions">
+          <button class="action-btn" onclick="showScreen('u04')">
+            <div class="btn-icon" style="background:#FFF8E1;">⏸️</div>
+            <span class="btn-label">일시정지</span>
+          </button>
+          <button class="action-btn" onclick="showScreen('u05')">
+            <div class="btn-icon" style="background:#E3F2FD;">📌</div>
+            <span class="btn-label">마킹</span>
+          </button>
+          <button class="action-btn" onclick="showScreen('u06')">
+            <div class="btn-icon" style="background:#FFEBEE;">🚨</div>
+            <span class="btn-label">신고</span>
+          </button>
+          <button class="action-btn" onclick="document.getElementById('modal-patrol-end').classList.add('show')">
+            <div class="btn-icon" style="background:#FFEBEE; border:2px solid #FFCDD2;">⏹️</div>
+            <span class="btn-label" style="color:#c62828;">종료</span>
+          </button>
+        </div>
+        <div class="tab-bar">
+          <button class="tab-item active" onclick="showTab('u02', this)"><span class="tab-icon">🏠</span><span class="tab-label">홈</span></button>
+          <button class="tab-item" onclick="showTab('u10', this)"><span class="tab-icon">💬</span><span class="tab-label">커뮤니티</span></button>
+          <button class="tab-item" onclick="showTab('u14', this)"><span class="tab-icon">🏆</span><span class="tab-label">랭킹</span></button>
+          <button class="tab-item" onclick="showTab('u15', this)"><span class="tab-icon">👤</span><span class="tab-label">마이</span></button>
+        </div>
+        <!-- End patrol modal -->
+        <div class="modal-overlay" id="modal-patrol-end">
+          <div class="modal-box">
+            <div class="modal-title">순찰을 종료하시겠습니까?</div>
+            <div class="modal-text">총 거리: 1.2km<br>총 시간: 00:23:45</div>
+            <div class="modal-btns">
+              <button class="modal-btn-cancel" onclick="document.getElementById('modal-patrol-end').classList.remove('show')">취소</button>
+              <button class="modal-btn-ok" onclick="document.getElementById('modal-patrol-end').classList.remove('show'); showScreen('u07')">종료</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================================
+           U04: PATROL PAUSED
+      ============================================================ -->
+      <div class="screen" id="screen-u04">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons"><span>📶</span><span>🔋</span></div>
+        </div>
+        <div class="nav-bar">
+          <span style="width:48px;"></span>
+          <span class="nav-title">순찰 일시정지</span>
+          <span style="width:48px;"></span>
+        </div>
+        <div class="info-bar" style="background:#78909C;">
+          <div class="info-bar-item">⏸️ 00:23:45</div>
+          <div class="info-bar-item">📏 1.2km</div>
+          <div class="info-bar-item">🏃 0.0km/h</div>
+          <div class="info-bar-item">💎 ~120pt</div>
+        </div>
+        <div class="map-area" style="flex:1; min-height:0; position:relative; filter:grayscale(30%);">
+          <svg style="position:absolute; inset:0; width:100%; height:100%; z-index:1;" viewBox="0 0 375 300" preserveAspectRatio="none">
+            <path d="M80 240 C100 200 120 180 150 160 C180 140 200 160 220 140" fill="none" stroke="#1565C0" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M220 140 C240 130 260 140 280 130" fill="none" stroke="#1565C0" stroke-width="3" stroke-dasharray="8,6" stroke-linecap="round"/>
+          </svg>
+          <div style="position:absolute; top:42%; left:73%; font-size:22px; z-index:2;">⏸️</div>
+          <div class="map-zoom">
+            <button>+</button>
+            <button>−</button>
+          </div>
+        </div>
+        <div style="padding:16px; background:#fff; border-top:1px solid #f0f0f0;">
+          <div style="text-align:center; margin-bottom:16px;">
+            <div style="display:inline-block; background:#FFF8E1; border-radius:20px; padding:8px 20px; font-size:14px; font-weight:700; color:#E65100;">⏸️ 일시정지 중</div>
+          </div>
+          <div style="display:flex; gap:12px;">
+            <button class="btn-primary" style="flex:1; background:#1565C0;" onclick="showScreen('u03')">▶️ 재개</button>
+            <button class="btn-secondary" style="flex:1;" onclick="document.getElementById('modal-pause-end').classList.add('show')">⏹️ 종료</button>
+          </div>
+        </div>
+        <div class="tab-bar">
+          <button class="tab-item active" onclick="showTab('u02',this)"><span class="tab-icon">🏠</span><span class="tab-label">홈</span></button>
+          <button class="tab-item" onclick="showTab('u10',this)"><span class="tab-icon">💬</span><span class="tab-label">커뮤니티</span></button>
+          <button class="tab-item" onclick="showTab('u14',this)"><span class="tab-icon">🏆</span><span class="tab-label">랭킹</span></button>
+          <button class="tab-item" onclick="showTab('u15',this)"><span class="tab-icon">👤</span><span class="tab-label">마이</span></button>
+        </div>
+        <div class="modal-overlay" id="modal-pause-end">
+          <div class="modal-box">
+            <div class="modal-title">순찰을 종료하시겠습니까?</div>
+            <div class="modal-text">지금까지의 기록이 저장됩니다.</div>
+            <div class="modal-btns">
+              <button class="modal-btn-cancel" onclick="document.getElementById('modal-pause-end').classList.remove('show')">취소</button>
+              <button class="modal-btn-ok" onclick="document.getElementById('modal-pause-end').classList.remove('show'); showScreen('u07')">종료</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================================
+           U05: FIELD MARKING (BOTTOM SHEET over U03)
+      ============================================================ -->
+      <div class="screen" id="screen-u05">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons"><span>📶</span><span>🔋</span></div>
+        </div>
+        <div class="nav-bar">
+          <span style="width:48px;"></span>
+          <span class="nav-title">순찰 진행 중 🟢</span>
+          <span style="width:48px;"></span>
+        </div>
+        <div class="info-bar">
+          <div class="info-bar-item">🕐 00:23:45</div>
+          <div class="info-bar-item">📏 1.2km</div>
+          <div class="info-bar-item">🏃 4.2km/h</div>
+          <div class="info-bar-item">💎 ~120pt</div>
+        </div>
+        <!-- Map background -->
+        <div class="map-area" style="flex:1; min-height:0; filter:blur(1px) brightness(0.8);">
+        </div>
+        <!-- Bottom sheet -->
+        <div style="background:#fff; border-radius:24px 24px 0 0; padding:16px; box-shadow:0 -4px 20px rgba(0,0,0,0.15);">
+          <div class="sheet-handle"></div>
+          <div style="font-size:17px; font-weight:800; color:#111; margin-bottom:16px;">현장 마킹</div>
+          <div style="margin-bottom:14px;">
+            <div class="input-label">유형 선택</div>
+            <div style="display:flex; gap:8px;">
+              <button class="chip active" id="mark-normal" onclick="selectMark('normal')">📌 일반 기록</button>
+              <button class="chip" id="mark-report" onclick="selectMark('report')">🚨 신고</button>
+            </div>
+          </div>
+          <div style="margin-bottom:14px;">
+            <div style="display:flex; align-items:center; gap:6px; background:#f0f0f0; border-radius:8px; padding:8px 12px; font-size:13px; color:#555;">
+              📍 서울시 강남구 역삼동 123
+            </div>
+          </div>
+          <div style="margin-bottom:14px;">
+            <div class="input-label">사진 촬영 (선택)</div>
+            <div class="photo-grid">
+              <div class="photo-slot">📷</div>
+              <div class="photo-slot filled">🌿</div>
+              <div class="photo-slot"></div>
+            </div>
+          </div>
+          <div style="margin-bottom:16px;">
+            <div class="input-label">메모 (선택)</div>
+            <textarea class="input-field" rows="2" placeholder="특이사항을 입력하세요 (최대 200자)" style="resize:none; font-size:14px;"></textarea>
+          </div>
+          <div style="display:flex; gap:10px;">
+            <button class="btn-secondary" style="flex:1;" onclick="showScreen('u03')">취소</button>
+            <button class="btn-primary" style="flex:1;" onclick="showScreen('u03'); showToast('마킹이 저장되었습니다 📌')">저장</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================================
+           U06: REPORT FORM
+      ============================================================ -->
+      <div class="screen" id="screen-u06" style="background:#f5f5f5;">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons"><span>📶</span><span>🔋</span></div>
+        </div>
+        <div class="nav-bar">
+          <button class="nav-back" onclick="showScreen('u05')">← 취소</button>
+          <span class="nav-title">신고 작성</span>
+          <span style="width:48px;"></span>
+        </div>
+        <div class="scroll-area" style="padding:16px;">
+          <div class="card" style="padding:16px; margin-bottom:12px;">
+            <div style="font-size:14px; font-weight:700; color:#222; margin-bottom:10px;">카테고리 <span style="color:#ef5350;">*</span></div>
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+              <button class="chip active">불법투기</button>
+              <button class="chip">시설파손</button>
+              <button class="chip">안전위험</button>
+              <button class="chip">기타</button>
+            </div>
+          </div>
+          <div class="card" style="padding:16px; margin-bottom:12px;">
+            <div style="display:flex; align-items:center; gap:6px; font-size:13px; color:#555; margin-bottom:12px; background:#f8f8f8; padding:8px 12px; border-radius:8px;">
+              📍 서울시 강남구 역삼동 123
+            </div>
+            <div style="font-size:14px; font-weight:700; color:#222; margin-bottom:8px;">상세 설명 <span style="color:#ef5350;">*</span></div>
+            <textarea class="input-field" rows="5" placeholder="상황을 상세하게 설명해주세요." style="resize:none;"></textarea>
+            <div style="text-align:right; font-size:12px; color:#bbb; margin-top:4px;">0/500</div>
+          </div>
+          <div class="card" style="padding:16px; margin-bottom:16px;">
+            <div style="font-size:14px; font-weight:700; color:#222; margin-bottom:10px;">사진 첨부 <span style="color:#999;">(선택, 최대 3장)</span></div>
+            <div class="photo-grid">
+              <div class="photo-slot">📷</div>
+              <div class="photo-slot"></div>
+              <div class="photo-slot"></div>
+            </div>
+          </div>
+          <button class="btn-primary" onclick="showScreen('u03'); showToast('신고가 접수되었습니다 🚨')">신고 제출</button>
+        </div>
+        <div class="tab-bar">
+          <button class="tab-item active" onclick="showTab('u02',this)"><span class="tab-icon">🏠</span><span class="tab-label">홈</span></button>
+          <button class="tab-item" onclick="showTab('u10',this)"><span class="tab-icon">💬</span><span class="tab-label">커뮤니티</span></button>
+          <button class="tab-item" onclick="showTab('u14',this)"><span class="tab-icon">🏆</span><span class="tab-label">랭킹</span></button>
+          <button class="tab-item" onclick="showTab('u15',this)"><span class="tab-icon">👤</span><span class="tab-label">마이</span></button>
+        </div>
+      </div>
+
+      <!-- ============================================================
+           U07: PATROL RESULT
+      ============================================================ -->
+      <div class="screen" id="screen-u07" style="background:#f5f5f5;">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons"><span>📶</span><span>🔋</span></div>
+        </div>
+        <div class="nav-bar">
+          <span style="width:48px;"></span>
+          <span class="nav-title">순찰 완료! 🎉</span>
+          <span style="width:48px;"></span>
+        </div>
+        <div class="scroll-area" style="padding:16px;">
+          <!-- Route map -->
+          <div class="card" style="margin-bottom:12px; overflow:hidden;">
+            <div class="map-area" style="height:160px; position:relative;">
+              <svg style="position:absolute; inset:0; width:100%; height:100%; z-index:1;" viewBox="0 0 375 160" preserveAspectRatio="none">
+                <path d="M40 130 C60 110 80 100 110 90 C140 80 160 95 190 80 C220 65 250 75 290 60 C320 50 340 65 350 55" fill="none" stroke="#1565C0" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <div style="position:absolute; top:55%; left:52%; font-size:16px; z-index:2;">🔵</div>
+              <div style="position:absolute; top:35%; left:94%; font-size:16px; z-index:2;">🔴</div>
+            </div>
+          </div>
+          <!-- Summary card -->
+          <div class="stat-card" style="margin:0 0 12px;">
+            <div style="font-size:15px; font-weight:700; margin-bottom:16px; opacity:0.9;">순찰 요약</div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;">
+              <div>
+                <div style="font-size:12px; opacity:0.7; margin-bottom:4px;">📏 거리</div>
+                <div style="font-size:22px; font-weight:900;">2.35 km</div>
+              </div>
+              <div>
+                <div style="font-size:12px; opacity:0.7; margin-bottom:4px;">🕐 시간</div>
+                <div style="font-size:22px; font-weight:900;">00:45:12</div>
+              </div>
+              <div>
+                <div style="font-size:12px; opacity:0.7; margin-bottom:4px;">📌 마킹</div>
+                <div style="font-size:22px; font-weight:900;">3건</div>
+              </div>
+              <div>
+                <div style="font-size:12px; opacity:0.7; margin-bottom:4px;">🚨 신고</div>
+                <div style="font-size:22px; font-weight:900;">1건</div>
+              </div>
+            </div>
+            <div style="background:rgba(255,255,255,0.2); border-radius:12px; padding:14px; text-align:center;">
+              <span class="point-badge" style="font-size:24px; font-weight:900;">💎 235pt 획득!</span>
+            </div>
+          </div>
+          <!-- Journal -->
+          <div class="card" style="padding:16px; margin-bottom:12px;">
+            <div style="font-size:15px; font-weight:700; color:#222; margin-bottom:12px;">활동 일지</div>
+            <div style="margin-bottom:12px;">
+              <div class="input-label">이상 유무</div>
+              <div style="display:flex; gap:20px;">
+                <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:14px;">
+                  <input type="radio" name="abnormal" style="accent-color:#2E7D32;"> 이상 없음
+                </label>
+                <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:14px;">
+                  <input type="radio" name="abnormal" style="accent-color:#2E7D32;"> 이상 있음
+                </label>
+              </div>
+            </div>
+            <div>
+              <div class="input-label">특이사항</div>
+              <textarea class="input-field" rows="3" placeholder="특이사항을 입력하세요 (선택)" style="resize:none;"></textarea>
+              <div style="text-align:right; font-size:12px; color:#bbb; margin-top:4px;">0/500</div>
+            </div>
+          </div>
+          <button class="btn-primary" onclick="document.getElementById('modal-save-done').classList.add('show')" style="margin-bottom:24px;">저장 및 완료</button>
+        </div>
+        <div class="tab-bar">
+          <button class="tab-item active" onclick="showTab('u02',this)"><span class="tab-icon">🏠</span><span class="tab-label">홈</span></button>
+          <button class="tab-item" onclick="showTab('u10',this)"><span class="tab-icon">💬</span><span class="tab-label">커뮤니티</span></button>
+          <button class="tab-item" onclick="showTab('u14',this)"><span class="tab-icon">🏆</span><span class="tab-label">랭킹</span></button>
+          <button class="tab-item" onclick="showTab('u15',this)"><span class="tab-icon">👤</span><span class="tab-label">마이</span></button>
+        </div>
+        <div class="modal-overlay" id="modal-save-done">
+          <div class="modal-box">
+            <div style="font-size:36px; margin-bottom:12px;">🎉</div>
+            <div class="modal-title">순찰이 저장되었습니다!</div>
+            <div class="modal-text">💎 235pt 획득</div>
+            <div class="modal-btns">
+              <button class="modal-btn-cancel" onclick="document.getElementById('modal-save-done').classList.remove('show'); showScreen('u02')">홈으로</button>
+              <button class="modal-btn-ok" onclick="document.getElementById('modal-save-done').classList.remove('show'); showScreen('u08')">상세보기</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================================
+           U08: PATROL RECORD DETAIL
+      ============================================================ -->
+      <div class="screen" id="screen-u08" style="background:#f5f5f5;">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons"><span>📶</span><span>🔋</span></div>
+        </div>
+        <div class="nav-bar">
+          <button class="nav-back" onclick="history.go(-1) || showScreen('u02')">← 뒤로</button>
+          <span class="nav-title">순찰 기록 상세</span>
+          <span style="width:48px;"></span>
+        </div>
+        <div class="scroll-area" style="padding:16px;">
+          <!-- Route map -->
+          <div class="card" style="margin-bottom:12px; overflow:hidden;">
+            <div class="map-area" style="height:180px; position:relative;">
+              <svg style="position:absolute; inset:0; width:100%; height:100%; z-index:1;" viewBox="0 0 375 180" preserveAspectRatio="none">
+                <path d="M40 150 C70 120 100 110 130 95 C160 80 185 100 210 85 C235 70 260 80 300 65 C330 55 350 70 360 60" fill="none" stroke="#1565C0" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <div style="position:absolute; top:52%; left:36%; font-size:16px; z-index:2;">🔵</div>
+              <div style="position:absolute; top:47%; left:57%; font-size:16px; z-index:2;">🔵</div>
+              <div style="position:absolute; top:36%; left:80%; font-size:16px; z-index:2;">🔴</div>
+              <div class="map-zoom"><button>+</button><button>−</button></div>
+            </div>
+          </div>
+          <!-- Info card -->
+          <div class="card" style="padding:16px; margin-bottom:12px;">
+            <div style="font-size:15px; font-weight:700; color:#222; margin-bottom:12px;">순찰 정보</div>
+            <div style="display:flex; flex-direction:column; gap:8px;">
+              <div style="display:flex; align-items:center; gap:8px; font-size:14px; color:#555;"><span style="width:24px;">📅</span> 2024.03.07 14:30</div>
+              <div style="display:flex; align-items:center; gap:8px; font-size:14px; color:#555;"><span style="width:24px;">📏</span> 2.35 km</div>
+              <div style="display:flex; align-items:center; gap:8px; font-size:14px; color:#555;"><span style="width:24px;">🕐</span> 00:45:12</div>
+              <div style="display:flex; align-items:center; gap:8px; font-size:14px; color:#555;"><span style="width:24px;">💎</span> <span style="color:#2E7D32; font-weight:700;">235pt</span></div>
+            </div>
+          </div>
+          <!-- Marking list -->
+          <div class="card" style="margin-bottom:12px; overflow:hidden;">
+            <div style="padding:14px 16px; border-bottom:1px solid #f0f0f0; font-size:15px; font-weight:700; color:#222;">마킹 목록 <span style="color:#2E7D32;">(3건)</span></div>
+            <div style="display:flex; align-items:center; gap:12px; padding:14px 16px; border-bottom:1px solid #f5f5f5; cursor:pointer;">
+              <span style="font-size:20px;">🔵</span>
+              <div style="width:52px; height:52px; background:#e8f5e9; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:24px; flex-shrink:0;">🌿</div>
+              <div style="flex:1;">
+                <div style="font-size:13px; font-weight:600; color:#222;">일반 마킹</div>
+                <div style="font-size:12px; color:#777; margin-top:2px;">벤치 파손 &nbsp;·&nbsp; 14:35</div>
+              </div>
+            </div>
+            <div style="display:flex; align-items:center; gap:12px; padding:14px 16px; border-bottom:1px solid #f5f5f5; cursor:pointer;">
+              <span style="font-size:20px;">🔵</span>
+              <div style="width:52px; height:52px; background:#e8f5e9; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:24px; flex-shrink:0;">🗑️</div>
+              <div style="flex:1;">
+                <div style="font-size:13px; font-weight:600; color:#222;">일반 마킹</div>
+                <div style="font-size:12px; color:#777; margin-top:2px;">쓰레기 투기 &nbsp;·&nbsp; 14:42</div>
+              </div>
+            </div>
+            <div style="display:flex; align-items:center; gap:12px; padding:14px 16px; cursor:pointer;">
+              <span style="font-size:20px;">🔴</span>
+              <div style="width:52px; height:52px; background:#ffebee; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:24px; flex-shrink:0;">💡</div>
+              <div style="flex:1;">
+                <div style="font-size:13px; font-weight:600; color:#c62828;">신고</div>
+                <div style="font-size:12px; color:#777; margin-top:2px;">가로등 파손 &nbsp;·&nbsp; 14:50</div>
+                <div style="font-size:11px; background:#ffebee; color:#c62828; border-radius:6px; padding:2px 6px; display:inline-block; margin-top:4px; font-weight:600;">접수됨</div>
+              </div>
+            </div>
+          </div>
+          <!-- Journal -->
+          <div class="card" style="padding:16px; margin-bottom:24px;">
+            <div style="font-size:15px; font-weight:700; color:#222; margin-bottom:10px;">활동 일지</div>
+            <div style="font-size:14px; color:#555; line-height:1.6;">이상 유무: 이상 없음<br>특이사항: 가로등 파손 1건 신고 완료</div>
+          </div>
+        </div>
+        <div class="tab-bar">
+          <button class="tab-item active" onclick="showTab('u02',this)"><span class="tab-icon">🏠</span><span class="tab-label">홈</span></button>
+          <button class="tab-item" onclick="showTab('u10',this)"><span class="tab-icon">💬</span><span class="tab-label">커뮤니티</span></button>
+          <button class="tab-item" onclick="showTab('u14',this)"><span class="tab-icon">🏆</span><span class="tab-label">랭킹</span></button>
+          <button class="tab-item" onclick="showTab('u15',this)"><span class="tab-icon">👤</span><span class="tab-label">마이</span></button>
+        </div>
+      </div>
+
+      <!-- ============================================================
+           U09: NOTIFICATIONS
+      ============================================================ -->
+      <div class="screen" id="screen-u09" style="background:#f5f5f5;">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons"><span>📶</span><span>🔋</span></div>
+        </div>
+        <div class="nav-bar">
+          <button class="nav-back" onclick="history.go(-1) || showScreen('u02')">← 뒤로</button>
+          <span class="nav-title">알림</span>
+          <button class="nav-action" onclick="showToast('모든 알림을 읽음 처리했습니다')">전체 읽음</button>
+        </div>
+        <div class="scroll-area" style="padding:12px 0;">
+          <div class="notif-card unread" onclick="showScreen('u02')">
+            <div style="font-size:28px; flex-shrink:0;">🎉</div>
+            <div style="flex:1; min-width:0;">
+              <div style="font-size:14px; font-weight:700; color:#111; margin-bottom:4px;">봄맞이 순찰 이벤트 시작!</div>
+              <div style="font-size:13px; color:#555; line-height:1.4;">보너스 포인트 x1.5 배율 적용</div>
+              <div style="font-size:11px; color:#aaa; margin-top:6px;">3분 전</div>
+            </div>
+            <div class="notif-unread-dot"></div>
+          </div>
+          <div class="notif-card unread" onclick="showScreen('u08')">
+            <div style="font-size:28px; flex-shrink:0;">🚨</div>
+            <div style="flex:1; min-width:0;">
+              <div style="font-size:14px; font-weight:700; color:#111; margin-bottom:4px;">신고 처리 완료</div>
+              <div style="font-size:13px; color:#555; line-height:1.4;">접수하신 '가로등 파손' 신고가 처리 완료되었습니다.</div>
+              <div style="font-size:11px; color:#aaa; margin-top:6px;">1시간 전</div>
+            </div>
+            <div class="notif-unread-dot"></div>
+          </div>
+          <div class="notif-card unread" onclick="showScreen('u11')">
+            <div style="font-size:28px; flex-shrink:0;">💬</div>
+            <div style="flex:1; min-width:0;">
+              <div style="font-size:14px; font-weight:700; color:#111; margin-bottom:4px;">댓글 알림</div>
+              <div style="font-size:13px; color:#555; line-height:1.4;">'오늘의 순찰 인증'에 새 댓글이 달렸습니다.</div>
+              <div style="font-size:11px; color:#aaa; margin-top:6px;">2시간 전</div>
+            </div>
+            <div class="notif-unread-dot"></div>
+          </div>
+          <div class="notif-card" onclick="showScreen('u10')">
+            <div style="font-size:28px; flex-shrink:0;">📢</div>
+            <div style="flex:1; min-width:0;">
+              <div style="font-size:14px; font-weight:600; color:#111; margin-bottom:4px;">공지사항</div>
+              <div style="font-size:13px; color:#777; line-height:1.4;">앱 업데이트 안내 (v1.1.0)</div>
+              <div style="font-size:11px; color:#aaa; margin-top:6px;">어제</div>
+            </div>
+          </div>
+          <div class="notif-card" onclick="showScreen('u10')">
+            <div style="font-size:28px; flex-shrink:0;">🎉</div>
+            <div style="flex:1; min-width:0;">
+              <div style="font-size:14px; font-weight:600; color:#111; margin-bottom:4px;">이벤트 종료</div>
+              <div style="font-size:13px; color:#777; line-height:1.4;">'겨울 순찰 챌린지' 이벤트가 종료되었습니다.</div>
+              <div style="font-size:11px; color:#aaa; margin-top:6px;">3일 전</div>
+            </div>
+          </div>
+          <div class="notif-card" onclick="showScreen('u18')">
+            <div style="font-size:28px; flex-shrink:0;">💎</div>
+            <div style="flex:1; min-width:0;">
+              <div style="font-size:14px; font-weight:600; color:#111; margin-bottom:4px;">포인트 지급</div>
+              <div style="font-size:13px; color:#777; line-height:1.4;">이벤트 참여 보너스 +50pt가 지급되었습니다.</div>
+              <div style="font-size:11px; color:#aaa; margin-top:6px;">5일 전</div>
+            </div>
+          </div>
+        </div>
+        <div class="tab-bar">
+          <button class="tab-item" onclick="showTab('u02',this)"><span class="tab-icon">🏠</span><span class="tab-label">홈</span></button>
+          <button class="tab-item" onclick="showTab('u10',this)"><span class="tab-icon">💬</span><span class="tab-label">커뮤니티</span></button>
+          <button class="tab-item" onclick="showTab('u14',this)"><span class="tab-icon">🏆</span><span class="tab-label">랭킹</span></button>
+          <button class="tab-item" onclick="showTab('u15',this)"><span class="tab-icon">👤</span><span class="tab-label">마이</span></button>
+        </div>
+      </div>
+
+      <!-- ============================================================
+           U10: COMMUNITY FEED
+      ============================================================ -->
+      <div class="screen" id="screen-u10" style="background:#f5f5f5;">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons"><span>📶</span><span>🔋</span></div>
+        </div>
+        <div class="app-header">
+          <div class="app-header-title">🐕‍🦺 <span style="font-size:16px; color:#111; font-weight:700;">커뮤니티</span></div>
+          <button style="background:none; border:none; cursor:pointer; font-size:22px; position:relative;" onclick="showScreen('u09')">
+            🔔<span class="notif-badge" style="position:absolute; top:-2px; right:-4px; font-size:9px; height:14px; padding:0 4px; line-height:14px;">3</span>
+          </button>
+        </div>
+        <div class="cat-tabs">
+          <button class="cat-tab active" onclick="setCatTab(this)">활동인증</button>
+          <button class="cat-tab" onclick="setCatTab(this)">정보공유</button>
+          <button class="cat-tab" onclick="setCatTab(this)">자유</button>
+        </div>
+        <div style="padding:10px 16px; background:#fff; border-bottom:1px solid #f0f0f0; display:flex; align-items:center; justify-content:flex-end; flex-shrink:0;">
+          <select style="border:none; font-size:13px; color:#666; background:transparent; font-family:inherit; cursor:pointer;">
+            <option>최신순 ▼</option>
+            <option>인기순 ▼</option>
+          </select>
+        </div>
+        <div class="scroll-area" style="padding:12px 0;">
+          <div class="post-card" onclick="showScreen('u11')">
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+              <div style="width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg,#c8e6c9,#66bb6a); display:flex; align-items:center; justify-content:center; font-size:18px;">👤</div>
+              <div>
+                <div style="font-size:14px; font-weight:700; color:#222;">순찰대원1</div>
+                <div style="font-size:11px; color:#aaa;">3분 전 · 활동인증</div>
+              </div>
+            </div>
+            <div style="font-size:15px; font-weight:700; color:#111; margin-bottom:6px;">오늘의 순찰 인증!</div>
+            <div style="font-size:13px; color:#777; margin-bottom:10px; line-height:1.5;">오늘 강남구 일대를 순찰했습니다. 가로등이 고장난 곳을 발견하여...</div>
+            <div style="display:flex; gap:6px; margin-bottom:10px;">
+              <div style="width:80px; height:60px; background:linear-gradient(135deg,#c8e6c9,#a5d6a7); border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:28px;">🌿</div>
+              <div style="width:80px; height:60px; background:linear-gradient(135deg,#e3f2fd,#90caf9); border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:28px;">🌙</div>
+            </div>
+            <div style="display:flex; align-items:center; gap:16px; font-size:13px; color:#aaa;">
+              <span>❤️ 12</span>
+              <span>💬 3</span>
+              <span style="margin-left:auto;">3분 전</span>
+            </div>
+          </div>
+          <div class="post-card" onclick="showScreen('u11')">
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+              <div style="width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg,#fff9c4,#f9a825); display:flex; align-items:center; justify-content:center; font-size:18px;">👤</div>
+              <div>
+                <div style="font-size:14px; font-weight:700; color:#222;">동네지킴이</div>
+                <div style="font-size:11px; color:#aaa;">1시간 전 · 정보공유</div>
+              </div>
+            </div>
+            <div style="font-size:15px; font-weight:700; color:#111; margin-bottom:6px;">역삼동 가로등 고장 안내</div>
+            <div style="font-size:13px; color:#777; line-height:1.5;">역삼동 3번 출구 부근 가로등이 고장되어 있습니다. 야간 순찰 시 주의해주세요.</div>
+            <div style="display:flex; align-items:center; gap:16px; font-size:13px; color:#aaa; margin-top:10px;">
+              <span>❤️ 8</span>
+              <span>💬 5</span>
+              <span style="margin-left:auto;">1시간 전</span>
+            </div>
+          </div>
+          <div class="post-card" onclick="showScreen('u11')">
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+              <div style="width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg,#fce4ec,#f48fb1); display:flex; align-items:center; justify-content:center; font-size:18px;">👤</div>
+              <div>
+                <div style="font-size:14px; font-weight:700; color:#222;">산책러김씨</div>
+                <div style="font-size:11px; color:#aaa;">3시간 전 · 자유</div>
+              </div>
+            </div>
+            <div style="font-size:15px; font-weight:700; color:#111; margin-bottom:6px;">반려견 동반 카페 추천해요 🐕</div>
+            <div style="font-size:13px; color:#777; line-height:1.5;">강남구 내 반려견 동반 가능한 카페를 발견했어요. 강아지도 좋아하네요!</div>
+            <div style="display:flex; align-items:center; gap:16px; font-size:13px; color:#aaa; margin-top:10px;">
+              <span>❤️ 24</span>
+              <span>💬 11</span>
+              <span style="margin-left:auto;">3시간 전</span>
+            </div>
+          </div>
+          <!-- Video shortcut -->
+          <div style="margin:4px 16px 16px; background:linear-gradient(135deg,#1a1a2e,#16213e); border-radius:14px; padding:16px; display:flex; align-items:center; gap:12px; cursor:pointer;" onclick="showScreen('u13a')">
+            <span style="font-size:28px;">🎬</span>
+            <div style="flex:1;">
+              <div style="font-size:14px; font-weight:700; color:#fff;">교육 영상 바로가기</div>
+              <div style="font-size:12px; color:rgba(255,255,255,0.5); margin-top:2px;">순찰 가이드 & 안전 정보</div>
+            </div>
+            <span style="color:rgba(255,255,255,0.4); font-size:18px;">›</span>
+          </div>
+        </div>
+        <button class="fab" onclick="showScreen('u12')">✏️</button>
+        <div class="tab-bar">
+          <button class="tab-item" onclick="showTab('u02',this)"><span class="tab-icon">🏠</span><span class="tab-label">홈</span></button>
+          <button class="tab-item active" onclick="showTab('u10',this)"><span class="tab-icon">💬</span><span class="tab-label">커뮤니티</span></button>
+          <button class="tab-item" onclick="showTab('u14',this)"><span class="tab-icon">🏆</span><span class="tab-label">랭킹</span></button>
+          <button class="tab-item" onclick="showTab('u15',this)"><span class="tab-icon">👤</span><span class="tab-label">마이</span></button>
+        </div>
+      </div>
+
+      <!-- ============================================================
+           U11: POST DETAIL
+      ============================================================ -->
+      <div class="screen" id="screen-u11" style="background:#f5f5f5;">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons"><span>📶</span><span>🔋</span></div>
+        </div>
+        <div class="nav-bar">
+          <button class="nav-back" onclick="showScreen('u10')">← 뒤로</button>
+          <span class="nav-title">게시글 상세</span>
+          <button class="nav-action">⋮</button>
+        </div>
+        <div class="scroll-area">
+          <div style="background:#fff; padding:16px; margin-bottom:8px;">
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:14px;">
+              <div style="width:44px; height:44px; border-radius:50%; background:linear-gradient(135deg,#c8e6c9,#66bb6a); display:flex; align-items:center; justify-content:center; font-size:22px;">👤</div>
+              <div>
+                <div style="font-size:15px; font-weight:700; color:#222;">순찰대원1</div>
+                <div style="font-size:12px; color:#aaa;">3분 전</div>
+              </div>
+            </div>
+            <div style="font-size:20px; font-weight:900; color:#111; margin-bottom:14px; line-height:1.3;">오늘의 순찰 인증!</div>
+            <!-- Image carousel -->
+            <div style="background:linear-gradient(135deg,#c8e6c9,#a5d6a7); border-radius:14px; height:200px; display:flex; align-items:center; justify-content:center; font-size:64px; margin-bottom:8px; position:relative;">
+              🌿
+              <div style="position:absolute; bottom:10px; right:12px; background:rgba(0,0,0,0.5); color:#fff; font-size:12px; padding:2px 8px; border-radius:10px;">1/3</div>
+            </div>
+            <div style="display:flex; justify-content:center; gap:6px; margin-bottom:16px;">
+              <div class="slide-dot active"></div>
+              <div class="slide-dot"></div>
+              <div class="slide-dot"></div>
+            </div>
+            <div style="font-size:14px; color:#444; line-height:1.7; margin-bottom:16px;">
+              오늘 강남구 역삼동 일대를 순찰했습니다. 가로등이 고장난 곳을 발견하여 신고 접수했습니다. 다들 안전한 밤 보내세요! 🐕
+            </div>
+            <button style="display:flex; align-items:center; gap:8px; background:#ffebee; border:none; border-radius:20px; padding:10px 20px; font-size:14px; font-weight:700; color:#ef5350; cursor:pointer; font-family:inherit;" onclick="this.style.background='#ffcdd2'">
+              ❤️ 좋아요 12
+            </button>
+          </div>
+          <!-- Comments -->
+          <div style="background:#fff; padding:16px;">
+            <div style="font-size:14px; font-weight:700; color:#666; margin-bottom:14px;">댓글 3개</div>
+            <div style="display:flex; gap:10px; margin-bottom:16px;">
+              <div style="width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg,#fff9c4,#f9a825); display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0;">👤</div>
+              <div style="flex:1; background:#f8f8f8; border-radius:12px; padding:10px 14px;">
+                <div style="font-size:13px; font-weight:700; color:#222; margin-bottom:4px;">동네지킴이</div>
+                <div style="font-size:13px; color:#444; line-height:1.5;">수고하셨습니다! 👍</div>
+                <div style="font-size:11px; color:#aaa; margin-top:6px;">2분 전</div>
+              </div>
+            </div>
+            <div style="display:flex; gap:10px; margin-bottom:16px;">
+              <div style="width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg,#fce4ec,#f48fb1); display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0;">👤</div>
+              <div style="flex:1; background:#f8f8f8; border-radius:12px; padding:10px 14px;">
+                <div style="font-size:13px; font-weight:700; color:#222; margin-bottom:4px;">산책러김씨</div>
+                <div style="font-size:13px; color:#444; line-height:1.5;">가로등 빨리 고쳐지면 좋겠네요</div>
+                <div style="font-size:11px; color:#aaa; margin-top:6px;">5분 전</div>
+              </div>
+            </div>
+            <div style="display:flex; gap:10px;">
+              <div style="width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg,#e8f5e9,#66bb6a); display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0;">👤</div>
+              <div style="flex:1; background:#f8f8f8; border-radius:12px; padding:10px 14px;">
+                <div style="font-size:13px; font-weight:700; color:#222; margin-bottom:4px;">강남파수꾼</div>
+                <div style="font-size:13px; color:#444; line-height:1.5;">오늘 저도 그쪽 지나갔는데 위험해 보였어요. 신고 감사해요!</div>
+                <div style="font-size:11px; color:#aaa; margin-top:6px;">10분 전</div>
+              </div>
+            </div>
+          </div>
+          <div style="height:60px;"></div>
+        </div>
+        <!-- Comment input bar -->
+        <div style="position:absolute; bottom:72px; left:0; right:0; background:#fff; border-top:1px solid #f0f0f0; padding:10px 16px; display:flex; gap:10px; align-items:center;">
+          <input class="input-field" placeholder="댓글을 입력하세요..." style="flex:1; padding:10px 14px; font-size:14px;">
+          <button style="width:40px; height:40px; background:#2E7D32; border:none; border-radius:50%; color:#fff; font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center;" onclick="showToast('댓글이 등록되었습니다')">▶</button>
+        </div>
+        <div class="tab-bar">
+          <button class="tab-item" onclick="showTab('u02',this)"><span class="tab-icon">🏠</span><span class="tab-label">홈</span></button>
+          <button class="tab-item active" onclick="showTab('u10',this)"><span class="tab-icon">💬</span><span class="tab-label">커뮤니티</span></button>
+          <button class="tab-item" onclick="showTab('u14',this)"><span class="tab-icon">🏆</span><span class="tab-label">랭킹</span></button>
+          <button class="tab-item" onclick="showTab('u15',this)"><span class="tab-icon">👤</span><span class="tab-label">마이</span></button>
+        </div>
+      </div>
+
+      <!-- ============================================================
+           U12: POST CREATE
+      ============================================================ -->
+      <div class="screen" id="screen-u12" style="background:#f5f5f5;">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons"><span>📶</span><span>🔋</span></div>
+        </div>
+        <div class="nav-bar">
+          <button class="nav-back" onclick="showScreen('u10')">← 취소</button>
+          <span class="nav-title">게시글 작성</span>
+          <button class="nav-action" onclick="showScreen('u10'); showToast('게시글이 등록되었습니다 ✍️')">등록</button>
+        </div>
+        <div class="scroll-area" style="padding:16px;">
+          <div class="card" style="padding:16px; margin-bottom:12px;">
+            <div style="font-size:14px; font-weight:700; color:#222; margin-bottom:10px;">게시판 선택</div>
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+              <button class="chip active">활동인증</button>
+              <button class="chip">정보공유</button>
+              <button class="chip">자유</button>
+            </div>
+          </div>
+          <div class="card" style="padding:16px; margin-bottom:12px;">
+            <div style="font-size:14px; font-weight:700; color:#222; margin-bottom:8px;">제목 <span style="color:#ef5350;">*</span></div>
+            <input class="input-field" type="text" placeholder="제목을 입력하세요 (최대 100자)">
+          </div>
+          <div class="card" style="padding:16px; margin-bottom:12px;">
+            <div style="font-size:14px; font-weight:700; color:#222; margin-bottom:8px;">본문 <span style="color:#ef5350;">*</span></div>
+            <textarea class="input-field" rows="6" placeholder="내용을 입력하세요..." style="resize:none;"></textarea>
+            <div style="text-align:right; font-size:12px; color:#bbb; margin-top:4px;">0/2000</div>
+          </div>
+          <div class="card" style="padding:16px; margin-bottom:24px;">
+            <div style="font-size:14px; font-weight:700; color:#222; margin-bottom:10px;">이미지 첨부 <span style="color:#999;">(선택, 최대 5장)</span></div>
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+              <div class="photo-slot">📷<br><span style="font-size:10px;">+</span></div>
+              <div class="photo-slot"></div>
+              <div class="photo-slot"></div>
+              <div class="photo-slot"></div>
+              <div class="photo-slot"></div>
+            </div>
+          </div>
+        </div>
+        <div class="tab-bar">
+          <button class="tab-item" onclick="showTab('u02',this)"><span class="tab-icon">🏠</span><span class="tab-label">홈</span></button>
+          <button class="tab-item active" onclick="showTab('u10',this)"><span class="tab-icon">💬</span><span class="tab-label">커뮤니티</span></button>
+          <button class="tab-item" onclick="showTab('u14',this)"><span class="tab-icon">🏆</span><span class="tab-label">랭킹</span></button>
+          <button class="tab-item" onclick="showTab('u15',this)"><span class="tab-icon">👤</span><span class="tab-label">마이</span></button>
+        </div>
+      </div>
+
+      <!-- ============================================================
+           U13a: VIDEO LIST
+      ============================================================ -->
+      <div class="screen" id="screen-u13a" style="background:#f5f5f5;">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons"><span>📶</span><span>🔋</span></div>
+        </div>
+        <div class="nav-bar">
+          <button class="nav-back" onclick="showScreen('u10')">← 뒤로</button>
+          <span class="nav-title">교육 영상</span>
+          <span style="width:48px;"></span>
+        </div>
+        <div class="scroll-area" style="padding:16px;">
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+            <div onclick="showScreen('u13b')" style="cursor:pointer;">
+              <div class="video-thumb" style="margin-bottom:8px;">
+                <div style="position:absolute; inset:0; background:linear-gradient(135deg,#1a3a0a,#2E7D32); opacity:0.8;"></div>
+                <div style="position:absolute; top:8px; right:8px; background:rgba(0,0,0,0.6); color:#fff; font-size:11px; padding:2px 6px; border-radius:6px;">3:25</div>
+                <div class="video-play-icon">▶</div>
+              </div>
+              <div style="font-size:13px; font-weight:700; color:#222; line-height:1.3;">순찰 안전 가이드</div>
+              <div style="font-size:11px; color:#aaa; margin-top:2px;">조회 1,234</div>
+            </div>
+            <div onclick="showScreen('u13b')" style="cursor:pointer;">
+              <div class="video-thumb" style="margin-bottom:8px;">
+                <div style="position:absolute; inset:0; background:linear-gradient(135deg,#0d47a1,#1565C0); opacity:0.8;"></div>
+                <div style="position:absolute; top:8px; right:8px; background:rgba(0,0,0,0.6); color:#fff; font-size:11px; padding:2px 6px; border-radius:6px;">5:10</div>
+                <div class="video-play-icon">▶</div>
+              </div>
+              <div style="font-size:13px; font-weight:700; color:#222; line-height:1.3;">반려견과 산책 팁</div>
+              <div style="font-size:11px; color:#aaa; margin-top:2px;">조회 987</div>
+            </div>
+            <div onclick="showScreen('u13b')" style="cursor:pointer;">
+              <div class="video-thumb" style="margin-bottom:8px;">
+                <div style="position:absolute; inset:0; background:linear-gradient(135deg,#4a148c,#7b1fa2); opacity:0.8;"></div>
+                <div style="position:absolute; top:8px; right:8px; background:rgba(0,0,0,0.6); color:#fff; font-size:11px; padding:2px 6px; border-radius:6px;">7:30</div>
+                <div class="video-play-icon">▶</div>
+              </div>
+              <div style="font-size:13px; font-weight:700; color:#222; line-height:1.3;">신고 작성 방법</div>
+              <div style="font-size:11px; color:#aaa; margin-top:2px;">조회 756</div>
+            </div>
+            <div onclick="showScreen('u13b')" style="cursor:pointer;">
+              <div class="video-thumb" style="margin-bottom:8px;">
+                <div style="position:absolute; inset:0; background:linear-gradient(135deg,#bf360c,#e64a19); opacity:0.8;"></div>
+                <div style="position:absolute; top:8px; right:8px; background:rgba(0,0,0,0.6); color:#fff; font-size:11px; padding:2px 6px; border-radius:6px;">4:15</div>
+                <div class="video-play-icon">▶</div>
+              </div>
+              <div style="font-size:13px; font-weight:700; color:#222; line-height:1.3;">야간 순찰 주의사항</div>
+              <div style="font-size:11px; color:#aaa; margin-top:2px;">조회 543</div>
+            </div>
+            <div onclick="showScreen('u13b')" style="cursor:pointer;">
+              <div class="video-thumb" style="margin-bottom:8px;">
+                <div style="position:absolute; inset:0; background:linear-gradient(135deg,#006064,#00838F); opacity:0.8;"></div>
+                <div style="position:absolute; top:8px; right:8px; background:rgba(0,0,0,0.6); color:#fff; font-size:11px; padding:2px 6px; border-radius:6px;">6:40</div>
+                <div class="video-play-icon">▶</div>
+              </div>
+              <div style="font-size:13px; font-weight:700; color:#222; line-height:1.3;">포인트 적립 방법</div>
+              <div style="font-size:11px; color:#aaa; margin-top:2px;">조회 432</div>
+            </div>
+            <div onclick="showScreen('u13b')" style="cursor:pointer;">
+              <div class="video-thumb" style="margin-bottom:8px;">
+                <div style="position:absolute; inset:0; background:linear-gradient(135deg,#1a237e,#283593); opacity:0.8;"></div>
+                <div style="position:absolute; top:8px; right:8px; background:rgba(0,0,0,0.6); color:#fff; font-size:11px; padding:2px 6px; border-radius:6px;">2:55</div>
+                <div class="video-play-icon">▶</div>
+              </div>
+              <div style="font-size:13px; font-weight:700; color:#222; line-height:1.3;">앱 사용 튜토리얼</div>
+              <div style="font-size:11px; color:#aaa; margin-top:2px;">조회 2,108</div>
+            </div>
+          </div>
+        </div>
+        <div class="tab-bar">
+          <button class="tab-item" onclick="showTab('u02',this)"><span class="tab-icon">🏠</span><span class="tab-label">홈</span></button>
+          <button class="tab-item active" onclick="showTab('u10',this)"><span class="tab-icon">💬</span><span class="tab-label">커뮤니티</span></button>
+          <button class="tab-item" onclick="showTab('u14',this)"><span class="tab-icon">🏆</span><span class="tab-label">랭킹</span></button>
+          <button class="tab-item" onclick="showTab('u15',this)"><span class="tab-icon">👤</span><span class="tab-label">마이</span></button>
+        </div>
+      </div>
+
+      <!-- ============================================================
+           U13b: VIDEO PLAYER
+      ============================================================ -->
+      <div class="screen" id="screen-u13b" style="background:#f5f5f5;">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons"><span>📶</span><span>🔋</span></div>
+        </div>
+        <div class="nav-bar">
+          <button class="nav-back" onclick="showScreen('u13a')">← 뒤로</button>
+          <span class="nav-title">영상 재생</span>
+          <span style="width:48px;"></span>
+        </div>
+        <div class="video-player-mock" style="flex-shrink:0;">
+          <div style="position:absolute; inset:0; background:linear-gradient(135deg,#1a3a0a,#2E7D32); opacity:0.9;"></div>
+          <div style="position:relative; z-index:2; display:flex; flex-direction:column; align-items:center; gap:8px;">
+            <div style="font-size:48px;">🐕‍🦺</div>
+            <div style="color:rgba(255,255,255,0.7); font-size:13px;">순찰 안전 가이드</div>
+          </div>
+          <div class="video-controls" style="position:absolute; bottom:0; left:0; right:0; padding:16px 16px 12px; background:linear-gradient(transparent,rgba(0,0,0,0.8)); z-index:3;">
+            <div class="seek-bar">
+              <div class="seek-fill"></div>
+            </div>
+            <div style="display:flex; align-items:center; justify-content:space-between;">
+              <div style="display:flex; align-items:center; gap:12px;">
+                <button style="background:none; border:none; color:#fff; font-size:22px; cursor:pointer;">⏸️</button>
+                <span style="color:rgba(255,255,255,0.8); font-size:12px;">1:12 / 3:25</span>
+              </div>
+              <button style="background:none; border:none; color:#fff; font-size:18px; cursor:pointer;">⛶</button>
+            </div>
+          </div>
+        </div>
+        <div class="scroll-area" style="padding:16px;">
+          <div style="font-size:18px; font-weight:900; color:#111; margin-bottom:8px;">순찰 안전 가이드</div>
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:14px;">
+            <div style="font-size:13px; color:#aaa;">반려견순찰대 공식</div>
+            <div style="width:4px; height:4px; background:#ddd; border-radius:50%;"></div>
+            <div style="font-size:13px; color:#aaa;">조회 1,234</div>
+          </div>
+          <div style="font-size:14px; color:#555; line-height:1.7;">
+            순찰 시 주의해야 할 안전 사항을 알려드립니다. 야간 순찰 시 반드시 반사조끼를 착용하세요. 혼자 순찰할 때는 주변 상황을 항상 주의하고, 위험하다고 느끼면 즉시 신고하세요.
+          </div>
+        </div>
+        <div class="tab-bar">
+          <button class="tab-item" onclick="showTab('u02',this)"><span class="tab-icon">🏠</span><span class="tab-label">홈</span></button>
+          <button class="tab-item active" onclick="showTab('u10',this)"><span class="tab-icon">💬</span><span class="tab-label">커뮤니티</span></button>
+          <button class="tab-item" onclick="showTab('u14',this)"><span class="tab-icon">🏆</span><span class="tab-label">랭킹</span></button>
+          <button class="tab-item" onclick="showTab('u15',this)"><span class="tab-icon">👤</span><span class="tab-label">마이</span></button>
+        </div>
+      </div>
+
+      <!-- ============================================================
+           U14: RANKING
+      ============================================================ -->
+      <div class="screen" id="screen-u14" style="background:#f5f5f5;">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons"><span>📶</span><span>🔋</span></div>
+        </div>
+        <div class="app-header">
+          <div class="app-header-title">🐕‍🦺 <span style="font-size:16px; color:#111; font-weight:700;">랭킹</span></div>
+          <button style="background:none; border:none; cursor:pointer; font-size:22px; position:relative;" onclick="showScreen('u09')">
+            🔔<span class="notif-badge" style="position:absolute; top:-2px; right:-4px; font-size:9px; height:14px; padding:0 4px; line-height:14px;">3</span>
+          </button>
+        </div>
+        <div class="cat-tabs">
+          <button class="cat-tab active" onclick="setCatTab(this)">실시간</button>
+          <button class="cat-tab" onclick="setCatTab(this)">주간</button>
+          <button class="cat-tab" onclick="setCatTab(this)">월간</button>
+        </div>
+        <div class="scroll-area">
+          <!-- Podium -->
+          <div style="background:linear-gradient(180deg,#E8F5E9,#f5f5f5); padding:20px 0 0;">
+            <div class="podium">
+              <!-- 2nd -->
+              <div class="podium-item podium-2">
+                <div style="font-size:20px;">🥈</div>
+                <div class="podium-avatar">👤</div>
+                <div style="font-size:13px; font-weight:700; color:#333; margin-top:4px;">대원B</div>
+                <div style="font-size:12px; color:#777;">12.5km</div>
+                <div class="podium-stand">2</div>
+              </div>
+              <!-- 1st -->
+              <div class="podium-item podium-1" style="margin-bottom:0;">
+                <div style="font-size:24px;">🥇</div>
+                <div class="podium-avatar">👤</div>
+                <div style="font-size:14px; font-weight:900; color:#1B5E20; margin-top:4px;">대원A</div>
+                <div style="font-size:12px; color:#555;">15.3km · 1,530pt</div>
+                <div class="podium-stand">1</div>
+              </div>
+              <!-- 3rd -->
+              <div class="podium-item podium-3">
+                <div style="font-size:20px;">🥉</div>
+                <div class="podium-avatar">👤</div>
+                <div style="font-size:13px; font-weight:700; color:#333; margin-top:4px;">대원C</div>
+                <div style="font-size:12px; color:#777;">9.8km</div>
+                <div class="podium-stand">3</div>
+              </div>
+            </div>
+          </div>
+          <!-- Rank list -->
+          <div style="background:#fff; margin-top:8px;">
+            <div class="rank-item">
+              <div class="rank-num">4</div>
+              <div class="rank-avatar">👤</div>
+              <div class="rank-info">
+                <div class="rank-name">대원D</div>
+                <div class="rank-detail">8.2km · 820pt</div>
+              </div>
+            </div>
+            <div class="rank-item">
+              <div class="rank-num">5</div>
+              <div class="rank-avatar">👤</div>
+              <div class="rank-info">
+                <div class="rank-name">대원E</div>
+                <div class="rank-detail">7.5km · 750pt</div>
+              </div>
+            </div>
+            <div class="rank-item">
+              <div class="rank-num">6</div>
+              <div class="rank-avatar">👤</div>
+              <div class="rank-info">
+                <div class="rank-name">대원F</div>
+                <div class="rank-detail">6.1km · 610pt</div>
+              </div>
+            </div>
+            <div class="rank-item">
+              <div class="rank-num">7</div>
+              <div class="rank-avatar">👤</div>
+              <div class="rank-info">
+                <div class="rank-name">대원G</div>
+                <div class="rank-detail">5.8km · 580pt</div>
+              </div>
+            </div>
+            <div class="rank-item">
+              <div class="rank-num">8</div>
+              <div class="rank-avatar">👤</div>
+              <div class="rank-info">
+                <div class="rank-name">대원H</div>
+                <div class="rank-detail">4.3km · 430pt</div>
+              </div>
+            </div>
+            <div class="rank-item">
+              <div class="rank-num">9</div>
+              <div class="rank-avatar">👤</div>
+              <div class="rank-info">
+                <div class="rank-name">대원I</div>
+                <div class="rank-detail">3.9km · 390pt</div>
+              </div>
+            </div>
+            <div style="height:60px;"></div>
+          </div>
+        </div>
+        <!-- My rank bar -->
+        <div class="my-rank-bar">
+          <div class="my-rank-num">42</div>
+          <div style="width:40px; height:40px; border-radius:50%; background:linear-gradient(135deg,#c8e6c9,#66bb6a); display:flex; align-items:center; justify-content:center; font-size:20px; border:2px solid #2E7D32;">👤</div>
+          <div style="flex:1;">
+            <div style="font-size:14px; font-weight:800; color:#2E7D32;">나 (순찰대원1)</div>
+            <div style="font-size:12px; color:#555;">2.1km · 210pt</div>
+          </div>
+          <div style="font-size:13px; color:#2E7D32; font-weight:700;">내 위치 ↑</div>
+        </div>
+        <div class="tab-bar">
+          <button class="tab-item" onclick="showTab('u02',this)"><span class="tab-icon">🏠</span><span class="tab-label">홈</span></button>
+          <button class="tab-item" onclick="showTab('u10',this)"><span class="tab-icon">💬</span><span class="tab-label">커뮤니티</span></button>
+          <button class="tab-item active" onclick="showTab('u14',this)"><span class="tab-icon">🏆</span><span class="tab-label">랭킹</span></button>
+          <button class="tab-item" onclick="showTab('u15',this)"><span class="tab-icon">👤</span><span class="tab-label">마이</span></button>
+        </div>
+      </div>
+
+      <!-- ============================================================
+           U15: MY PAGE / PROFILE
+      ============================================================ -->
+      <div class="screen" id="screen-u15" style="background:#f5f5f5;">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons"><span>📶</span><span>🔋</span></div>
+        </div>
+        <div class="app-header">
+          <div class="app-header-title">🐕‍🦺 <span style="font-size:16px; color:#111; font-weight:700;">마이페이지</span></div>
+          <button style="background:none; border:none; cursor:pointer; font-size:22px; position:relative;" onclick="showScreen('u09')">
+            🔔<span class="notif-badge" style="position:absolute; top:-2px; right:-4px; font-size:9px; height:14px; padding:0 4px; line-height:14px;">3</span>
+          </button>
+        </div>
+        <div class="scroll-area">
+          <!-- Profile card -->
+          <div style="background:linear-gradient(160deg,#1B5E20,#2E7D32,#43A047); padding:32px 20px 24px; text-align:center;">
+            <div style="width:84px; height:84px; border-radius:50%; background:rgba(255,255,255,0.2); border:3px solid rgba(255,255,255,0.5); display:flex; align-items:center; justify-content:center; font-size:42px; margin:0 auto 14px;">👤</div>
+            <div style="font-size:20px; font-weight:900; color:#fff; margin-bottom:4px;">순찰대원1</div>
+            <div style="font-size:12px; color:rgba(255,255,255,0.6); margin-bottom:16px;">가입일: 2024.01.15</div>
+            <button class="btn-outline" style="color:#fff; border-color:rgba(255,255,255,0.5); font-size:13px; padding:8px 20px;" onclick="showScreen('u19')">✏️ 프로필 편집</button>
+          </div>
+          <!-- Stats -->
+          <div class="profile-stats">
+            <div class="profile-stat-item">
+              <div class="profile-stat-value">42회</div>
+              <div class="profile-stat-label">🚶 총 순찰</div>
+            </div>
+            <div class="profile-stat-item">
+              <div class="profile-stat-value">85.3</div>
+              <div class="profile-stat-label">📏 총 거리(km)</div>
+            </div>
+            <div class="profile-stat-item">
+              <div class="profile-stat-value">8,530</div>
+              <div class="profile-stat-label">💎 총 포인트</div>
+            </div>
+          </div>
+          <!-- Menu -->
+          <div style="margin:0 16px 24px; background:#fff; border-radius:14px; overflow:hidden; box-shadow:0 1px 6px rgba(0,0,0,0.06);">
+            <div class="menu-item" onclick="showScreen('u16')">
+              <div class="menu-item-left"><span style="font-size:20px;">📋</span> 활동 내역</div>
+              <span class="menu-item-right">›</span>
+            </div>
+            <div class="menu-item" onclick="showScreen('u17')">
+              <div class="menu-item-left"><span style="font-size:20px;">📍</span> 순찰 기록</div>
+              <span class="menu-item-right">›</span>
+            </div>
+            <div class="menu-item" onclick="showScreen('u18')">
+              <div class="menu-item-left"><span style="font-size:20px;">💎</span> 포인트 내역</div>
+              <span class="menu-item-right">›</span>
+            </div>
+            <div class="menu-item" onclick="showScreen('u20')">
+              <div class="menu-item-left"><span style="font-size:20px;">⚙️</span> 설정</div>
+              <span class="menu-item-right">›</span>
+            </div>
+          </div>
+        </div>
+        <div class="tab-bar">
+          <button class="tab-item" onclick="showTab('u02',this)"><span class="tab-icon">🏠</span><span class="tab-label">홈</span></button>
+          <button class="tab-item" onclick="showTab('u10',this)"><span class="tab-icon">💬</span><span class="tab-label">커뮤니티</span></button>
+          <button class="tab-item" onclick="showTab('u14',this)"><span class="tab-icon">🏆</span><span class="tab-label">랭킹</span></button>
+          <button class="tab-item active" onclick="showTab('u15',this)"><span class="tab-icon">👤</span><span class="tab-label">마이</span></button>
+        </div>
+      </div>
+
+      <!-- ============================================================
+           U16: ACTIVITY HISTORY
+      ============================================================ -->
+      <div class="screen" id="screen-u16" style="background:#f5f5f5;">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons"><span>📶</span><span>🔋</span></div>
+        </div>
+        <div class="nav-bar">
+          <button class="nav-back" onclick="showScreen('u15')">← 뒤로</button>
+          <span class="nav-title">활동 내역</span>
+          <span style="width:48px;"></span>
+        </div>
+        <div style="padding:14px 16px; background:#fff; border-bottom:1px solid #f0f0f0; font-size:14px; color:#555; flex-shrink:0;">
+          총 <span style="font-weight:700; color:#2E7D32;">42회</span> 순찰 &nbsp;·&nbsp; <span style="font-weight:700; color:#2E7D32;">85.3km</span>
+        </div>
+        <div class="scroll-area" style="padding:12px 0;">
+          <div class="activity-item" onclick="showScreen('u08')">
+            <div style="font-size:13px; font-weight:700; color:#2E7D32;">📅 2024.03.07</div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
+              <div style="font-size:13px; color:#555;">📏 2.35km &nbsp; 🕐 45분</div>
+              <div style="font-size:13px; color:#555;">💎 235pt &nbsp; 📌 3건</div>
+            </div>
+          </div>
+          <div class="activity-item" onclick="showScreen('u08')">
+            <div style="font-size:13px; font-weight:700; color:#2E7D32;">📅 2024.03.05</div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
+              <div style="font-size:13px; color:#555;">📏 1.80km &nbsp; 🕐 32분</div>
+              <div style="font-size:13px; color:#555;">💎 180pt &nbsp; 📌 1건</div>
+            </div>
+          </div>
+          <div class="activity-item" onclick="showScreen('u08')">
+            <div style="font-size:13px; font-weight:700; color:#2E7D32;">📅 2024.03.03</div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
+              <div style="font-size:13px; color:#555;">📏 3.10km &nbsp; 🕐 58분</div>
+              <div style="font-size:13px; color:#555;">💎 310pt &nbsp; 📌 5건</div>
+            </div>
+          </div>
+          <div class="activity-item" onclick="showScreen('u08')">
+            <div style="font-size:13px; font-weight:700; color:#2E7D32;">📅 2024.03.01</div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
+              <div style="font-size:13px; color:#555;">📏 1.50km &nbsp; 🕐 28분</div>
+              <div style="font-size:13px; color:#555;">💎 150pt &nbsp; 📌 0건</div>
+            </div>
+          </div>
+          <div class="activity-item" onclick="showScreen('u08')">
+            <div style="font-size:13px; font-weight:700; color:#2E7D32;">📅 2024.02.28</div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
+              <div style="font-size:13px; color:#555;">📏 2.70km &nbsp; 🕐 50분</div>
+              <div style="font-size:13px; color:#555;">💎 270pt &nbsp; 📌 2건</div>
+            </div>
+          </div>
+          <div class="activity-item" onclick="showScreen('u08')">
+            <div style="font-size:13px; font-weight:700; color:#2E7D32;">📅 2024.02.25</div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
+              <div style="font-size:13px; color:#555;">📏 1.90km &nbsp; 🕐 36분</div>
+              <div style="font-size:13px; color:#555;">💎 190pt &nbsp; 📌 1건</div>
+            </div>
+          </div>
+        </div>
+        <div class="tab-bar">
+          <button class="tab-item" onclick="showTab('u02',this)"><span class="tab-icon">🏠</span><span class="tab-label">홈</span></button>
+          <button class="tab-item" onclick="showTab('u10',this)"><span class="tab-icon">💬</span><span class="tab-label">커뮤니티</span></button>
+          <button class="tab-item" onclick="showTab('u14',this)"><span class="tab-icon">🏆</span><span class="tab-label">랭킹</span></button>
+          <button class="tab-item active" onclick="showTab('u15',this)"><span class="tab-icon">👤</span><span class="tab-label">마이</span></button>
+        </div>
+      </div>
+
+      <!-- ============================================================
+           U17: PATROL RECORD LIST
+      ============================================================ -->
+      <div class="screen" id="screen-u17" style="background:#f5f5f5;">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons"><span>📶</span><span>🔋</span></div>
+        </div>
+        <div class="nav-bar">
+          <button class="nav-back" onclick="showScreen('u15')">← 뒤로</button>
+          <span class="nav-title">순찰 기록 목록</span>
+          <span style="width:48px;"></span>
+        </div>
+        <div class="scroll-area" style="padding:12px 16px;">
+          <div style="font-size:12px; font-weight:700; color:#2E7D32; margin-bottom:10px; text-transform:uppercase; letter-spacing:1px;">2024년 3월</div>
+          <div class="card" style="padding:14px; margin-bottom:8px; cursor:pointer;" onclick="showScreen('u08')">
+            <div style="font-size:13px; font-weight:700; color:#2E7D32; margin-bottom:10px;">📅 03.07 (목)</div>
+            <div class="mini-route" style="margin-bottom:10px;">
+              <svg style="position:absolute; inset:0; width:100%; height:100%;" viewBox="0 0 300 90" preserveAspectRatio="none">
+                <path d="M20 70 C50 55 80 50 110 45 C140 40 160 55 190 45 C220 35 250 42 270 35" fill="none" stroke="#2E7D32" stroke-width="3" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div style="display:flex; gap:12px; font-size:13px; color:#555;">
+              <span>📏 2.35km</span><span>🕐 45분</span><span>💎 235pt</span>
+            </div>
+          </div>
+          <div class="card" style="padding:14px; margin-bottom:16px; cursor:pointer;" onclick="showScreen('u08')">
+            <div style="font-size:13px; font-weight:700; color:#2E7D32; margin-bottom:10px;">📅 03.05 (화)</div>
+            <div class="mini-route" style="margin-bottom:10px;">
+              <svg style="position:absolute; inset:0; width:100%; height:100%;" viewBox="0 0 300 90" preserveAspectRatio="none">
+                <path d="M20 65 C60 50 90 40 130 50 C160 58 185 45 210 55 C240 65 260 50 280 45" fill="none" stroke="#2E7D32" stroke-width="3" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div style="display:flex; gap:12px; font-size:13px; color:#555;">
+              <span>📏 1.80km</span><span>🕐 32분</span><span>💎 180pt</span>
+            </div>
+          </div>
+          <div style="font-size:12px; font-weight:700; color:#2E7D32; margin-bottom:10px; text-transform:uppercase; letter-spacing:1px;">2024년 2월</div>
+          <div class="card" style="padding:14px; margin-bottom:8px; cursor:pointer;" onclick="showScreen('u08')">
+            <div style="font-size:13px; font-weight:700; color:#2E7D32; margin-bottom:10px;">📅 02.28 (수)</div>
+            <div class="mini-route" style="margin-bottom:10px;">
+              <svg style="position:absolute; inset:0; width:100%; height:100%;" viewBox="0 0 300 90" preserveAspectRatio="none">
+                <path d="M15 75 C45 60 75 45 110 55 C140 63 165 50 195 40 C230 28 260 42 285 38" fill="none" stroke="#2E7D32" stroke-width="3" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div style="display:flex; gap:12px; font-size:13px; color:#555;">
+              <span>📏 2.70km</span><span>🕐 50분</span><span>💎 270pt</span>
+            </div>
+          </div>
+        </div>
+        <div class="tab-bar">
+          <button class="tab-item" onclick="showTab('u02',this)"><span class="tab-icon">🏠</span><span class="tab-label">홈</span></button>
+          <button class="tab-item" onclick="showTab('u10',this)"><span class="tab-icon">💬</span><span class="tab-label">커뮤니티</span></button>
+          <button class="tab-item" onclick="showTab('u14',this)"><span class="tab-icon">🏆</span><span class="tab-label">랭킹</span></button>
+          <button class="tab-item active" onclick="showTab('u15',this)"><span class="tab-icon">👤</span><span class="tab-label">마이</span></button>
+        </div>
+      </div>
+
+      <!-- ============================================================
+           U18: POINTS HISTORY
+      ============================================================ -->
+      <div class="screen" id="screen-u18" style="background:#f5f5f5;">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons"><span>📶</span><span>🔋</span></div>
+        </div>
+        <div class="nav-bar">
+          <button class="nav-back" onclick="showScreen('u15')">← 뒤로</button>
+          <span class="nav-title">포인트 내역</span>
+          <span style="width:48px;"></span>
+        </div>
+        <div style="background:linear-gradient(135deg,#2E7D32,#43A047); padding:24px; text-align:center; flex-shrink:0;">
+          <div style="font-size:13px; color:rgba(255,255,255,0.7); margin-bottom:8px; font-weight:600;">현재 보유 포인트</div>
+          <div style="font-size:36px; font-weight:900; color:#fff;">💎 8,530pt</div>
+        </div>
+        <div class="scroll-area">
+          <div class="point-item">
+            <div>
+              <div style="font-size:13px; font-weight:600; color:#222;">순찰 완료 (2.35km)</div>
+              <div style="font-size:12px; color:#aaa; margin-top:2px;">📅 2024.03.07</div>
+            </div>
+            <div class="point-plus">+235pt</div>
+          </div>
+          <div class="point-item">
+            <div>
+              <div style="font-size:13px; font-weight:600; color:#222;">순찰 완료 (1.80km)</div>
+              <div style="font-size:12px; color:#aaa; margin-top:2px;">📅 2024.03.05</div>
+            </div>
+            <div class="point-plus">+180pt</div>
+          </div>
+          <div class="point-item">
+            <div>
+              <div style="font-size:13px; font-weight:600; color:#222;">이벤트 보너스 (x1.5)</div>
+              <div style="font-size:12px; color:#aaa; margin-top:2px;">📅 2024.03.03</div>
+            </div>
+            <div class="point-plus">+465pt</div>
+          </div>
+          <div class="point-item">
+            <div>
+              <div style="font-size:13px; font-weight:600; color:#ef5350;">관리자 수동 차감</div>
+              <div style="font-size:12px; color:#aaa; margin-top:2px;">📅 2024.03.01 · 규정 위반</div>
+            </div>
+            <div class="point-minus">-50pt</div>
+          </div>
+          <div class="point-item">
+            <div>
+              <div style="font-size:13px; font-weight:600; color:#222;">순찰 완료 (2.70km)</div>
+              <div style="font-size:12px; color:#aaa; margin-top:2px;">📅 2024.02.28</div>
+            </div>
+            <div class="point-plus">+270pt</div>
+          </div>
+          <div class="point-item">
+            <div>
+              <div style="font-size:13px; font-weight:600; color:#222;">순찰 완료 (1.90km)</div>
+              <div style="font-size:12px; color:#aaa; margin-top:2px;">📅 2024.02.25</div>
+            </div>
+            <div class="point-plus">+190pt</div>
+          </div>
+          <div class="point-item">
+            <div>
+              <div style="font-size:13px; font-weight:600; color:#222;">관리자 수동 지급</div>
+              <div style="font-size:12px; color:#aaa; margin-top:2px;">📅 2024.02.20 · 이벤트 참여</div>
+            </div>
+            <div class="point-plus">+50pt</div>
+          </div>
+          <div class="point-item">
+            <div>
+              <div style="font-size:13px; font-weight:600; color:#222;">순찰 완료 (3.10km)</div>
+              <div style="font-size:12px; color:#aaa; margin-top:2px;">📅 2024.02.18</div>
+            </div>
+            <div class="point-plus">+310pt</div>
+          </div>
+        </div>
+        <div class="tab-bar">
+          <button class="tab-item" onclick="showTab('u02',this)"><span class="tab-icon">🏠</span><span class="tab-label">홈</span></button>
+          <button class="tab-item" onclick="showTab('u10',this)"><span class="tab-icon">💬</span><span class="tab-label">커뮤니티</span></button>
+          <button class="tab-item" onclick="showTab('u14',this)"><span class="tab-icon">🏆</span><span class="tab-label">랭킹</span></button>
+          <button class="tab-item active" onclick="showTab('u15',this)"><span class="tab-icon">👤</span><span class="tab-label">마이</span></button>
+        </div>
+      </div>
+
+      <!-- ============================================================
+           U19: PROFILE EDIT
+      ============================================================ -->
+      <div class="screen" id="screen-u19" style="background:#f5f5f5;">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons"><span>📶</span><span>🔋</span></div>
+        </div>
+        <div class="nav-bar">
+          <button class="nav-back" onclick="showScreen('u15')">← 취소</button>
+          <span class="nav-title">프로필 편집</span>
+          <button class="nav-action" onclick="showScreen('u15'); showToast('프로필이 수정되었습니다 ✅')">저장</button>
+        </div>
+        <div class="scroll-area" style="padding:24px 20px;">
+          <div style="display:flex; flex-direction:column; align-items:center; margin-bottom:28px;">
+            <div style="position:relative; cursor:pointer;">
+              <div style="width:88px; height:88px; border-radius:50%; background:linear-gradient(135deg,#c8e6c9,#66bb6a); display:flex; align-items:center; justify-content:center; font-size:44px; border:3px solid #fff; box-shadow:0 2px 12px rgba(0,0,0,0.1);">👤</div>
+              <div style="position:absolute; bottom:0; right:0; width:28px; height:28px; background:#2E7D32; border-radius:50%; border:2px solid #fff; display:flex; align-items:center; justify-content:center; font-size:14px;">📷</div>
+            </div>
+            <div style="font-size:13px; color:#2E7D32; font-weight:600; margin-top:10px; cursor:pointer;">📷 사진 변경</div>
+          </div>
+          <div style="margin-bottom:16px;">
+            <div class="input-label">닉네임</div>
+            <input class="input-field" type="text" value="순찰대원1" placeholder="2~10자">
+            <div style="font-size:12px; color:#4CAF50; margin-top:4px;">✓ 사용 가능한 닉네임입니다</div>
+          </div>
+          <div style="margin-bottom:16px;">
+            <div class="input-label">휴대폰 번호</div>
+            <input class="input-field" type="tel" value="010-1234-5678">
+          </div>
+          <div style="margin-bottom:16px;">
+            <div class="input-label" style="color:#bbb;">이메일 (변경 불가)</div>
+            <input class="input-field" type="email" value="user@email.com" disabled style="background:#f0f0f0; color:#bbb; cursor:not-allowed;">
+          </div>
+        </div>
+        <div class="tab-bar">
+          <button class="tab-item" onclick="showTab('u02',this)"><span class="tab-icon">🏠</span><span class="tab-label">홈</span></button>
+          <button class="tab-item" onclick="showTab('u10',this)"><span class="tab-icon">💬</span><span class="tab-label">커뮤니티</span></button>
+          <button class="tab-item" onclick="showTab('u14',this)"><span class="tab-icon">🏆</span><span class="tab-label">랭킹</span></button>
+          <button class="tab-item active" onclick="showTab('u15',this)"><span class="tab-icon">👤</span><span class="tab-label">마이</span></button>
+        </div>
+      </div>
+
+      <!-- ============================================================
+           U20: SETTINGS
+      ============================================================ -->
+      <div class="screen" id="screen-u20" style="background:#f5f5f5;">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons"><span>📶</span><span>🔋</span></div>
+        </div>
+        <div class="nav-bar">
+          <button class="nav-back" onclick="showScreen('u15')">← 뒤로</button>
+          <span class="nav-title">설정</span>
+          <span style="width:48px;"></span>
+        </div>
+        <div class="scroll-area" style="padding:16px;">
+          <div class="section-header" style="padding-left:0; padding-top:0;">알림 설정</div>
+          <div class="settings-section">
+            <div class="settings-item">
+              <div style="font-size:15px; color:#222; font-weight:500;">순찰 알림</div>
+              <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+            </div>
+            <div class="settings-item">
+              <div style="font-size:15px; color:#222; font-weight:500;">커뮤니티 알림</div>
+              <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+            </div>
+            <div class="settings-item">
+              <div style="font-size:15px; color:#222; font-weight:500;">이벤트 알림</div>
+              <div class="toggle" onclick="this.classList.toggle('on')"></div>
+            </div>
+          </div>
+          <div class="section-header" style="padding-left:0;">위치 권한</div>
+          <div class="settings-section">
+            <div class="settings-item">
+              <div>
+                <div style="font-size:15px; color:#222; font-weight:500; margin-bottom:4px;">위치 권한 상태</div>
+                <div style="font-size:13px; color:#4CAF50; font-weight:600;">✅ 항상 허용</div>
+              </div>
+              <button style="background:none; border:none; color:#2E7D32; font-size:14px; font-weight:600; cursor:pointer; font-family:inherit;">설정 &gt;</button>
+            </div>
+          </div>
+          <div class="section-header" style="padding-left:0;">계정</div>
+          <div class="settings-section">
+            <div class="settings-item" onclick="document.getElementById('modal-logout').classList.add('show')">
+              <div style="font-size:15px; color:#222; font-weight:500;">로그아웃</div>
+              <span class="menu-item-right">›</span>
+            </div>
+            <div class="settings-item" onclick="document.getElementById('modal-withdraw').classList.add('show')">
+              <div style="font-size:15px; color:#ef5350; font-weight:500;">회원 탈퇴</div>
+              <span class="menu-item-right" style="color:#ef5350;">›</span>
+            </div>
+          </div>
+          <div class="section-header" style="padding-left:0;">앱 정보</div>
+          <div class="settings-section">
+            <div class="settings-item" style="cursor:default;">
+              <div style="font-size:15px; color:#222; font-weight:500;">앱 버전</div>
+              <span style="font-size:14px; color:#aaa;">v1.0.0</span>
+            </div>
+            <div class="settings-item" onclick="showToast('이용약관 페이지를 여는 중...')">
+              <div style="font-size:15px; color:#222; font-weight:500;">이용약관</div>
+              <span class="menu-item-right">›</span>
+            </div>
+            <div class="settings-item" onclick="showToast('개인정보 처리방침 페이지를 여는 중...')">
+              <div style="font-size:15px; color:#222; font-weight:500;">개인정보 처리방침</div>
+              <span class="menu-item-right">›</span>
+            </div>
+          </div>
+        </div>
+        <div class="tab-bar">
+          <button class="tab-item" onclick="showTab('u02',this)"><span class="tab-icon">🏠</span><span class="tab-label">홈</span></button>
+          <button class="tab-item" onclick="showTab('u10',this)"><span class="tab-icon">💬</span><span class="tab-label">커뮤니티</span></button>
+          <button class="tab-item" onclick="showTab('u14',this)"><span class="tab-icon">🏆</span><span class="tab-label">랭킹</span></button>
+          <button class="tab-item active" onclick="showTab('u15',this)"><span class="tab-icon">👤</span><span class="tab-label">마이</span></button>
+        </div>
+        <!-- Logout modal -->
+        <div class="modal-overlay" id="modal-logout">
+          <div class="modal-box">
+            <div class="modal-title">로그아웃</div>
+            <div class="modal-text">로그아웃 하시겠습니까?</div>
+            <div class="modal-btns">
+              <button class="modal-btn-cancel" onclick="document.getElementById('modal-logout').classList.remove('show')">취소</button>
+              <button class="modal-btn-ok" onclick="document.getElementById('modal-logout').classList.remove('show'); showScreen('u00b')">로그아웃</button>
+            </div>
+          </div>
+        </div>
+        <!-- Withdraw modal -->
+        <div class="modal-overlay" id="modal-withdraw">
+          <div class="modal-box">
+            <div style="font-size:28px; margin-bottom:10px;">⚠️</div>
+            <div class="modal-title">회원 탈퇴</div>
+            <div class="modal-text">탈퇴 시 모든 데이터가 삭제됩니다.<br>순찰 기록, 포인트, 게시글 등 모든 정보가 복구 불가능합니다.</div>
+            <div class="modal-btns">
+              <button class="modal-btn-cancel" onclick="document.getElementById('modal-withdraw').classList.remove('show')">취소</button>
+              <button class="modal-btn-danger" onclick="document.getElementById('modal-withdraw').classList.remove('show'); showScreen('u00b')">탈퇴</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TOAST -->
+      <div class="toast" id="toast"></div>
+
+    </div><!-- /phone-screen -->
+  </div><!-- /phone-frame -->
+</div><!-- /desktop-bg -->
+
+<script>
+  // --- Screen Management ---
+  let currentScreen = 'u00';
+  const screenHistory = ['u00'];
+
+  function showScreen(id) {
+    // Hide all
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    // Show target
+    const target = document.getElementById('screen-' + id);
+    if (target) {
+      target.classList.add('active');
+      currentScreen = id;
+      screenHistory.push(id);
+    }
+    // Update sidebar
+    document.querySelectorAll('.sidebar-btn').forEach(btn => {
+      btn.classList.remove('active-nav');
+      if (btn.textContent.toLowerCase().includes(id) ||
+          btn.getAttribute('onclick') && btn.getAttribute('onclick').includes("'" + id + "'")) {
+        btn.classList.add('active-nav');
+      }
+    });
+    // Scroll to top
+    if (target) {
+      const scrollArea = target.querySelector('.scroll-area');
+      if (scrollArea) scrollArea.scrollTop = 0;
+    }
+  }
+
+  // Tab bar navigation
+  function showTab(screenId, tabEl) {
+    showScreen(screenId);
+    // Update tab active state within current screen
+    if (tabEl) {
+      const tabBar = tabEl.closest('.tab-bar');
+      if (tabBar) {
+        tabBar.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+        tabEl.classList.add('active');
+      }
+    }
+  }
+
+  // --- Toast ---
+  function showToast(msg) {
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2500);
+  }
+
+  // --- Onboarding Carousel ---
+  const slides = [
+    { icon: '🐕 🚶 🗺️', title: '우리 동네를 함께 지켜요', desc: '반려견과 함께 산책하며\n안전한 동네를 만들어요' },
+    { icon: '💎 🏆 🐾', title: '순찰하고 포인트 받으세요', desc: '걸은 거리만큼 포인트가 쌓여요' },
+    { icon: '🚨 📍 🛡️', title: '이상 상황을 바로 신고해요', desc: '현장 마킹과 신고로\n동네를 안전하게' },
+  ];
+  let currentSlide = 0;
+
+  function nextSlide() {
+    if (currentSlide < 2) {
+      currentSlide++;
+      updateSlide();
+    } else {
+      showScreen('u00b');
+      currentSlide = 0;
+      updateSlide();
+    }
+  }
+
+  function updateSlide() {
+    const s = slides[currentSlide];
+    document.getElementById('onboard-illus').textContent = s.icon;
+    document.getElementById('onboard-title').textContent = s.title;
+    document.getElementById('onboard-desc').innerHTML = s.desc.replace('\n', '<br>');
+    document.getElementById('onboard-btn').textContent = currentSlide === 2 ? '시작하기' : '다음';
+    [0,1,2].forEach(i => {
+      const dot = document.getElementById('dot' + i);
+      dot.classList.toggle('active', i === currentSlide);
+    });
+  }
+
+  // --- Password reset state ---
+  function showPwSent() {
+    document.getElementById('pw-reset-form').style.display = 'none';
+    document.getElementById('pw-sent').style.display = 'block';
+  }
+
+  // --- Field marking type selection ---
+  function selectMark(type) {
+    document.getElementById('mark-normal').classList.toggle('active', type === 'normal');
+    document.getElementById('mark-report').classList.toggle('active', type === 'report');
+    if (type === 'report') {
+      setTimeout(() => showScreen('u06'), 300);
+    }
+  }
+
+  // --- Category tab selection ---
+  function setCatTab(el) {
+    const tabs = el.closest('.cat-tabs').querySelectorAll('.cat-tab');
+    tabs.forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+  }
+
+  // --- Patrol timer simulation ---
+  let timerSeconds = 23 * 60 + 45;
+  let timerInterval = null;
+
+  function startTimer() {
+    if (timerInterval) return;
+    timerInterval = setInterval(() => {
+      timerSeconds++;
+      const h = Math.floor(timerSeconds / 3600).toString().padStart(2,'0');
+      const m = Math.floor((timerSeconds % 3600) / 60).toString().padStart(2,'0');
+      const s = (timerSeconds % 60).toString().padStart(2,'0');
+      const el = document.getElementById('patrol-time');
+      if (el) el.textContent = `${h}:${m}:${s}`;
+    }, 1000);
+  }
+
+  // Start timer when patrol screen is shown
+  const origShowScreen = showScreen;
+
+  // Override history.go for back navigation
+  window.history.go = function() {
+    if (screenHistory.length > 1) {
+      screenHistory.pop();
+      const prev = screenHistory[screenHistory.length - 1];
+      showScreen(prev);
+    }
+  };
+
+  // Initial splash auto-redirect hint
+  setTimeout(() => {
+    const splashScreen = document.getElementById('screen-u00');
+    if (splashScreen && splashScreen.classList.contains('active')) {
+      // Keep splash, user will click
+    }
+  }, 2000);
+
+  // Start timer when on U03
+  document.getElementById('screen-u03').addEventListener('transitionend', () => {
+    if (document.getElementById('screen-u03').classList.contains('active')) {
+      startTimer();
+    }
+  });
+
+  // Show initial screen
+  showScreen('u00');
+</script>
+</body>
+</html>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>반려견순찰대 - 디자인 프로토타입</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+* { font-family: 'Noto Sans KR', sans-serif; }
+body { background: linear-gradient(135deg, #1B5E20 0%, #2E7D32 40%, #388E3C 100%); min-height: 100vh; }
+.card { transition: transform 0.2s, box-shadow 0.2s; }
+.card:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
+</style>
+</head>
+<body class="flex items-center justify-center p-8">
+<div class="max-w-3xl w-full">
+  <div class="text-center mb-12">
+    <div class="text-6xl mb-4">🐕</div>
+    <h1 class="text-4xl font-black text-white mb-2">반려견순찰대</h1>
+    <p class="text-green-200 text-lg">GPS 트래킹 & 커뮤니티 앱 디자인 프로토타입</p>
+    <div class="mt-4 inline-block bg-white/10 rounded-full px-4 py-1 text-green-100 text-sm">
+      총 35개 화면 (앱 25 + 관리자 10)
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- App Card -->
+    <a href="app.html" class="card block bg-white rounded-2xl overflow-hidden shadow-xl cursor-pointer">
+      <div class="bg-gradient-to-br from-green-600 to-green-800 p-8 text-center">
+        <div class="text-5xl mb-3">📱</div>
+        <h2 class="text-2xl font-bold text-white">모바일 앱</h2>
+        <p class="text-green-200 text-sm mt-1">Android / iOS</p>
+      </div>
+      <div class="p-6">
+        <div class="text-3xl font-black text-green-800 mb-3">25개 화면</div>
+        <ul class="space-y-2 text-sm text-gray-600">
+          <li class="flex items-center gap-2">
+            <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+            온보딩 (스플래시, 로그인, 회원가입)
+          </li>
+          <li class="flex items-center gap-2">
+            <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+            홈 & 순찰 (GPS 트래킹, 현장 기록)
+          </li>
+          <li class="flex items-center gap-2">
+            <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+            커뮤니티 (피드, 게시글, 영상)
+          </li>
+          <li class="flex items-center gap-2">
+            <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+            랭킹 (리더보드, Top 3 포디움)
+          </li>
+          <li class="flex items-center gap-2">
+            <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+            마이페이지 & 설정
+          </li>
+        </ul>
+        <div class="mt-4 text-center">
+          <span class="inline-block bg-green-100 text-green-800 font-semibold rounded-full px-4 py-2 text-sm">
+            앱 프로토타입 열기 →
+          </span>
+        </div>
+      </div>
+    </a>
+
+    <!-- Admin Card -->
+    <a href="admin.html" class="card block bg-white rounded-2xl overflow-hidden shadow-xl cursor-pointer">
+      <div class="bg-gradient-to-br from-green-800 to-green-950 p-8 text-center">
+        <div class="text-5xl mb-3">🖥️</div>
+        <h2 class="text-2xl font-bold text-white">관리자 웹</h2>
+        <p class="text-green-300 text-sm mt-1">Desktop Web</p>
+      </div>
+      <div class="p-6">
+        <div class="text-3xl font-black text-green-800 mb-3">10개 화면</div>
+        <ul class="space-y-2 text-sm text-gray-600">
+          <li class="flex items-center gap-2">
+            <span class="w-2 h-2 bg-green-700 rounded-full"></span>
+            대시보드 (KPI, 차트, 활동 로그)
+          </li>
+          <li class="flex items-center gap-2">
+            <span class="w-2 h-2 bg-green-700 rounded-full"></span>
+            대원 관리 & 신고 관리
+          </li>
+          <li class="flex items-center gap-2">
+            <span class="w-2 h-2 bg-green-700 rounded-full"></span>
+            이벤트 & 포인트 관리
+          </li>
+          <li class="flex items-center gap-2">
+            <span class="w-2 h-2 bg-green-700 rounded-full"></span>
+            Push 알림 & 통계 (히트맵)
+          </li>
+          <li class="flex items-center gap-2">
+            <span class="w-2 h-2 bg-green-700 rounded-full"></span>
+            콘텐츠 & 설정
+          </li>
+        </ul>
+        <div class="mt-4 text-center">
+          <span class="inline-block bg-green-100 text-green-800 font-semibold rounded-full px-4 py-2 text-sm">
+            관리자 프로토타입 열기 →
+          </span>
+        </div>
+      </div>
+    </a>
+  </div>
+
+  <div class="mt-10 text-center text-green-200 text-xs">
+    <p>© 2026 반려견순찰대 | 디자인 프로토타입 v1.0</p>
+    <p class="mt-1">Tailwind CSS + Vanilla JS | 브라우저에서 바로 실행</p>
+  </div>
+</div>
+</body>
+</html>

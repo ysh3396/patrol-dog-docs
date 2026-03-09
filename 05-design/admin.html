@@ -1,0 +1,1689 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>순찰대 관리자 — Admin Console</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          forest: {
+            50:  '#f0fdf0',
+            100: '#dcfce7',
+            200: '#bbf7d0',
+            300: '#86efac',
+            400: '#4ade80',
+            500: '#22c55e',
+            600: '#16a34a',
+            700: '#15803d',
+            800: '#166534',
+            900: '#14532d',
+            950: '#1B5E20',
+          },
+          accent: '#4CAF50',
+        },
+        fontFamily: {
+          sans: ['Noto Sans KR', 'sans-serif'],
+          mono: ['DM Mono', 'monospace'],
+        },
+      }
+    }
+  }
+</script>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: 'Noto Sans KR', sans-serif; background: #f8fafc; }
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  /* Sidebar */
+  .sidebar-link { display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-radius: 8px; color: rgba(255,255,255,0.75); font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.15s; margin-bottom: 2px; }
+  .sidebar-link:hover { background: rgba(255,255,255,0.12); color: #fff; }
+  .sidebar-link.active { background: rgba(255,255,255,0.18); color: #fff; font-weight: 600; }
+
+  /* Cards */
+  .card { background: #fff; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.05); }
+  .kpi-card { cursor: pointer; transition: box-shadow 0.15s, transform 0.15s; }
+  .kpi-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.12); transform: translateY(-1px); }
+
+  /* Tables */
+  table { border-collapse: collapse; width: 100%; }
+  th { background: #f8fafc; font-size: 12px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; padding: 10px 14px; text-align: left; border-bottom: 1px solid #e2e8f0; }
+  td { padding: 11px 14px; font-size: 13.5px; color: #334155; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+  tr:hover td { background: #f8fafc; }
+  tr:last-child td { border-bottom: none; }
+
+  /* Badges */
+  .badge { display: inline-flex; align-items: center; padding: 2px 9px; border-radius: 9999px; font-size: 11.5px; font-weight: 600; }
+  .badge-green { background: #dcfce7; color: #15803d; }
+  .badge-red { background: #fee2e2; color: #b91c1c; }
+  .badge-gray { background: #f1f5f9; color: #475569; }
+  .badge-blue { background: #dbeafe; color: #1d4ed8; }
+  .badge-yellow { background: #fef9c3; color: #a16207; }
+  .badge-orange { background: #ffedd5; color: #c2410c; }
+
+  /* Buttons */
+  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 16px; border-radius: 8px; font-size: 13.5px; font-weight: 600; cursor: pointer; transition: all 0.15s; border: none; }
+  .btn-primary { background: #1B5E20; color: #fff; }
+  .btn-primary:hover { background: #155218; }
+  .btn-secondary { background: #fff; color: #334155; border: 1px solid #e2e8f0; }
+  .btn-secondary:hover { background: #f8fafc; }
+  .btn-danger { background: #fee2e2; color: #b91c1c; }
+  .btn-danger:hover { background: #fecaca; }
+  .btn-sm { padding: 4px 10px; font-size: 12px; border-radius: 6px; }
+  .btn-link { background: none; color: #1B5E20; padding: 3px 8px; font-size: 12.5px; font-weight: 600; border-radius: 5px; }
+  .btn-link:hover { background: #dcfce7; }
+
+  /* Form controls */
+  input[type=text], input[type=email], input[type=password], input[type=number], input[type=date], select, textarea {
+    border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px 12px; font-size: 13.5px; color: #334155;
+    outline: none; width: 100%; background: #fff; font-family: 'Noto Sans KR', sans-serif;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  input:focus, select:focus, textarea:focus { border-color: #4CAF50; box-shadow: 0 0 0 3px rgba(76,175,80,0.15); }
+  label { font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 5px; display: block; }
+
+  /* Tabs */
+  .tab-btn { padding: 8px 20px; font-size: 13.5px; font-weight: 600; color: #64748b; border-bottom: 2px solid transparent; cursor: pointer; transition: all 0.15s; background: none; border-top: none; border-left: none; border-right: none; }
+  .tab-btn.active { color: #1B5E20; border-bottom-color: #1B5E20; }
+  .tab-btn:hover:not(.active) { color: #334155; }
+
+  /* Status tabs (report filter) */
+  .status-tab { padding: 6px 14px; border-radius: 20px; font-size: 12.5px; font-weight: 600; cursor: pointer; border: 1.5px solid transparent; transition: all 0.15s; }
+  .status-tab.active { background: #1B5E20; color: #fff; border-color: #1B5E20; }
+  .status-tab:not(.active) { background: #fff; color: #475569; border-color: #e2e8f0; }
+  .status-tab:not(.active):hover { border-color: #4CAF50; color: #1B5E20; }
+
+  /* Modal */
+  .modal-backdrop { position: fixed; inset: 0; background: rgba(15,23,42,0.5); backdrop-filter: blur(2px); z-index: 50; display: none; align-items: center; justify-content: center; }
+  .modal-backdrop.open { display: flex; }
+  .modal-box { background: #fff; border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto; }
+
+  /* Side panel */
+  .side-panel { position: fixed; top: 0; right: -480px; width: 460px; height: 100vh; background: #fff; box-shadow: -4px 0 20px rgba(0,0,0,0.1); z-index: 40; transition: right 0.25s ease; overflow-y: auto; }
+  .side-panel.open { right: 0; }
+  .side-panel-backdrop { position: fixed; inset: 0; background: rgba(15,23,42,0.3); z-index: 39; display: none; }
+  .side-panel-backdrop.open { display: block; }
+
+  /* Toast */
+  .toast { position: fixed; bottom: 24px; right: 24px; background: #1e293b; color: #fff; padding: 12px 20px; border-radius: 10px; font-size: 13.5px; font-weight: 500; z-index: 100; display: none; align-items: center; gap: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+  .toast.show { display: flex; animation: slideUp 0.25s ease; }
+  .toast.success { background: #15803d; }
+  .toast.error { background: #b91c1c; }
+  @keyframes slideUp { from { transform: translateY(16px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+  /* SVG Charts */
+  .chart-area { background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; }
+
+  /* Pagination */
+  .page-btn { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; border: 1px solid #e2e8f0; background: #fff; color: #475569; }
+  .page-btn.active { background: #1B5E20; color: #fff; border-color: #1B5E20; }
+  .page-btn:hover:not(.active) { background: #f8fafc; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+  /* Login screen */
+  .login-screen { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, #f0fdf0 0%, #f8fafc 50%, #f0fdf4 100%); }
+
+  /* Map placeholder */
+  .map-placeholder { background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 50%, #e0e7ff 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #64748b; font-size: 13px; position: relative; overflow: hidden; }
+  .map-placeholder::before { content: ''; position: absolute; inset: 0; background-image: radial-gradient(circle, rgba(76,175,80,0.3) 2px, transparent 2px); background-size: 30px 30px; }
+
+  /* Line chart SVG */
+  .svg-chart-line { display: block; width: 100%; }
+
+  /* Heatmap */
+  .heatmap-cell { display: inline-block; width: 18px; height: 18px; border-radius: 3px; margin: 1px; }
+
+  /* Notification preview */
+  .notif-preview { background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 14px; max-width: 280px; margin: 0 auto; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+
+  /* Period preset buttons */
+  .period-btn { padding: 6px 14px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; border: 1.5px solid #e2e8f0; background: #fff; color: #475569; transition: all 0.15s; }
+  .period-btn.active { background: #1B5E20; color: #fff; border-color: #1B5E20; }
+  .period-btn:hover:not(.active) { border-color: #4CAF50; color: #1B5E20; }
+
+  /* Admin dropdown */
+  .admin-dropdown { position: absolute; top: 100%; right: 0; background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); padding: 6px; min-width: 150px; z-index: 60; display: none; }
+  .admin-dropdown.open { display: block; }
+  .admin-dropdown-item { padding: 8px 14px; border-radius: 7px; font-size: 13.5px; color: #334155; cursor: pointer; }
+  .admin-dropdown-item:hover { background: #f8fafc; }
+
+  /* Scrollable main */
+  .main-content { flex: 1; overflow-y: auto; min-height: 0; }
+</style>
+</head>
+<body class="min-h-screen" style="min-width:1024px;">
+
+<!-- ===== TOAST ===== -->
+<div id="toast" class="toast"></div>
+
+<!-- ===== LOGIN SCREEN ===== -->
+<div id="screen-login" class="screen active login-screen">
+  <div style="width:420px;">
+    <div class="card p-0 overflow-hidden">
+      <!-- Header -->
+      <div style="background:linear-gradient(135deg,#1B5E20,#2e7d32); padding:36px 40px 32px;">
+        <div class="text-center">
+          <div style="font-size:48px; margin-bottom:10px;">🐕</div>
+          <h1 style="color:#fff; font-size:22px; font-weight:700; margin-bottom:4px;">순찰대 관리자</h1>
+          <p style="color:rgba(255,255,255,0.7); font-size:13px; font-weight:500; letter-spacing:0.08em;">ADMIN CONSOLE</p>
+        </div>
+      </div>
+      <!-- Form -->
+      <div style="padding:36px 40px;">
+        <div style="margin-bottom:18px;">
+          <label for="login-email">이메일</label>
+          <input type="email" id="login-email" placeholder="admin@patrol.co" value="admin@patrol.co">
+          <p id="err-email" style="color:#b91c1c; font-size:12px; margin-top:4px; display:none;">필수 항목입니다</p>
+        </div>
+        <div style="margin-bottom:24px;">
+          <label for="login-pw">비밀번호</label>
+          <input type="password" id="login-pw" placeholder="비밀번호 입력" onkeydown="if(event.key==='Enter')doLogin()">
+          <p id="err-pw" style="color:#b91c1c; font-size:12px; margin-top:4px; display:none;">필수 항목입니다</p>
+        </div>
+        <button class="btn btn-primary w-full" style="width:100%;justify-content:center;padding:11px;" onclick="doLogin()">로그인</button>
+        <div id="login-error" style="color:#b91c1c; font-size:13px; margin-top:14px; text-align:center; background:#fee2e2; border-radius:8px; padding:9px; display:none;"></div>
+      </div>
+    </div>
+    <p style="text-align:center; color:#94a3b8; font-size:12px; margin-top:20px;">© 2026 반려견순찰대</p>
+  </div>
+</div>
+
+<!-- ===== ADMIN SHELL (all non-login screens) ===== -->
+<div id="admin-shell" style="display:none; height:100vh; flex-direction:column;">
+
+  <!-- Header -->
+  <header style="background:#fff; border-bottom:1px solid #e2e8f0; height:56px; display:flex; align-items:center; padding:0 24px; flex-shrink:0; z-index:30; position:relative;">
+    <div style="display:flex; align-items:center; gap:10px; width:240px; padding-right:24px;">
+      <span style="font-size:22px;">🐕</span>
+      <span style="font-size:15px; font-weight:700; color:#1B5E20;">순찰대 관리자</span>
+    </div>
+    <div style="flex:1;"></div>
+    <div style="position:relative;" id="admin-dropdown-wrap">
+      <button class="btn btn-secondary btn-sm" onclick="toggleAdminDropdown()" style="gap:6px;">
+        <span>관리자님</span><span style="font-size:11px;">▼</span>
+      </button>
+      <div class="admin-dropdown" id="admin-dropdown">
+        <div class="admin-dropdown-item">내 정보</div>
+        <div class="admin-dropdown-item" style="color:#b91c1c;" onclick="doLogout()">로그아웃</div>
+      </div>
+    </div>
+    <button class="btn btn-secondary btn-sm" style="margin-left:10px;" onclick="doLogout()">로그아웃</button>
+  </header>
+
+  <!-- Body -->
+  <div style="display:flex; flex:1; min-height:0;">
+
+    <!-- Sidebar -->
+    <aside style="width:240px; background:#1B5E20; padding:16px 12px; display:flex; flex-direction:column; flex-shrink:0; overflow-y:auto;">
+      <div style="padding:0 4px 12px; border-bottom:1px solid rgba(255,255,255,0.12); margin-bottom:12px;">
+        <p style="color:rgba(255,255,255,0.45); font-size:11px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase;">메뉴</p>
+      </div>
+      <nav id="sidebar-nav">
+        <div class="sidebar-link" data-screen="dashboard" onclick="navigate('dashboard')"><span>📊</span><span>대시보드</span></div>
+        <div class="sidebar-link" data-screen="members" onclick="navigate('members')"><span>👥</span><span>대원 관리</span></div>
+        <div class="sidebar-link" data-screen="reports" onclick="navigate('reports')"><span>🚨</span><span>신고 관리</span></div>
+        <div class="sidebar-link" data-screen="events" onclick="navigate('events')"><span>📅</span><span>이벤트</span></div>
+        <div class="sidebar-link" data-screen="points" onclick="navigate('points')"><span>💰</span><span>포인트</span></div>
+        <div class="sidebar-link" data-screen="push" onclick="navigate('push')"><span>🔔</span><span>Push 알림</span></div>
+        <div class="sidebar-link" data-screen="stats" onclick="navigate('stats')"><span>📈</span><span>통계</span></div>
+        <div class="sidebar-link" data-screen="content" onclick="navigate('content')"><span>📝</span><span>콘텐츠</span></div>
+        <div class="sidebar-link" data-screen="settings" onclick="navigate('settings')"><span>⚙️</span><span>설정</span></div>
+      </nav>
+      <div style="flex:1;"></div>
+      <div style="border-top:1px solid rgba(255,255,255,0.12); padding-top:12px; margin-top:12px;">
+        <p style="color:rgba(255,255,255,0.4); font-size:11px; text-align:center;">© 2026 반려견순찰대</p>
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <main class="main-content" style="flex:1; padding:28px; background:#f8fafc;">
+
+      <!-- ===== A01: DASHBOARD ===== -->
+      <div id="screen-dashboard" class="screen">
+        <h2 style="font-size:22px; font-weight:700; color:#0f172a; margin-bottom:24px;">대시보드</h2>
+
+        <!-- KPI Cards -->
+        <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:24px;">
+          <div class="card kpi-card p-5" onclick="navigate('members')">
+            <p style="font-size:12px; font-weight:600; color:#64748b; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:10px;">총 대원 수</p>
+            <p style="font-size:30px; font-weight:700; color:#0f172a; line-height:1;">1,234</p>
+            <p style="font-size:12px; color:#64748b; margin-top:4px;">명</p>
+            <div style="margin-top:10px; display:flex; align-items:center; gap:4px;">
+              <span style="color:#15803d; font-size:12px; font-weight:600;">▲ 5%</span>
+              <span style="color:#94a3b8; font-size:11px;">전주 대비</span>
+            </div>
+          </div>
+          <div class="card kpi-card p-5" onclick="navigate('stats')">
+            <p style="font-size:12px; font-weight:600; color:#64748b; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:10px;">금일 순찰 건수</p>
+            <p style="font-size:30px; font-weight:700; color:#0f172a; line-height:1;">56</p>
+            <p style="font-size:12px; color:#64748b; margin-top:4px;">건</p>
+            <div style="margin-top:10px; display:flex; align-items:center; gap:4px;">
+              <span style="color:#15803d; font-size:12px; font-weight:600;">▲ 12%</span>
+              <span style="color:#94a3b8; font-size:11px;">전일 대비</span>
+            </div>
+          </div>
+          <div class="card kpi-card p-5" onclick="navigate('reports')">
+            <p style="font-size:12px; font-weight:600; color:#64748b; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:10px;">미처리 신고</p>
+            <p style="font-size:30px; font-weight:700; color:#b91c1c; line-height:1;">12</p>
+            <p style="font-size:12px; color:#64748b; margin-top:4px;">건</p>
+            <div style="margin-top:10px; display:flex; align-items:center; gap:4px;">
+              <span style="color:#b91c1c; font-size:12px; font-weight:600;">▼ 3%</span>
+              <span style="color:#94a3b8; font-size:11px;">전주 대비</span>
+            </div>
+          </div>
+          <div class="card kpi-card p-5">
+            <p style="font-size:12px; font-weight:600; color:#64748b; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:10px;">금주 신규 가입</p>
+            <p style="font-size:30px; font-weight:700; color:#0f172a; line-height:1;">23</p>
+            <p style="font-size:12px; color:#64748b; margin-top:4px;">명</p>
+            <div style="margin-top:10px; display:flex; align-items:center; gap:4px;">
+              <span style="color:#15803d; font-size:12px; font-weight:600;">▲ 8%</span>
+              <span style="color:#94a3b8; font-size:11px;">전주 대비</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts -->
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:24px;">
+          <!-- Line Chart -->
+          <div class="card p-5">
+            <h3 style="font-size:14px; font-weight:700; color:#0f172a; margin-bottom:16px;">일별 순찰 추이 <span style="color:#94a3b8; font-weight:400; font-size:12px;">(최근 7일)</span></h3>
+            <svg viewBox="0 0 400 180" class="svg-chart-line" style="overflow:visible;">
+              <!-- Grid -->
+              <line x1="40" y1="20" x2="40" y2="150" stroke="#e2e8f0" stroke-width="1"/>
+              <line x1="40" y1="150" x2="380" y2="150" stroke="#e2e8f0" stroke-width="1"/>
+              <!-- Y labels -->
+              <text x="35" y="24" text-anchor="end" font-size="10" fill="#94a3b8">60</text>
+              <text x="35" y="71" text-anchor="end" font-size="10" fill="#94a3b8">40</text>
+              <text x="35" y="118" text-anchor="end" font-size="10" fill="#94a3b8">20</text>
+              <text x="35" y="154" text-anchor="end" font-size="10" fill="#94a3b8">0</text>
+              <!-- Horizontal grid lines -->
+              <line x1="40" y1="22" x2="380" y2="22" stroke="#f1f5f9" stroke-width="1" stroke-dasharray="4,3"/>
+              <line x1="40" y1="69" x2="380" y2="69" stroke="#f1f5f9" stroke-width="1" stroke-dasharray="4,3"/>
+              <line x1="40" y1="116" x2="380" y2="116" stroke="#f1f5f9" stroke-width="1" stroke-dasharray="4,3"/>
+              <!-- Data: Mon=32, Tue=45, Wed=38, Thu=55, Fri=60, Sat=48, Sun=42 -->
+              <!-- Scale: 0→150, 60→22. Range 128px for 60 units -->
+              <!-- y = 150 - (val/60)*128 -->
+              <defs>
+                <linearGradient id="lineGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#4CAF50" stop-opacity="0.3"/>
+                  <stop offset="100%" stop-color="#4CAF50" stop-opacity="0"/>
+                </linearGradient>
+              </defs>
+              <!-- Area fill -->
+              <path d="M 63,82 L 116,54 L 169,68 L 222,36 L 275,22 L 328,48 L 381,60 L 381,150 L 63,150 Z" fill="url(#lineGrad)"/>
+              <!-- Line -->
+              <polyline points="63,82 116,54 169,68 222,36 275,22 328,48 381,60" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linejoin="round"/>
+              <!-- Dots -->
+              <circle cx="63" cy="82" r="4" fill="#1B5E20" stroke="#fff" stroke-width="2"/>
+              <circle cx="116" cy="54" r="4" fill="#1B5E20" stroke="#fff" stroke-width="2"/>
+              <circle cx="169" cy="68" r="4" fill="#1B5E20" stroke="#fff" stroke-width="2"/>
+              <circle cx="222" cy="36" r="4" fill="#1B5E20" stroke="#fff" stroke-width="2"/>
+              <circle cx="275" cy="22" r="4" fill="#1B5E20" stroke="#fff" stroke-width="2"/>
+              <circle cx="328" cy="48" r="4" fill="#1B5E20" stroke="#fff" stroke-width="2"/>
+              <circle cx="381" cy="60" r="4" fill="#1B5E20" stroke="#fff" stroke-width="2"/>
+              <!-- X labels -->
+              <text x="63" y="168" text-anchor="middle" font-size="10" fill="#94a3b8">월</text>
+              <text x="116" y="168" text-anchor="middle" font-size="10" fill="#94a3b8">화</text>
+              <text x="169" y="168" text-anchor="middle" font-size="10" fill="#94a3b8">수</text>
+              <text x="222" y="168" text-anchor="middle" font-size="10" fill="#94a3b8">목</text>
+              <text x="275" y="168" text-anchor="middle" font-size="10" fill="#94a3b8">금</text>
+              <text x="328" y="168" text-anchor="middle" font-size="10" fill="#94a3b8">토</text>
+              <text x="381" y="168" text-anchor="middle" font-size="10" fill="#94a3b8">일</text>
+            </svg>
+          </div>
+          <!-- Bar Chart -->
+          <div class="card p-5">
+            <h3 style="font-size:14px; font-weight:700; color:#0f172a; margin-bottom:16px;">지역별 순찰 분포</h3>
+            <div style="display:flex; flex-direction:column; gap:10px; padding-top:4px;">
+              <div style="display:flex; align-items:center; gap:10px;">
+                <span style="width:60px; font-size:12px; color:#475569; text-align:right; flex-shrink:0;">강남구</span>
+                <div style="flex:1; background:#f1f5f9; border-radius:4px; height:18px; overflow:hidden;"><div style="width:75%; height:100%; background:#22c55e; border-radius:4px;"></div></div>
+                <span style="width:36px; font-size:12px; color:#475569; font-family:'DM Mono',monospace;">45건</span>
+              </div>
+              <div style="display:flex; align-items:center; gap:10px;">
+                <span style="width:60px; font-size:12px; color:#475569; text-align:right; flex-shrink:0;">서초구</span>
+                <div style="flex:1; background:#f1f5f9; border-radius:4px; height:18px; overflow:hidden;"><div style="width:63%; height:100%; background:#4ade80; border-radius:4px;"></div></div>
+                <span style="width:36px; font-size:12px; color:#475569; font-family:'DM Mono',monospace;">38건</span>
+              </div>
+              <div style="display:flex; align-items:center; gap:10px;">
+                <span style="width:60px; font-size:12px; color:#475569; text-align:right; flex-shrink:0;">송파구</span>
+                <div style="flex:1; background:#f1f5f9; border-radius:4px; height:18px; overflow:hidden;"><div style="width:45%; height:100%; background:#86efac; border-radius:4px;"></div></div>
+                <span style="width:36px; font-size:12px; color:#475569; font-family:'DM Mono',monospace;">27건</span>
+              </div>
+              <div style="display:flex; align-items:center; gap:10px;">
+                <span style="width:60px; font-size:12px; color:#475569; text-align:right; flex-shrink:0;">마포구</span>
+                <div style="flex:1; background:#f1f5f9; border-radius:4px; height:18px; overflow:hidden;"><div style="width:42%; height:100%; background:#86efac; border-radius:4px;"></div></div>
+                <span style="width:36px; font-size:12px; color:#475569; font-family:'DM Mono',monospace;">25건</span>
+              </div>
+              <div style="display:flex; align-items:center; gap:10px;">
+                <span style="width:60px; font-size:12px; color:#475569; text-align:right; flex-shrink:0;">용산구</span>
+                <div style="flex:1; background:#f1f5f9; border-radius:4px; height:18px; overflow:hidden;"><div style="width:25%; height:100%; background:#bbf7d0; border-radius:4px;"></div></div>
+                <span style="width:36px; font-size:12px; color:#475569; font-family:'DM Mono',monospace;">15건</span>
+              </div>
+              <div style="display:flex; align-items:center; gap:10px;">
+                <span style="width:60px; font-size:12px; color:#475569; text-align:right; flex-shrink:0;">기타</span>
+                <div style="flex:1; background:#f1f5f9; border-radius:4px; height:18px; overflow:hidden;"><div style="width:50%; height:100%; background:#dcfce7; border-radius:4px;"></div></div>
+                <span style="width:36px; font-size:12px; color:#475569; font-family:'DM Mono',monospace;">30건</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="card">
+          <div style="padding:16px 20px; border-bottom:1px solid #f1f5f9;">
+            <h3 style="font-size:14px; font-weight:700; color:#0f172a;">최근 활동</h3>
+          </div>
+          <table>
+            <thead><tr><th>시간</th><th>유형</th><th>내용</th><th>상태</th></tr></thead>
+            <tbody>
+              <tr style="cursor:pointer;" onclick="navigate('stats')"><td style="font-family:'DM Mono',monospace;font-size:12.5px;">10:23</td><td><span class="badge badge-green">순찰</span></td><td>김순찰 대원 2.3km 순찰 완료</td><td><span class="badge badge-green">완료</span></td></tr>
+              <tr style="cursor:pointer;" onclick="navigate('reports')"><td style="font-family:'DM Mono',monospace;font-size:12.5px;">10:15</td><td><span class="badge badge-red">신고</span></td><td>이대원 불법투기 신고</td><td><span class="badge badge-yellow">접수</span></td></tr>
+              <tr style="cursor:pointer;" onclick="navigate('members')"><td style="font-family:'DM Mono',monospace;font-size:12.5px;">09:58</td><td><span class="badge badge-blue">가입</span></td><td>박신규 대원 신규 가입</td><td><span class="badge badge-gray">—</span></td></tr>
+              <tr style="cursor:pointer;" onclick="navigate('stats')"><td style="font-family:'DM Mono',monospace;font-size:12.5px;">09:45</td><td><span class="badge badge-green">순찰</span></td><td>최대원 1.8km 순찰 완료</td><td><span class="badge badge-green">완료</span></td></tr>
+              <tr style="cursor:pointer;" onclick="navigate('reports')"><td style="font-family:'DM Mono',monospace;font-size:12.5px;">09:30</td><td><span class="badge badge-red">신고</span></td><td>정대원 시설파손 신고</td><td><span class="badge badge-orange">처리중</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ===== A02: MEMBERS ===== -->
+      <div id="screen-members" class="screen">
+        <!-- Member List View -->
+        <div id="member-list-view">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;">
+            <h2 style="font-size:22px; font-weight:700; color:#0f172a;">대원 관리</h2>
+          </div>
+          <div class="card p-5" style="margin-bottom:16px;">
+            <input type="text" placeholder="🔍 이름 또는 이메일 검색..." style="margin-bottom:14px;">
+            <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <label style="margin:0; white-space:nowrap;">가입일</label>
+                <input type="date" style="width:140px;">
+                <span style="color:#94a3b8;">~</span>
+                <input type="date" style="width:140px;">
+              </div>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <label style="margin:0;">상태</label>
+                <select style="width:110px;"><option>전체</option><option>활성</option><option>정지</option><option>탈퇴</option></select>
+              </div>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <label style="margin:0;">정렬</label>
+                <select style="width:120px;"><option>가입일순</option><option>활동량순</option><option>닉네임순</option></select>
+              </div>
+              <button class="btn btn-secondary btn-sm" style="margin-left:auto;">⬇ CSV 다운로드</button>
+            </div>
+          </div>
+          <div class="card" style="overflow:hidden;">
+            <table>
+              <thead><tr><th>#</th><th>이름</th><th>이메일</th><th>가입일</th><th>순찰</th><th>총포인트</th><th>상태</th><th>상세</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td style="font-weight:600;">김순찰</td><td style="color:#64748b;font-size:12.5px;">kim@email.com</td><td style="font-family:'DM Mono',monospace;font-size:12.5px;">2026-01-15</td><td style="font-family:'DM Mono',monospace;">45</td><td style="font-family:'DM Mono',monospace;">4,500</td><td><span class="badge badge-green">활성</span></td><td><button class="btn btn-link" onclick="showMemberDetail('김순찰','kim@email.com','010-1234-5678','2026-01-15','45','52.3','4,500','활성')">보기</button></td></tr>
+                <tr><td>2</td><td style="font-weight:600;">이대원</td><td style="color:#64748b;font-size:12.5px;">lee@email.com</td><td style="font-family:'DM Mono',monospace;font-size:12.5px;">2026-02-01</td><td style="font-family:'DM Mono',monospace;">32</td><td style="font-family:'DM Mono',monospace;">3,200</td><td><span class="badge badge-green">활성</span></td><td><button class="btn btn-link" onclick="showMemberDetail('이대원','lee@email.com','010-2345-6789','2026-02-01','32','38.1','3,200','활성')">보기</button></td></tr>
+                <tr><td>3</td><td style="font-weight:600;">박산책</td><td style="color:#64748b;font-size:12.5px;">park@email.com</td><td style="font-family:'DM Mono',monospace;font-size:12.5px;">2026-02-10</td><td style="font-family:'DM Mono',monospace;">28</td><td style="font-family:'DM Mono',monospace;">2,800</td><td><span class="badge badge-green">활성</span></td><td><button class="btn btn-link" onclick="showMemberDetail('박산책','park@email.com','010-3456-7890','2026-02-10','28','29.5','2,800','활성')">보기</button></td></tr>
+                <tr><td>4</td><td style="font-weight:600;">최방범</td><td style="color:#64748b;font-size:12.5px;">choi@email.com</td><td style="font-family:'DM Mono',monospace;font-size:12.5px;">2026-03-01</td><td style="font-family:'DM Mono',monospace;">5</td><td style="font-family:'DM Mono',monospace;">500</td><td><span class="badge badge-red">정지</span></td><td><button class="btn btn-link" onclick="showMemberDetail('최방범','choi@email.com','010-4567-8901','2026-03-01','5','4.2','500','정지')">보기</button></td></tr>
+                <tr><td>5</td><td style="font-weight:600;">정순찰</td><td style="color:#64748b;font-size:12.5px;">jung@email.com</td><td style="font-family:'DM Mono',monospace;font-size:12.5px;">2026-03-05</td><td style="font-family:'DM Mono',monospace;">3</td><td style="font-family:'DM Mono',monospace;">300</td><td><span class="badge badge-green">활성</span></td><td><button class="btn btn-link" onclick="showMemberDetail('정순찰','jung@email.com','010-5678-9012','2026-03-05','3','2.1','300','활성')">보기</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div style="display:flex; justify-content:center; gap:4px; margin-top:16px;">
+            <button class="page-btn">‹</button>
+            <button class="page-btn active">1</button>
+            <button class="page-btn">2</button>
+            <button class="page-btn">3</button>
+            <button class="page-btn">4</button>
+            <button class="page-btn">5</button>
+            <button class="page-btn">…</button>
+            <button class="page-btn">12</button>
+            <button class="page-btn">›</button>
+          </div>
+        </div>
+
+        <!-- Member Detail View -->
+        <div id="member-detail-view" style="display:none;">
+          <button class="btn btn-secondary btn-sm" style="margin-bottom:20px;" onclick="showMemberList()">← 대원 목록으로 돌아가기</button>
+          <div class="card p-6" style="margin-bottom:20px;">
+            <h3 style="font-size:15px; font-weight:700; color:#0f172a; margin-bottom:18px;">프로필 정보</h3>
+            <div style="display:flex; gap:24px; align-items:flex-start;">
+              <div style="width:72px; height:72px; border-radius:50%; background:linear-gradient(135deg,#22c55e,#1B5E20); display:flex; align-items:center; justify-content:center; font-size:28px; flex-shrink:0;">🐕</div>
+              <div style="flex:1; display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                <div><p style="font-size:11.5px;color:#94a3b8;font-weight:600;">이름</p><p id="d-name" style="font-weight:700;color:#0f172a;font-size:15px;"></p></div>
+                <div><p style="font-size:11.5px;color:#94a3b8;font-weight:600;">이메일</p><p id="d-email" style="color:#334155;"></p></div>
+                <div><p style="font-size:11.5px;color:#94a3b8;font-weight:600;">휴대폰</p><p id="d-phone" style="font-family:'DM Mono',monospace;color:#334155;"></p></div>
+                <div><p style="font-size:11.5px;color:#94a3b8;font-weight:600;">가입일</p><p id="d-join" style="font-family:'DM Mono',monospace;color:#334155;"></p></div>
+                <div><p style="font-size:11.5px;color:#94a3b8;font-weight:600;">총 순찰 / 거리</p><p id="d-patrol" style="color:#334155;"></p></div>
+                <div><p style="font-size:11.5px;color:#94a3b8;font-weight:600;">총 포인트</p><p id="d-points" style="font-weight:700;color:#1B5E20;"></p></div>
+              </div>
+            </div>
+            <div style="margin-top:18px; padding-top:18px; border-top:1px solid #f1f5f9; display:flex; align-items:center; gap:12px;">
+              <label style="margin:0;">상태</label>
+              <select id="d-status" style="width:120px;">
+                <option>활성</option><option>정지</option><option>탈퇴</option>
+              </select>
+              <button class="btn btn-primary btn-sm" onclick="saveMemberStatus()">저장</button>
+            </div>
+          </div>
+          <div class="card" style="overflow:hidden; margin-bottom:20px;">
+            <div style="padding:14px 20px; border-bottom:1px solid #f1f5f9;"><h3 style="font-size:14px; font-weight:700; color:#0f172a;">순찰(Patrol) 이력</h3></div>
+            <table>
+              <thead><tr><th>날짜</th><th>거리(km)</th><th>시간</th><th>포인트</th><th>상태</th></tr></thead>
+              <tbody>
+                <tr><td style="font-family:'DM Mono',monospace;font-size:12.5px;">2026-03-07</td><td style="font-family:'DM Mono',monospace;">2.35</td><td style="font-family:'DM Mono',monospace;font-size:12px;">00:45:12</td><td style="font-family:'DM Mono',monospace;">235</td><td><span class="badge badge-green">completed</span></td></tr>
+                <tr><td style="font-family:'DM Mono',monospace;font-size:12.5px;">2026-03-06</td><td style="font-family:'DM Mono',monospace;">1.80</td><td style="font-family:'DM Mono',monospace;font-size:12px;">00:32:05</td><td style="font-family:'DM Mono',monospace;">180</td><td><span class="badge badge-green">completed</span></td></tr>
+                <tr><td style="font-family:'DM Mono',monospace;font-size:12.5px;">2026-03-05</td><td style="font-family:'DM Mono',monospace;">3.10</td><td style="font-family:'DM Mono',monospace;font-size:12px;">01:02:30</td><td style="font-family:'DM Mono',monospace;">310</td><td><span class="badge badge-green">completed</span></td></tr>
+              </tbody>
+            </table>
+            <div style="display:flex; justify-content:center; gap:4px; padding:12px;">
+              <button class="page-btn active">1</button><button class="page-btn">2</button><button class="page-btn">3</button>
+            </div>
+          </div>
+          <div class="card" style="overflow:hidden;">
+            <div style="padding:14px 20px; border-bottom:1px solid #f1f5f9;"><h3 style="font-size:14px; font-weight:700; color:#0f172a;">포인트(Points) 내역</h3></div>
+            <table>
+              <thead><tr><th>날짜</th><th>유형</th><th>금액</th><th>사유</th></tr></thead>
+              <tbody>
+                <tr><td style="font-family:'DM Mono',monospace;font-size:12.5px;">2026-03-07</td><td><span class="badge badge-green">자동지급</span></td><td style="font-family:'DM Mono',monospace;color:#15803d;font-weight:600;">+235</td><td style="color:#64748b;font-size:12.5px;">순찰 완료 (2.35km)</td></tr>
+                <tr><td style="font-family:'DM Mono',monospace;font-size:12.5px;">2026-03-06</td><td><span class="badge badge-green">자동지급</span></td><td style="font-family:'DM Mono',monospace;color:#15803d;font-weight:600;">+180</td><td style="color:#64748b;font-size:12.5px;">순찰 완료 (1.80km)</td></tr>
+                <tr><td style="font-family:'DM Mono',monospace;font-size:12.5px;">2026-03-05</td><td><span class="badge badge-blue">수동지급</span></td><td style="font-family:'DM Mono',monospace;color:#15803d;font-weight:600;">+500</td><td style="color:#64748b;font-size:12.5px;">이벤트 보상</td></tr>
+                <tr><td style="font-family:'DM Mono',monospace;font-size:12.5px;">2026-03-04</td><td><span class="badge badge-red">수동차감</span></td><td style="font-family:'DM Mono',monospace;color:#b91c1c;font-weight:600;">-100</td><td style="color:#64748b;font-size:12.5px;">어뷰징 차감</td></tr>
+              </tbody>
+            </table>
+            <div style="display:flex; justify-content:center; gap:4px; padding:12px;">
+              <button class="page-btn active">1</button><button class="page-btn">2</button><button class="page-btn">3</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== A03: REPORTS ===== -->
+      <div id="screen-reports" class="screen">
+        <h2 style="font-size:22px; font-weight:700; color:#0f172a; margin-bottom:20px;">신고 관리</h2>
+        <!-- Status tabs -->
+        <div style="display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap;">
+          <button class="status-tab active" onclick="setReportTab(this,'전체')">전체 <span style="background:rgba(255,255,255,0.25);border-radius:10px;padding:1px 7px;font-size:11px;">48</span></button>
+          <button class="status-tab" onclick="setReportTab(this,'접수')">접수(submitted) <span style="background:rgba(0,0,0,0.08);border-radius:10px;padding:1px 7px;font-size:11px;">12</span></button>
+          <button class="status-tab" onclick="setReportTab(this,'처리중')">처리중 <span style="background:rgba(0,0,0,0.08);border-radius:10px;padding:1px 7px;font-size:11px;">8</span></button>
+          <button class="status-tab" onclick="setReportTab(this,'완료')">완료(resolved) <span style="background:rgba(0,0,0,0.08);border-radius:10px;padding:1px 7px;font-size:11px;">28</span></button>
+        </div>
+        <div class="card p-4" style="margin-bottom:16px; display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <label style="margin:0; white-space:nowrap;">날짜</label>
+            <input type="date" style="width:140px;">
+            <span style="color:#94a3b8;">~</span>
+            <input type="date" style="width:140px;">
+          </div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <label style="margin:0;">카테고리</label>
+            <select style="width:130px;"><option>전체</option><option>불법투기</option><option>시설파손</option><option>안전위험</option><option>기타</option></select>
+          </div>
+          <button class="btn btn-secondary btn-sm" style="margin-left:auto;">⬇ CSV 다운로드</button>
+        </div>
+        <div class="card" style="overflow:hidden;">
+          <table>
+            <thead><tr><th>#</th><th>날짜</th><th>신고자</th><th>카테고리</th><th>위치</th><th>상태</th><th>상세</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td style="font-family:'DM Mono',monospace;font-size:12px;">03-07 10:15</td><td style="font-weight:600;">이대원</td><td>불법투기</td><td style="color:#64748b;font-size:12.5px;">강남구 역삼동</td><td><span class="badge badge-yellow">submitted</span></td><td><button class="btn btn-link" onclick="openReportPanel('RPT-2026030701','2026-03-07 10:15','이대원','lee@email.com','불법투기','역삼동 골목길에 대형 폐기물이 불법으로 투기되어 있습니다. 보행에 방해가 됩니다.','서울시 강남구 역삼동 123-45','submitted')">보기</button></td></tr>
+              <tr><td>2</td><td style="font-family:'DM Mono',monospace;font-size:12px;">03-07 09:30</td><td style="font-weight:600;">정대원</td><td>시설파손</td><td style="color:#64748b;font-size:12.5px;">서초구 방배동</td><td><span class="badge badge-orange">in_progress</span></td><td><button class="btn btn-link" onclick="openReportPanel('RPT-2026030702','2026-03-07 09:30','정대원','jung@email.com','시설파손','방배동 공원 내 벤치가 심하게 파손되어 있습니다. 안전 사고 우려가 있습니다.','서울시 서초구 방배동 456-78','in_progress')">보기</button></td></tr>
+              <tr><td>3</td><td style="font-family:'DM Mono',monospace;font-size:12px;">03-06 16:20</td><td style="font-weight:600;">박산책</td><td>안전위험</td><td style="color:#64748b;font-size:12.5px;">송파구 잠실동</td><td><span class="badge badge-green">resolved</span></td><td><button class="btn btn-link" onclick="openReportPanel('RPT-2026030601','2026-03-06 16:20','박산책','park@email.com','안전위험','잠실동 횡단보도 신호등이 작동하지 않습니다.','서울시 송파구 잠실동 789-01','resolved')">보기</button></td></tr>
+              <tr><td>4</td><td style="font-family:'DM Mono',monospace;font-size:12px;">03-06 14:00</td><td style="font-weight:600;">최방범</td><td>기타</td><td style="color:#64748b;font-size:12.5px;">마포구 합정동</td><td><span class="badge badge-yellow">submitted</span></td><td><button class="btn btn-link" onclick="openReportPanel('RPT-2026030602','2026-03-06 14:00','최방범','choi@email.com','기타','합정동 골목에 고양이 사료를 무단으로 놓아두는 분이 있습니다.','서울시 마포구 합정동 321-65','submitted')">보기</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="display:flex; justify-content:center; gap:4px; margin-top:16px;">
+          <button class="page-btn">‹</button><button class="page-btn active">1</button><button class="page-btn">2</button><button class="page-btn">3</button><button class="page-btn">4</button><button class="page-btn">5</button><button class="page-btn">…</button><button class="page-btn">8</button><button class="page-btn">›</button>
+        </div>
+      </div>
+
+      <!-- ===== A04: EVENTS ===== -->
+      <div id="screen-events" class="screen">
+        <!-- Event list -->
+        <div id="event-list-view">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;">
+            <h2 style="font-size:22px; font-weight:700; color:#0f172a;">이벤트 관리</h2>
+            <button class="btn btn-primary" onclick="showEventForm(null)">+ 새 이벤트 등록</button>
+          </div>
+          <div class="card" style="overflow:hidden;">
+            <table>
+              <thead><tr><th>#</th><th>제목</th><th>시작일</th><th>종료일</th><th>배율</th><th>상태</th><th>관리</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td style="font-weight:600;">봄맞이 순찰 이벤트</td><td style="font-family:'DM Mono',monospace;font-size:12.5px;">2026-03-01</td><td style="font-family:'DM Mono',monospace;font-size:12.5px;">2026-03-31</td><td style="font-family:'DM Mono',monospace;">1.5x</td><td><span class="badge badge-green">진행중</span></td><td style="display:flex;gap:6px;"><button class="btn btn-secondary btn-sm" onclick="showEventForm({title:'봄맞이 순찰 이벤트',desc:'봄을 맞아 순찰 포인트를 1.5배로 지급합니다! 많은 참여 부탁드립니다.',start:'2026-03-01',end:'2026-03-31',mult:'1.5'})">수정</button><button class="btn btn-danger btn-sm" onclick="openEventDeleteModal('봄맞이 순찰 이벤트')">삭제</button></td></tr>
+                <tr><td>2</td><td style="font-weight:600;">설날 특별 이벤트</td><td style="font-family:'DM Mono',monospace;font-size:12.5px;">2026-01-28</td><td style="font-family:'DM Mono',monospace;font-size:12.5px;">2026-02-02</td><td style="font-family:'DM Mono',monospace;">2.0x</td><td><span class="badge badge-gray">종료</span></td><td style="display:flex;gap:6px;"><button class="btn btn-secondary btn-sm" onclick="showEventForm({title:'설날 특별 이벤트',desc:'설날 연휴 순찰 포인트 2배 지급!',start:'2026-01-28',end:'2026-02-02',mult:'2.0'})">수정</button><button class="btn btn-danger btn-sm" onclick="openEventDeleteModal('설날 특별 이벤트')">삭제</button></td></tr>
+                <tr><td>3</td><td style="font-weight:600;">신규 대원 환영</td><td style="font-family:'DM Mono',monospace;font-size:12.5px;">2026-04-01</td><td style="font-family:'DM Mono',monospace;font-size:12.5px;">2026-04-15</td><td style="font-family:'DM Mono',monospace;">1.2x</td><td><span class="badge badge-blue">예정</span></td><td style="display:flex;gap:6px;"><button class="btn btn-secondary btn-sm" onclick="showEventForm({title:'신규 대원 환영',desc:'신규 대원을 위한 특별 포인트 혜택!',start:'2026-04-01',end:'2026-04-15',mult:'1.2'})">수정</button><button class="btn btn-danger btn-sm" onclick="openEventDeleteModal('신규 대원 환영')">삭제</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div style="display:flex; justify-content:center; gap:4px; margin-top:16px;">
+            <button class="page-btn active">1</button><button class="page-btn">2</button>
+          </div>
+        </div>
+
+        <!-- Event form -->
+        <div id="event-form-view" style="display:none;">
+          <button class="btn btn-secondary btn-sm" style="margin-bottom:20px;" onclick="showEventList()">← 이벤트 목록으로 돌아가기</button>
+          <h2 id="event-form-title" style="font-size:22px; font-weight:700; color:#0f172a; margin-bottom:20px;">이벤트 등록</h2>
+          <div class="card p-6" style="max-width:640px;">
+            <div style="margin-bottom:18px;">
+              <label>제목 <span style="color:#b91c1c;">*</span></label>
+              <input type="text" id="ev-title" placeholder="이벤트 제목을 입력하세요" maxlength="100">
+            </div>
+            <div style="margin-bottom:18px;">
+              <label>설명 <span style="color:#b91c1c;">*</span></label>
+              <textarea id="ev-desc" rows="4" placeholder="이벤트 설명을 입력하세요" maxlength="1000" style="resize:vertical;"></textarea>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:18px;">
+              <div>
+                <label>시작일 <span style="color:#b91c1c;">*</span></label>
+                <input type="date" id="ev-start">
+              </div>
+              <div>
+                <label>종료일 <span style="color:#b91c1c;">*</span></label>
+                <input type="date" id="ev-end">
+              </div>
+            </div>
+            <div style="margin-bottom:24px;">
+              <label>보너스 배율 (bonus_multiplier)</label>
+              <div style="display:flex; align-items:center; gap:12px;">
+                <input type="number" id="ev-mult" value="1.0" step="0.1" min="0.1" style="width:120px;">
+                <span style="color:#64748b; font-size:13px;">기본값: 1.0 (100%) — 예: 1.5 = 150% 포인트 지급</span>
+              </div>
+            </div>
+            <div style="display:flex; gap:10px; justify-content:flex-end;">
+              <button class="btn btn-secondary" onclick="showEventList()">취소</button>
+              <button class="btn btn-primary" onclick="saveEvent()">저장</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== A05: POINTS ===== -->
+      <div id="screen-points" class="screen">
+        <h2 style="font-size:22px; font-weight:700; color:#0f172a; margin-bottom:20px;">포인트 관리</h2>
+        <div class="card p-6" style="max-width:640px; margin-bottom:20px;">
+          <h3 style="font-size:14px; font-weight:700; color:#0f172a; margin-bottom:16px;">포인트 수동 지급/차감</h3>
+          <div style="margin-bottom:16px;">
+            <label>대상 검색</label>
+            <div style="position:relative;">
+              <input type="text" id="pt-search" placeholder="🔍 이름 또는 이메일 검색..." oninput="handlePointSearch(this.value)" autocomplete="off">
+              <div id="pt-autocomplete" style="position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid #e2e8f0;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.1);z-index:10;display:none;">
+                <div class="admin-dropdown-item" onclick="selectPointUser('김순찰','kim@email.com','4,500')">김순찰 <span style="color:#94a3b8;">(kim@email.com)</span></div>
+                <div class="admin-dropdown-item" onclick="selectPointUser('김대원','kimd@email.com','2,100')">김대원 <span style="color:#94a3b8;">(kimd@email.com)</span></div>
+                <div class="admin-dropdown-item" onclick="selectPointUser('이대원','lee@email.com','3,200')">이대원 <span style="color:#94a3b8;">(lee@email.com)</span></div>
+              </div>
+            </div>
+          </div>
+          <div id="pt-user-card" style="display:none; background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:14px; margin-bottom:16px;">
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
+              <div><p style="font-size:11px;color:#94a3b8;font-weight:600;">이름</p><p id="pt-name" style="font-weight:700;color:#0f172a;"></p></div>
+              <div><p style="font-size:11px;color:#94a3b8;font-weight:600;">이메일</p><p id="pt-email" style="font-size:12.5px;color:#334155;"></p></div>
+              <div><p style="font-size:11px;color:#94a3b8;font-weight:600;">현재 포인트</p><p id="pt-cur" style="font-weight:700;color:#1B5E20;"></p></div>
+            </div>
+          </div>
+          <div style="margin-bottom:16px;">
+            <label>유형</label>
+            <div style="display:flex; gap:20px;">
+              <label style="display:flex;align-items:center;gap:6px;margin:0;font-weight:500;cursor:pointer;"><input type="radio" name="pt-type" value="지급" checked> 지급</label>
+              <label style="display:flex;align-items:center;gap:6px;margin:0;font-weight:500;cursor:pointer;"><input type="radio" name="pt-type" value="차감"> 차감</label>
+            </div>
+          </div>
+          <div style="margin-bottom:16px;">
+            <label>포인트 금액 <span style="color:#b91c1c;">*</span></label>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <input type="number" id="pt-amount" placeholder="500" min="1" style="width:160px;">
+              <span style="color:#64748b;">pt</span>
+            </div>
+          </div>
+          <div style="margin-bottom:20px;">
+            <label>사유 <span style="color:#b91c1c;">*</span></label>
+            <input type="text" id="pt-reason" placeholder="포인트 지급/차감 사유를 입력하세요" maxlength="200">
+          </div>
+          <div style="text-align:right;">
+            <button class="btn btn-primary" onclick="applyPoints()">적용</button>
+          </div>
+        </div>
+
+        <div style="margin-bottom:12px;">
+          <h3 style="font-size:15px; font-weight:700; color:#0f172a;">최근 수동 지급/차감 이력</h3>
+        </div>
+        <div class="card" style="overflow:hidden;">
+          <table>
+            <thead><tr><th>날짜</th><th>대상</th><th>유형</th><th>금액</th><th>사유</th><th>처리자</th></tr></thead>
+            <tbody>
+              <tr><td style="font-family:'DM Mono',monospace;font-size:12.5px;">2026-03-07</td><td style="font-weight:600;">김순찰</td><td><span class="badge badge-green">수동지급</span></td><td style="font-family:'DM Mono',monospace;color:#15803d;font-weight:600;">+500</td><td style="color:#64748b;font-size:12.5px;">이벤트 보상</td><td style="color:#64748b;font-size:12.5px;">관리자</td></tr>
+              <tr><td style="font-family:'DM Mono',monospace;font-size:12.5px;">2026-03-06</td><td style="font-weight:600;">이대원</td><td><span class="badge badge-red">수동차감</span></td><td style="font-family:'DM Mono',monospace;color:#b91c1c;font-weight:600;">-100</td><td style="color:#64748b;font-size:12.5px;">어뷰징 차감</td><td style="color:#64748b;font-size:12.5px;">관리자</td></tr>
+              <tr><td style="font-family:'DM Mono',monospace;font-size:12.5px;">2026-03-05</td><td style="font-weight:600;">박산책</td><td><span class="badge badge-green">수동지급</span></td><td style="font-family:'DM Mono',monospace;color:#15803d;font-weight:600;">+300</td><td style="color:#64748b;font-size:12.5px;">신고 보상</td><td style="color:#64748b;font-size:12.5px;">관리자</td></tr>
+              <tr><td style="font-family:'DM Mono',monospace;font-size:12.5px;">2026-03-04</td><td style="font-weight:600;">최방범</td><td><span class="badge badge-green">수동지급</span></td><td style="font-family:'DM Mono',monospace;color:#15803d;font-weight:600;">+1,000</td><td style="color:#64748b;font-size:12.5px;">우수 대원</td><td style="color:#64748b;font-size:12.5px;">관리자</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="display:flex; justify-content:center; gap:4px; margin-top:16px;">
+          <button class="page-btn active">1</button><button class="page-btn">2</button><button class="page-btn">3</button>
+        </div>
+      </div>
+
+      <!-- ===== A06: PUSH ===== -->
+      <div id="screen-push" class="screen">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;">
+          <h2 style="font-size:22px; font-weight:700; color:#0f172a;">Push 알림 관리</h2>
+          <button class="btn btn-primary" onclick="openPushModal()">+ 새 알림 발송</button>
+        </div>
+        <div class="card" style="overflow:hidden;">
+          <table>
+            <thead><tr><th>#</th><th>제목</th><th>발송일시</th><th>대상</th><th>발송수</th><th>상세</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td style="font-weight:600;">봄맞이 이벤트 안내</td><td style="font-family:'DM Mono',monospace;font-size:12px;">2026-03-01 09:00</td><td><span class="badge badge-blue">전체</span></td><td style="font-family:'DM Mono',monospace;">1,234</td><td><button class="btn btn-link" onclick="openPushDetailModal('봄맞이 이벤트 안내','봄맞이 순찰 이벤트가 시작됩니다! 3월 한 달간 순찰 포인트가 1.5배로 적용됩니다.','전체 (all)','2026-03-01 09:00','1,234')">보기</button></td></tr>
+              <tr><td>2</td><td style="font-weight:600;">긴급: 폭설 주의</td><td style="font-family:'DM Mono',monospace;font-size:12px;">2026-02-28 18:00</td><td><span class="badge badge-blue">전체</span></td><td style="font-family:'DM Mono',monospace;">1,230</td><td><button class="btn btn-link" onclick="openPushDetailModal('긴급: 폭설 주의','오늘 밤부터 폭설이 예보되어 있습니다. 순찰 시 안전에 각별히 유의해주세요.','전체 (all)','2026-02-28 18:00','1,230')">보기</button></td></tr>
+              <tr><td>3</td><td style="font-weight:600;">포인트 2배 이벤트</td><td style="font-family:'DM Mono',monospace;font-size:12px;">2026-02-15 10:00</td><td><span class="badge badge-gray">그룹</span></td><td style="font-family:'DM Mono',monospace;">456</td><td><button class="btn btn-link" onclick="openPushDetailModal('포인트 2배 이벤트','이번 주 포인트 1,000pt 이상 대원에게만! 주말 특별 순찰 이벤트가 시작됩니다.','그룹 (group)','2026-02-15 10:00','456')">보기</button></td></tr>
+              <tr><td>4</td><td style="font-weight:600;">신규 기능 안내</td><td style="font-family:'DM Mono',monospace;font-size:12px;">2026-02-01 12:00</td><td><span class="badge badge-blue">전체</span></td><td style="font-family:'DM Mono',monospace;">1,180</td><td><button class="btn btn-link" onclick="openPushDetailModal('신규 기능 안내','순찰대 앱 업데이트! 새로운 지도 기능과 친구 초대 기능이 추가되었습니다.','전체 (all)','2026-02-01 12:00','1,180')">보기</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="display:flex; justify-content:center; gap:4px; margin-top:16px;">
+          <button class="page-btn active">1</button><button class="page-btn">2</button><button class="page-btn">3</button>
+        </div>
+      </div>
+
+      <!-- ===== A07: STATISTICS ===== -->
+      <div id="screen-stats" class="screen">
+        <h2 style="font-size:22px; font-weight:700; color:#0f172a; margin-bottom:20px;">통계</h2>
+        <!-- Period selector -->
+        <div class="card p-4" style="margin-bottom:20px; display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+          <span style="font-size:13px; font-weight:600; color:#475569;">기간 선택</span>
+          <button class="period-btn" onclick="setPeriod(this)">오늘</button>
+          <button class="period-btn active" onclick="setPeriod(this)">이번주</button>
+          <button class="period-btn" onclick="setPeriod(this)">이번달</button>
+          <button class="period-btn" onclick="setPeriod(this)">전체</button>
+          <div style="width:1px;height:24px;background:#e2e8f0;margin:0 4px;"></div>
+          <input type="date" style="width:140px;" value="2026-03-01">
+          <span style="color:#94a3b8;">~</span>
+          <input type="date" style="width:140px;" value="2026-03-09">
+        </div>
+
+        <!-- KPI Cards -->
+        <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:20px;">
+          <div class="card p-5"><p style="font-size:12px;font-weight:600;color:#64748b;letter-spacing:0.05em;margin-bottom:8px;">총 순찰 건수</p><p style="font-size:28px;font-weight:700;color:#0f172a;line-height:1;">1,856</p><p style="font-size:12px;color:#64748b;margin-top:4px;">건</p></div>
+          <div class="card p-5"><p style="font-size:12px;font-weight:600;color:#64748b;letter-spacing:0.05em;margin-bottom:8px;">총 이동 거리</p><p style="font-size:28px;font-weight:700;color:#0f172a;line-height:1;">2,145.3</p><p style="font-size:12px;color:#64748b;margin-top:4px;">km</p></div>
+          <div class="card p-5"><p style="font-size:12px;font-weight:600;color:#64748b;letter-spacing:0.05em;margin-bottom:8px;">평균 순찰 시간</p><p style="font-size:28px;font-weight:700;color:#0f172a;line-height:1;font-family:'DM Mono',monospace;">38:24</p><p style="font-size:12px;color:#64748b;margin-top:4px;">분</p></div>
+          <div class="card p-5"><p style="font-size:12px;font-weight:600;color:#64748b;letter-spacing:0.05em;margin-bottom:8px;">총 신고 건수</p><p style="font-size:28px;font-weight:700;color:#0f172a;line-height:1;">156</p><p style="font-size:12px;color:#64748b;margin-top:4px;">건</p></div>
+        </div>
+
+        <!-- Line chart full width -->
+        <div class="card p-5" style="margin-bottom:20px;">
+          <h3 style="font-size:14px; font-weight:700; color:#0f172a; margin-bottom:16px;">일별 순찰 추이</h3>
+          <svg viewBox="0 0 800 160" class="svg-chart-line" style="overflow:visible;">
+            <defs>
+              <linearGradient id="statsGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#4CAF50" stop-opacity="0.25"/>
+                <stop offset="100%" stop-color="#4CAF50" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <line x1="40" y1="10" x2="40" y2="130" stroke="#e2e8f0" stroke-width="1"/>
+            <line x1="40" y1="130" x2="780" y2="130" stroke="#e2e8f0" stroke-width="1"/>
+            <text x="35" y="14" text-anchor="end" font-size="10" fill="#94a3b8">80</text>
+            <text x="35" y="57" text-anchor="end" font-size="10" fill="#94a3b8">60</text>
+            <text x="35" y="90" text-anchor="end" font-size="10" fill="#94a3b8">40</text>
+            <text x="35" y="130" text-anchor="end" font-size="10" fill="#94a3b8">0</text>
+            <line x1="40" y1="12" x2="780" y2="12" stroke="#f1f5f9" stroke-width="1" stroke-dasharray="4,3"/>
+            <line x1="40" y1="55" x2="780" y2="55" stroke="#f1f5f9" stroke-width="1" stroke-dasharray="4,3"/>
+            <line x1="40" y1="88" x2="780" y2="88" stroke="#f1f5f9" stroke-width="1" stroke-dasharray="4,3"/>
+            <!-- 14 data points -->
+            <path d="M55,90 L107,70 L159,82 L211,55 L263,62 L315,45 L367,32 L419,50 L471,40 L523,60 L575,35 L627,48 L679,55 L731,42 L731,130 L55,130 Z" fill="url(#statsGrad)"/>
+            <polyline points="55,90 107,70 159,82 211,55 263,62 315,45 367,32 419,50 471,40 523,60 575,35 627,48 679,55 731,42" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linejoin="round"/>
+            <circle cx="55" cy="90" r="3.5" fill="#1B5E20" stroke="#fff" stroke-width="2"/>
+            <circle cx="107" cy="70" r="3.5" fill="#1B5E20" stroke="#fff" stroke-width="2"/>
+            <circle cx="159" cy="82" r="3.5" fill="#1B5E20" stroke="#fff" stroke-width="2"/>
+            <circle cx="211" cy="55" r="3.5" fill="#1B5E20" stroke="#fff" stroke-width="2"/>
+            <circle cx="263" cy="62" r="3.5" fill="#1B5E20" stroke="#fff" stroke-width="2"/>
+            <circle cx="315" cy="45" r="3.5" fill="#1B5E20" stroke="#fff" stroke-width="2"/>
+            <circle cx="367" cy="32" r="3.5" fill="#1B5E20" stroke="#fff" stroke-width="2"/>
+            <circle cx="419" cy="50" r="3.5" fill="#1B5E20" stroke="#fff" stroke-width="2"/>
+            <circle cx="471" cy="40" r="3.5" fill="#1B5E20" stroke="#fff" stroke-width="2"/>
+            <circle cx="523" cy="60" r="3.5" fill="#1B5E20" stroke="#fff" stroke-width="2"/>
+            <circle cx="575" cy="35" r="3.5" fill="#1B5E20" stroke="#fff" stroke-width="2"/>
+            <circle cx="627" cy="48" r="3.5" fill="#1B5E20" stroke="#fff" stroke-width="2"/>
+            <circle cx="679" cy="55" r="3.5" fill="#1B5E20" stroke="#fff" stroke-width="2"/>
+            <circle cx="731" cy="42" r="3.5" fill="#1B5E20" stroke="#fff" stroke-width="2"/>
+            <text x="55" y="148" text-anchor="middle" font-size="9" fill="#94a3b8">3/1</text>
+            <text x="107" y="148" text-anchor="middle" font-size="9" fill="#94a3b8">3/2</text>
+            <text x="159" y="148" text-anchor="middle" font-size="9" fill="#94a3b8">3/3</text>
+            <text x="211" y="148" text-anchor="middle" font-size="9" fill="#94a3b8">3/4</text>
+            <text x="263" y="148" text-anchor="middle" font-size="9" fill="#94a3b8">3/5</text>
+            <text x="315" y="148" text-anchor="middle" font-size="9" fill="#94a3b8">3/6</text>
+            <text x="367" y="148" text-anchor="middle" font-size="9" fill="#94a3b8">3/7</text>
+            <text x="419" y="148" text-anchor="middle" font-size="9" fill="#94a3b8">3/8</text>
+            <text x="471" y="148" text-anchor="middle" font-size="9" fill="#94a3b8">3/9</text>
+            <text x="523" y="148" text-anchor="middle" font-size="9" fill="#94a3b8">3/10</text>
+            <text x="575" y="148" text-anchor="middle" font-size="9" fill="#94a3b8">3/11</text>
+            <text x="627" y="148" text-anchor="middle" font-size="9" fill="#94a3b8">3/12</text>
+            <text x="679" y="148" text-anchor="middle" font-size="9" fill="#94a3b8">3/13</text>
+            <text x="731" y="148" text-anchor="middle" font-size="9" fill="#94a3b8">3/14</text>
+          </svg>
+        </div>
+
+        <!-- Two charts -->
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:20px;">
+          <!-- Bar chart hourly -->
+          <div class="card p-5">
+            <h3 style="font-size:14px; font-weight:700; color:#0f172a; margin-bottom:16px;">시간대별 순찰 분포</h3>
+            <svg viewBox="0 0 340 160" style="width:100%;overflow:visible;">
+              <line x1="30" y1="10" x2="30" y2="130" stroke="#e2e8f0" stroke-width="1"/>
+              <line x1="30" y1="130" x2="330" y2="130" stroke="#e2e8f0" stroke-width="1"/>
+              <!-- bars: 06,08,10,12,14,16,18,20 -->
+              <rect x="38" y="110" width="28" height="20" fill="#bbf7d0" rx="3"/>
+              <rect x="80" y="85" width="28" height="45" fill="#86efac" rx="3"/>
+              <rect x="122" y="55" width="28" height="75" fill="#4ade80" rx="3"/>
+              <rect x="164" y="40" width="28" height="90" fill="#22c55e" rx="3"/>
+              <rect x="206" y="65" width="28" height="65" fill="#4ade80" rx="3"/>
+              <rect x="248" y="90" width="28" height="40" fill="#86efac" rx="3"/>
+              <rect x="290" y="115" width="28" height="15" fill="#bbf7d0" rx="3"/>
+              <text x="52" y="148" text-anchor="middle" font-size="9" fill="#94a3b8">06시</text>
+              <text x="94" y="148" text-anchor="middle" font-size="9" fill="#94a3b8">08시</text>
+              <text x="136" y="148" text-anchor="middle" font-size="9" fill="#94a3b8">10시</text>
+              <text x="178" y="148" text-anchor="middle" font-size="9" fill="#94a3b8">12시</text>
+              <text x="220" y="148" text-anchor="middle" font-size="9" fill="#94a3b8">14시</text>
+              <text x="262" y="148" text-anchor="middle" font-size="9" fill="#94a3b8">16시</text>
+              <text x="304" y="148" text-anchor="middle" font-size="9" fill="#94a3b8">18시</text>
+            </svg>
+          </div>
+          <!-- Pie chart -->
+          <div class="card p-5">
+            <h3 style="font-size:14px; font-weight:700; color:#0f172a; margin-bottom:16px;">카테고리별 신고 분포</h3>
+            <div style="display:flex; align-items:center; gap:24px;">
+              <svg viewBox="0 0 120 120" style="width:130px;flex-shrink:0;">
+                <!-- Pie: 불법투기 42%, 시설파손 35%, 안전위험 15%, 기타 8% -->
+                <!-- 42% = 151.2deg, 35%=126deg, 15%=54deg, 8%=28.8deg -->
+                <circle r="50" cx="60" cy="60" fill="#f1f5f9"/>
+                <!-- Pie slices using stroke-dasharray trick -->
+                <circle r="37" cx="60" cy="60" fill="transparent" stroke="#22c55e" stroke-width="26" stroke-dasharray="97.7 155.7" stroke-dashoffset="0" transform="rotate(-90 60 60)"/>
+                <circle r="37" cx="60" cy="60" fill="transparent" stroke="#86efac" stroke-width="26" stroke-dasharray="81.4 171.7" stroke-dashoffset="-97.7" transform="rotate(-90 60 60)"/>
+                <circle r="37" cx="60" cy="60" fill="transparent" stroke="#fbbf24" stroke-width="26" stroke-dasharray="34.9 218.7" stroke-dashoffset="-179.1" transform="rotate(-90 60 60)"/>
+                <circle r="37" cx="60" cy="60" fill="transparent" stroke="#e2e8f0" stroke-width="26" stroke-dasharray="18.6 234.7" stroke-dashoffset="-214" transform="rotate(-90 60 60)"/>
+                <circle r="28" cx="60" cy="60" fill="#fff"/>
+              </svg>
+              <div style="display:flex; flex-direction:column; gap:8px;">
+                <div style="display:flex;align-items:center;gap:8px;"><div style="width:12px;height:12px;border-radius:3px;background:#22c55e;flex-shrink:0;"></div><span style="font-size:12.5px;color:#334155;">불법투기</span><span style="font-size:12.5px;font-weight:600;color:#0f172a;margin-left:4px;">42%</span></div>
+                <div style="display:flex;align-items:center;gap:8px;"><div style="width:12px;height:12px;border-radius:3px;background:#86efac;flex-shrink:0;"></div><span style="font-size:12.5px;color:#334155;">시설파손</span><span style="font-size:12.5px;font-weight:600;color:#0f172a;margin-left:4px;">35%</span></div>
+                <div style="display:flex;align-items:center;gap:8px;"><div style="width:12px;height:12px;border-radius:3px;background:#fbbf24;flex-shrink:0;"></div><span style="font-size:12.5px;color:#334155;">안전위험</span><span style="font-size:12.5px;font-weight:600;color:#0f172a;margin-left:4px;">15%</span></div>
+                <div style="display:flex;align-items:center;gap:8px;"><div style="width:12px;height:12px;border-radius:3px;background:#e2e8f0;flex-shrink:0;"></div><span style="font-size:12.5px;color:#334155;">기타</span><span style="font-size:12.5px;font-weight:600;color:#0f172a;margin-left:4px;">8%</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Heatmap -->
+        <div class="card p-5" style="margin-bottom:20px;">
+          <h3 style="font-size:14px; font-weight:700; color:#0f172a; margin-bottom:12px;">지역별 순찰 히트맵</h3>
+          <div class="map-placeholder" style="height:200px;">
+            <div style="position:relative;z-index:1;text-align:center;">
+              <p style="font-size:28px;margin-bottom:8px;">🗺</p>
+              <p style="font-size:13px;color:#64748b;">지도 히트맵 영역</p>
+              <p style="font-size:12px;color:#94a3b8;">실제 구현 시 지도 API 연동</p>
+            </div>
+          </div>
+          <div style="display:flex; gap:16px; margin-top:12px; font-size:12px; color:#64748b; align-items:center;">
+            <span style="font-weight:600;">범례:</span>
+            <div style="display:flex;align-items:center;gap:4px;"><div style="width:16px;height:16px;background:#dcfce7;border-radius:3px;"></div> 1~10건</div>
+            <div style="display:flex;align-items:center;gap:4px;"><div style="width:16px;height:16px;background:#86efac;border-radius:3px;"></div> 11~30건</div>
+            <div style="display:flex;align-items:center;gap:4px;"><div style="width:16px;height:16px;background:#22c55e;border-radius:3px;"></div> 31~50건</div>
+            <div style="display:flex;align-items:center;gap:4px;"><div style="width:16px;height:16px;background:#1B5E20;border-radius:3px;"></div> 51건+</div>
+          </div>
+        </div>
+
+        <!-- CSV Export -->
+        <div class="card p-5">
+          <h3 style="font-size:14px; font-weight:700; color:#0f172a; margin-bottom:14px;">데이터 추출</h3>
+          <div style="display:flex; align-items:center; gap:20px; flex-wrap:wrap;">
+            <span style="font-size:13px; font-weight:600; color:#475569;">내보내기 대상:</span>
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13.5px;margin:0;"><input type="checkbox" id="csv-patrol"> 순찰 데이터</label>
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13.5px;margin:0;"><input type="checkbox" id="csv-member"> 대원 데이터</label>
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13.5px;margin:0;"><input type="checkbox" id="csv-report"> 신고 데이터</label>
+            <button class="btn btn-secondary btn-sm" style="margin-left:auto;" onclick="showToast('CSV 파일이 다운로드됩니다.','success')">⬇ CSV 내보내기</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== A08: CONTENT ===== -->
+      <div id="screen-content" class="screen">
+        <h2 style="font-size:22px; font-weight:700; color:#0f172a; margin-bottom:20px;">콘텐츠 관리</h2>
+        <!-- Tabs -->
+        <div style="border-bottom:1px solid #e2e8f0; margin-bottom:20px;">
+          <button class="tab-btn active" onclick="setContentTab(this,'video')">영상 관리</button>
+          <button class="tab-btn" onclick="setContentTab(this,'board')">게시판 관리</button>
+        </div>
+
+        <!-- Video tab -->
+        <div id="content-video">
+          <div style="text-align:right; margin-bottom:12px;">
+            <button class="btn btn-primary" onclick="openVideoModal(null)">+ 새 영상 등록</button>
+          </div>
+          <div class="card" style="overflow:hidden;">
+            <table>
+              <thead><tr><th>#</th><th>제목</th><th>URL</th><th>카테고리</th><th>등록일</th><th>관리</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td style="font-weight:600;">순찰 안전 가이드</td><td style="font-family:'DM Mono',monospace;font-size:12px;color:#1d4ed8;">youtu.be/abc123</td><td><span class="badge badge-blue">교육</span></td><td style="font-family:'DM Mono',monospace;font-size:12.5px;">03-01</td><td style="display:flex;gap:6px;"><button class="btn btn-secondary btn-sm" onclick="openVideoModal({title:'순찰 안전 가이드',url:'https://youtu.be/abc123',cat:'교육'})">수정</button><button class="btn btn-danger btn-sm" onclick="confirmDeleteVideo('순찰 안전 가이드')">삭제</button></td></tr>
+                <tr><td>2</td><td style="font-weight:600;">순찰대 홍보 영상</td><td style="font-family:'DM Mono',monospace;font-size:12px;color:#1d4ed8;">youtu.be/def456</td><td><span class="badge badge-green">홍보</span></td><td style="font-family:'DM Mono',monospace;font-size:12.5px;">02-15</td><td style="display:flex;gap:6px;"><button class="btn btn-secondary btn-sm" onclick="openVideoModal({title:'순찰대 홍보 영상',url:'https://youtu.be/def456',cat:'홍보'})">수정</button><button class="btn btn-danger btn-sm" onclick="confirmDeleteVideo('순찰대 홍보 영상')">삭제</button></td></tr>
+                <tr><td>3</td><td style="font-weight:600;">반려견 산책 매너</td><td style="font-family:'DM Mono',monospace;font-size:12px;color:#1d4ed8;">vimeo.com/789012</td><td><span class="badge badge-blue">교육</span></td><td style="font-family:'DM Mono',monospace;font-size:12.5px;">02-01</td><td style="display:flex;gap:6px;"><button class="btn btn-secondary btn-sm" onclick="openVideoModal({title:'반려견 산책 매너',url:'https://vimeo.com/789012',cat:'교육'})">수정</button><button class="btn btn-danger btn-sm" onclick="confirmDeleteVideo('반려견 산책 매너')">삭제</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div style="display:flex; justify-content:center; gap:4px; margin-top:16px;">
+            <button class="page-btn active">1</button><button class="page-btn">2</button>
+          </div>
+        </div>
+
+        <!-- Board tab -->
+        <div id="content-board" style="display:none;">
+          <h3 style="font-size:14px; font-weight:700; color:#0f172a; margin-bottom:12px;">게시판 카테고리 관리</h3>
+          <div class="card" style="overflow:hidden; margin-bottom:8px;">
+            <table>
+              <thead><tr><th>카테고리명</th><th>코드값</th><th>게시글 수</th><th>관리</th></tr></thead>
+              <tbody>
+                <tr><td style="font-weight:600;">활동인증</td><td style="font-family:'DM Mono',monospace;font-size:12px;">activity</td><td style="font-family:'DM Mono',monospace;">156</td><td><button class="btn btn-secondary btn-sm" onclick="showToast('카테고리명 수정 모달 (코드값 변경 불가)','')">수정</button></td></tr>
+                <tr><td style="font-weight:600;">정보공유</td><td style="font-family:'DM Mono',monospace;font-size:12px;">info</td><td style="font-family:'DM Mono',monospace;">89</td><td><button class="btn btn-secondary btn-sm" onclick="showToast('카테고리명 수정 모달 (코드값 변경 불가)','')">수정</button></td></tr>
+                <tr><td style="font-weight:600;">자유</td><td style="font-family:'DM Mono',monospace;font-size:12px;">free</td><td style="font-family:'DM Mono',monospace;">234</td><td><button class="btn btn-secondary btn-sm" onclick="showToast('카테고리명 수정 모달 (코드값 변경 불가)','')">수정</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p style="font-size:12px; color:#94a3b8; margin-bottom:20px;">※ 기본 카테고리(활동인증/정보공유/자유)는 삭제할 수 없습니다.</p>
+
+          <h3 style="font-size:14px; font-weight:700; color:#0f172a; margin-bottom:12px;">신고된 게시글 관리</h3>
+          <div class="card" style="overflow:hidden;">
+            <table>
+              <thead><tr><th>#</th><th>제목</th><th>작성자</th><th>카테고리</th><th>신고횟수</th><th>처리</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td style="font-weight:600;">부적절한 광고 글</td><td>스패머1</td><td><span class="badge badge-gray">자유</span></td><td style="font-family:'DM Mono',monospace;color:#b91c1c;font-weight:600;">5</td><td><button class="btn btn-danger btn-sm" onclick="openPostProcessModal('부적절한 광고 글','스패머1','spammer@email.com','자유','5','광고/스팸 (3건)\n부적절한 내용 (2건)')">처리</button></td></tr>
+                <tr><td>2</td><td style="font-weight:600;">욕설 포함 게시글</td><td>악성유저</td><td><span class="badge badge-gray">정보공유</span></td><td style="font-family:'DM Mono',monospace;color:#b91c1c;font-weight:600;">3</td><td><button class="btn btn-danger btn-sm" onclick="openPostProcessModal('욕설 포함 게시글','악성유저','bad@email.com','정보공유','3','욕설/비방 (2건)\n혐오 표현 (1건)')">처리</button></td></tr>
+                <tr><td>3</td><td style="font-weight:600;">허위 활동 인증</td><td>가짜대원</td><td><span class="badge badge-gray">활동인증</span></td><td style="font-family:'DM Mono',monospace;color:#b91c1c;font-weight:600;">2</td><td><button class="btn btn-danger btn-sm" onclick="openPostProcessModal('허위 활동 인증','가짜대원','fake@email.com','활동인증','2','허위 정보 (2건)')">처리</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div style="display:flex; justify-content:center; gap:4px; margin-top:16px;">
+            <button class="page-btn active">1</button><button class="page-btn">2</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== A10: SETTINGS ===== -->
+      <div id="screen-settings" class="screen">
+        <h2 style="font-size:22px; font-weight:700; color:#0f172a; margin-bottom:20px;">⚙️ 관리자 설정</h2>
+        <!-- Tabs -->
+        <div style="border-bottom:1px solid #e2e8f0; margin-bottom:24px;">
+          <button class="tab-btn active" onclick="setSettingsTab(this,'points-policy')">포인트 정책</button>
+          <button class="tab-btn" onclick="setSettingsTab(this,'anti-abuse')">어뷰징 방지</button>
+          <button class="tab-btn" onclick="setSettingsTab(this,'general')">일반 설정</button>
+        </div>
+
+        <!-- Points policy -->
+        <div id="settings-points-policy">
+          <div class="card p-6" style="max-width:540px;">
+            <h3 style="font-size:15px; font-weight:700; color:#0f172a; margin-bottom:20px;">📌 포인트 정책 설정</h3>
+            <div style="margin-bottom:20px;">
+              <label>기본 포인트 지급률</label>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <span style="color:#64748b;font-size:13px;">1 km =</span>
+                <input type="number" value="100" style="width:100px;">
+                <span style="color:#64748b;font-size:13px;">pt</span>
+              </div>
+            </div>
+            <div style="margin-bottom:20px;">
+              <label>일일 포인트 상한</label>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <input type="number" value="1000" style="width:120px;">
+                <span style="color:#64748b;font-size:13px;">pt / 일</span>
+              </div>
+            </div>
+            <div style="margin-bottom:28px;">
+              <label>이벤트 보너스 배율</label>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <span style="color:#64748b;">x</span>
+                <input type="number" value="1.0" step="0.1" min="0.1" style="width:100px;">
+              </div>
+            </div>
+            <div style="display:flex;gap:10px;">
+              <button class="btn btn-primary" onclick="showToast('포인트 정책이 저장되었습니다.','success')">저장</button>
+              <button class="btn btn-secondary" onclick="showToast('기본값으로 초기화되었습니다.','')">초기화</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Anti abuse -->
+        <div id="settings-anti-abuse" style="display:none;">
+          <div class="card p-6" style="max-width:540px;">
+            <h3 style="font-size:15px; font-weight:700; color:#0f172a; margin-bottom:20px;">🚫 어뷰징 방지 설정</h3>
+            <div style="margin-bottom:18px;">
+              <label style="margin-bottom:12px;">속도 임계값 <span style="color:#94a3b8;font-size:12px;font-weight:400;">(초과 시 포인트 미지급)</span></label>
+              <div style="display:flex; flex-direction:column; gap:10px;">
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <label style="width:100px; margin:0; font-weight:500; color:#475569;">도보 상한</label>
+                  <input type="number" value="6" style="width:80px;">
+                  <span style="color:#64748b;font-size:13px;">km/h</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <label style="width:100px; margin:0; font-weight:500; color:#475569;">자전거 상한</label>
+                  <input type="number" value="25" style="width:80px;">
+                  <span style="color:#64748b;font-size:13px;">km/h</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <label style="width:100px; margin:0; font-weight:500; color:#475569;">차량 감지</label>
+                  <input type="number" value="40" style="width:80px;">
+                  <span style="color:#64748b;font-size:13px;">km/h</span>
+                </div>
+              </div>
+            </div>
+            <div style="margin-bottom:18px;">
+              <label>연속 경고 횟수</label>
+              <div style="display:flex; align-items:center; gap:10px;">
+                <input type="number" value="3" style="width:80px;">
+                <span style="color:#64748b;font-size:13px;">회</span>
+              </div>
+              <p style="font-size:12px; color:#94a3b8; margin-top:4px;">※ 초과 시 해당 순찰 포인트 전체 미지급</p>
+            </div>
+            <div style="margin-bottom:24px;">
+              <label style="margin-bottom:10px;">GPS 수집 간격</label>
+              <div style="display:flex; flex-direction:column; gap:8px;">
+                <label style="display:flex;align-items:center;gap:8px;margin:0;cursor:pointer;font-weight:500;"><input type="radio" name="gps-mode" value="dist"> 거리 기반: <input type="number" value="5" style="width:60px;display:inline-block;margin:0 4px;"> m 이동 시</label>
+                <label style="display:flex;align-items:center;gap:8px;margin:0;cursor:pointer;font-weight:500;"><input type="radio" name="gps-mode" value="time"> 시간 기반: <input type="number" value="10" style="width:60px;display:inline-block;margin:0 4px;"> 초 간격</label>
+                <label style="display:flex;align-items:center;gap:8px;margin:0;cursor:pointer;font-weight:500;"><input type="radio" name="gps-mode" value="mixed" checked> 혼합 (둘 중 먼저 충족 시)</label>
+              </div>
+            </div>
+            <div style="display:flex;gap:10px;">
+              <button class="btn btn-primary" onclick="showToast('어뷰징 방지 설정이 저장되었습니다.','success')">저장</button>
+              <button class="btn btn-secondary" onclick="showToast('기본값으로 초기화되었습니다.','')">초기화</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- General -->
+        <div id="settings-general" style="display:none;">
+          <div class="card p-6" style="max-width:540px;">
+            <h3 style="font-size:15px; font-weight:700; color:#0f172a; margin-bottom:20px;">🔧 일반 설정</h3>
+            <div style="margin-bottom:20px;">
+              <label>서비스 이름</label>
+              <input type="text" value="반려견순찰대">
+            </div>
+            <div style="margin-bottom:20px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:16px;">
+              <h4 style="font-size:13px; font-weight:700; color:#334155; margin-bottom:12px;">관리자 계정 관리</h4>
+              <p style="font-size:13px; color:#64748b; margin-bottom:10px;">이메일: admin@patrol.com</p>
+              <button class="btn btn-secondary btn-sm" onclick="showToast('비밀번호 변경 모달이 열립니다.','')">비밀번호 변경</button>
+            </div>
+            <div style="margin-bottom:20px;">
+              <label style="margin-bottom:10px;">게시판 카테고리 관리</label>
+              <div style="display:flex; flex-direction:column; gap:6px;">
+                <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-weight:500;margin:0;"><input type="checkbox" checked> 활동인증</label>
+                <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-weight:500;margin:0;"><input type="checkbox" checked> 정보공유</label>
+                <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-weight:500;margin:0;"><input type="checkbox" checked> 자유</label>
+              </div>
+              <button class="btn btn-secondary btn-sm" style="margin-top:10px;" onclick="showToast('카테고리 추가 입력 필드가 활성화됩니다.','')">+ 카테고리 추가</button>
+            </div>
+            <div style="margin-bottom:24px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:16px;">
+              <h4 style="font-size:13px; font-weight:700; color:#334155; margin-bottom:12px;">데이터 관리</h4>
+              <div style="display:flex; flex-direction:column; gap:8px;">
+                <button class="btn btn-secondary btn-sm" onclick="showToast('전체 데이터 CSV 파일이 다운로드됩니다.','success')">⬇ 전체 데이터 CSV 내보내기</button>
+                <button class="btn btn-danger btn-sm" onclick="showToast('비활성 계정 정리 확인 팝업이 표시됩니다.','error')" style="width:fit-content;">🗑 비활성 계정 정리 (6개월 미접속)</button>
+              </div>
+            </div>
+            <button class="btn btn-primary" onclick="showToast('설정이 저장되었습니다.','success')">저장</button>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+
+<!-- ===== MODALS ===== -->
+
+<!-- Member status confirm modal -->
+<div id="modal-member-status" class="modal-backdrop">
+  <div class="modal-box" style="width:380px; padding:28px;">
+    <h3 style="font-size:16px; font-weight:700; color:#0f172a; margin-bottom:16px;">대원 상태 변경</h3>
+    <p id="modal-member-msg" style="color:#475569; margin-bottom:24px; line-height:1.6;"></p>
+    <div style="display:flex; justify-content:flex-end; gap:10px;">
+      <button class="btn btn-secondary" onclick="closeModal('modal-member-status')">취소</button>
+      <button class="btn btn-primary" onclick="confirmMemberStatus()">확인</button>
+    </div>
+  </div>
+</div>
+
+<!-- Report side panel -->
+<div class="side-panel-backdrop" id="report-backdrop" onclick="closeReportPanel()"></div>
+<div class="side-panel" id="report-panel">
+  <div style="padding:20px; border-bottom:1px solid #f1f5f9; display:flex; align-items:center; justify-content:space-between;">
+    <h3 style="font-size:15px; font-weight:700; color:#0f172a;">신고 상세</h3>
+    <button onclick="closeReportPanel()" style="background:none;border:none;font-size:20px;cursor:pointer;color:#64748b;padding:4px;">✕</button>
+  </div>
+  <div style="padding:20px;">
+    <div style="margin-bottom:16px; background:#f8fafc; border-radius:10px; padding:14px;">
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+        <div><p style="font-size:11px;color:#94a3b8;font-weight:600;">신고 번호</p><p id="rp-id" style="font-family:'DM Mono',monospace;font-size:13px;font-weight:600;color:#0f172a;"></p></div>
+        <div><p style="font-size:11px;color:#94a3b8;font-weight:600;">접수일</p><p id="rp-date" style="font-size:13px;color:#334155;"></p></div>
+        <div><p style="font-size:11px;color:#94a3b8;font-weight:600;">신고자</p><p id="rp-user" style="font-size:13px;color:#334155;"></p></div>
+        <div><p style="font-size:11px;color:#94a3b8;font-weight:600;">카테고리</p><p id="rp-cat" style="font-size:13px;font-weight:600;color:#0f172a;"></p></div>
+      </div>
+    </div>
+    <div style="margin-bottom:16px;">
+      <label style="margin-bottom:6px;">상세 설명</label>
+      <div id="rp-desc" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px;font-size:13px;color:#334155;line-height:1.6;"></div>
+    </div>
+    <div style="margin-bottom:16px;">
+      <label style="margin-bottom:6px;">첨부 사진</label>
+      <div style="display:flex; gap:8px;">
+        <div style="width:70px;height:70px;background:linear-gradient(135deg,#f1f5f9,#e2e8f0);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;">📷</div>
+        <div style="width:70px;height:70px;background:linear-gradient(135deg,#f1f5f9,#e2e8f0);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;">📷</div>
+        <div style="width:70px;height:70px;background:linear-gradient(135deg,#f1f5f9,#e2e8f0);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;">📷</div>
+      </div>
+    </div>
+    <div style="margin-bottom:16px;">
+      <label style="margin-bottom:6px;">위치</label>
+      <div class="map-placeholder" style="height:130px;"><div style="position:relative;z-index:1;">📍 신고 위치</div></div>
+      <p id="rp-loc" style="font-size:12.5px;color:#64748b;margin-top:6px;"></p>
+    </div>
+    <div style="border-top:1px solid #f1f5f9; padding-top:16px; margin-bottom:14px;">
+      <label style="margin-bottom:6px;">처리 상태</label>
+      <select id="rp-status">
+        <option value="submitted">submitted</option>
+        <option value="in_progress">in_progress</option>
+        <option value="resolved">resolved</option>
+      </select>
+    </div>
+    <div style="margin-bottom:14px;">
+      <label style="margin-bottom:6px;">처리 메모</label>
+      <textarea id="rp-memo" rows="3" placeholder="관리자 메모를 입력하세요..." style="resize:vertical;"></textarea>
+    </div>
+    <div style="margin-bottom:16px;">
+      <label style="margin-bottom:6px;">처리 이력</label>
+      <div id="rp-history" style="font-size:12.5px; color:#64748b; line-height:1.8;"></div>
+    </div>
+    <button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="saveReport()">저장</button>
+  </div>
+</div>
+
+<!-- Event delete modal -->
+<div id="modal-event-delete" class="modal-backdrop">
+  <div class="modal-box" style="width:380px; padding:28px;">
+    <h3 style="font-size:16px; font-weight:700; color:#0f172a; margin-bottom:8px;">이벤트 삭제</h3>
+    <p id="event-delete-msg" style="color:#475569; margin-bottom:8px; line-height:1.6;"></p>
+    <p style="color:#b91c1c; font-size:13px; margin-bottom:24px;">삭제된 이벤트는 복구할 수 없습니다.</p>
+    <div style="display:flex; justify-content:flex-end; gap:10px;">
+      <button class="btn btn-secondary" onclick="closeModal('modal-event-delete')">취소</button>
+      <button class="btn btn-danger" onclick="deleteEvent()">삭제</button>
+    </div>
+  </div>
+</div>
+
+<!-- Points confirm modal -->
+<div id="modal-points-confirm" class="modal-backdrop">
+  <div class="modal-box" style="width:380px; padding:28px;">
+    <h3 id="pt-modal-title" style="font-size:16px; font-weight:700; color:#0f172a; margin-bottom:16px;">포인트 지급 확인</h3>
+    <div style="background:#f8fafc; border-radius:10px; padding:16px; margin-bottom:20px;">
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:13.5px;">
+        <div><span style="color:#94a3b8;">대상:</span> <span id="pt-conf-name" style="font-weight:600;"></span></div>
+        <div><span style="color:#94a3b8;">유형:</span> <span id="pt-conf-type" style="font-weight:600;"></span></div>
+        <div><span style="color:#94a3b8;">금액:</span> <span id="pt-conf-amount" style="font-weight:600;color:#1B5E20;"></span></div>
+        <div><span style="color:#94a3b8;">사유:</span> <span id="pt-conf-reason"></span></div>
+      </div>
+      <div style="border-top:1px solid #e2e8f0; margin-top:12px; padding-top:12px; font-size:13.5px;">
+        <span style="color:#94a3b8;">적용 후 포인트:</span> <span id="pt-conf-after" style="font-weight:700; color:#1B5E20;"></span>
+      </div>
+    </div>
+    <div style="display:flex; justify-content:flex-end; gap:10px;">
+      <button class="btn btn-secondary" onclick="closeModal('modal-points-confirm')">취소</button>
+      <button class="btn btn-primary" onclick="confirmPoints()">확인</button>
+    </div>
+  </div>
+</div>
+
+<!-- Push send modal -->
+<div id="modal-push" class="modal-backdrop">
+  <div class="modal-box" style="width:580px; padding:28px; max-height:90vh; overflow-y:auto;">
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;">
+      <h3 style="font-size:16px; font-weight:700; color:#0f172a;">새 알림 발송</h3>
+      <button onclick="closeModal('modal-push')" style="background:none;border:none;font-size:20px;cursor:pointer;color:#64748b;">✕</button>
+    </div>
+    <div style="margin-bottom:16px;">
+      <label style="margin-bottom:8px;">대상 선택 <span style="color:#b91c1c;">*</span></label>
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:500;margin:0;"><input type="radio" name="push-target" value="all" checked onchange="togglePushGroup(this)"> 전체 (all) — 모든 대원에게 발송</label>
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:500;margin:0;"><input type="radio" name="push-target" value="group" onchange="togglePushGroup(this)"> 특정 그룹 (group)</label>
+        <div id="push-group-opts" style="display:none; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:12px; margin-left:22px;">
+          <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13.5px;margin:0 0 6px;font-weight:400;"><input type="checkbox"> 이번 주 순찰 미참여 대원</label>
+          <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13.5px;margin:0 0 6px;font-weight:400;"><input type="checkbox"> 가입 후 첫 순찰 미완료 대원</label>
+          <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13.5px;margin:0;font-weight:400;"><input type="checkbox"> 포인트 1,000pt 이상 대원</label>
+        </div>
+      </div>
+    </div>
+    <div style="margin-bottom:16px;">
+      <label>알림 제목 <span style="color:#b91c1c;">*</span></label>
+      <input type="text" id="push-title" placeholder="알림 제목" maxlength="50" oninput="updatePushPreview()">
+    </div>
+    <div style="margin-bottom:16px;">
+      <label>알림 내용 <span style="color:#b91c1c;">*</span></label>
+      <textarea id="push-body" rows="3" placeholder="알림 내용 입력..." maxlength="200" oninput="updatePushPreview()" style="resize:vertical;"></textarea>
+    </div>
+    <div style="margin-bottom:16px;">
+      <label style="margin-bottom:8px;">미리보기</label>
+      <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:16px; text-align:center;">
+        <div class="notif-preview">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+            <span style="font-size:18px;">🐕</span>
+            <span style="font-size:12px;font-weight:700;color:#1B5E20;">순찰대</span>
+            <span style="font-size:11px;color:#94a3b8;margin-left:auto;">지금</span>
+          </div>
+          <p id="push-preview-title" style="font-size:13px;font-weight:700;color:#0f172a;margin-bottom:4px;">알림 제목이 여기 표시됩니다</p>
+          <p id="push-preview-body" style="font-size:12px;color:#475569;line-height:1.5;">알림 내용이 여기 표시됩니다.</p>
+        </div>
+      </div>
+    </div>
+    <div style="background:#dcfce7; border-radius:8px; padding:10px 14px; margin-bottom:20px; display:flex; align-items:center; gap:6px;">
+      <span style="font-size:13px; font-weight:600; color:#1B5E20;">발송 대상: 1,234명</span>
+    </div>
+    <div style="display:flex; justify-content:flex-end; gap:10px;">
+      <button class="btn btn-secondary" onclick="closeModal('modal-push')">취소</button>
+      <button class="btn btn-primary" onclick="openPushConfirmModal()">발송</button>
+    </div>
+  </div>
+</div>
+
+<!-- Push confirm modal -->
+<div id="modal-push-confirm" class="modal-backdrop">
+  <div class="modal-box" style="width:360px; padding:28px;">
+    <h3 style="font-size:16px; font-weight:700; color:#0f172a; margin-bottom:12px;">알림 발송 확인</h3>
+    <p style="color:#475569; margin-bottom:8px;">1,234명에게 알림을 발송합니다.</p>
+    <p style="color:#b91c1c; font-size:13px; margin-bottom:24px;">발송 후에는 취소할 수 없습니다.</p>
+    <div style="display:flex; justify-content:flex-end; gap:10px;">
+      <button class="btn btn-secondary" onclick="closeModal('modal-push-confirm')">취소</button>
+      <button class="btn btn-primary" onclick="sendPush()">발송</button>
+    </div>
+  </div>
+</div>
+
+<!-- Push detail modal -->
+<div id="modal-push-detail" class="modal-backdrop">
+  <div class="modal-box" style="width:420px; padding:28px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+      <h3 style="font-size:16px; font-weight:700; color:#0f172a;">발송 상세</h3>
+      <button onclick="closeModal('modal-push-detail')" style="background:none;border:none;font-size:20px;cursor:pointer;color:#64748b;">✕</button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:20px;">
+      <div><span style="font-size:12px;color:#94a3b8;font-weight:600;display:block;">제목</span><p id="pd-title" style="font-weight:700;color:#0f172a;font-size:14px;"></p></div>
+      <div><span style="font-size:12px;color:#94a3b8;font-weight:600;display:block;">내용</span><p id="pd-body" style="color:#334155;line-height:1.6;font-size:13.5px;"></p></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div><span style="font-size:12px;color:#94a3b8;font-weight:600;display:block;">대상</span><p id="pd-target" style="color:#334155;font-size:13.5px;"></p></div>
+        <div><span style="font-size:12px;color:#94a3b8;font-weight:600;display:block;">발송일시</span><p id="pd-date" style="font-family:'DM Mono',monospace;color:#334155;font-size:12.5px;"></p></div>
+        <div><span style="font-size:12px;color:#94a3b8;font-weight:600;display:block;">발송 수</span><p id="pd-count" style="font-family:'DM Mono',monospace;font-weight:700;color:#1B5E20;font-size:14px;"></p></div>
+      </div>
+    </div>
+    <div style="text-align:right;">
+      <button class="btn btn-secondary" onclick="closeModal('modal-push-detail')">닫기</button>
+    </div>
+  </div>
+</div>
+
+<!-- Video modal -->
+<div id="modal-video" class="modal-backdrop">
+  <div class="modal-box" style="width:460px; padding:28px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+      <h3 id="video-modal-title" style="font-size:16px; font-weight:700; color:#0f172a;">영상 등록</h3>
+      <button onclick="closeModal('modal-video')" style="background:none;border:none;font-size:20px;cursor:pointer;color:#64748b;">✕</button>
+    </div>
+    <div style="margin-bottom:16px;">
+      <label>제목 <span style="color:#b91c1c;">*</span></label>
+      <input type="text" id="vid-title" placeholder="영상 제목" maxlength="100">
+    </div>
+    <div style="margin-bottom:6px;">
+      <label>영상 URL <span style="color:#b91c1c;">*</span></label>
+      <input type="text" id="vid-url" placeholder="https://youtu.be/...">
+      <p style="font-size:12px; color:#94a3b8; margin-top:4px;">YouTube 또는 Vimeo URL을 입력하세요</p>
+    </div>
+    <div style="margin-bottom:20px;">
+      <label style="margin-bottom:8px;">카테고리 <span style="color:#b91c1c;">*</span></label>
+      <div style="display:flex; gap:20px;">
+        <label style="display:flex;align-items:center;gap:6px;margin:0;cursor:pointer;font-weight:500;"><input type="radio" name="vid-cat" value="교육" checked> 교육</label>
+        <label style="display:flex;align-items:center;gap:6px;margin:0;cursor:pointer;font-weight:500;"><input type="radio" name="vid-cat" value="홍보"> 홍보</label>
+      </div>
+    </div>
+    <div style="display:flex; justify-content:flex-end; gap:10px;">
+      <button class="btn btn-secondary" onclick="closeModal('modal-video')">취소</button>
+      <button class="btn btn-primary" onclick="saveVideo()">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- Post process modal -->
+<div id="modal-post-process" class="modal-backdrop">
+  <div class="modal-box" style="width:480px; padding:28px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+      <h3 style="font-size:16px; font-weight:700; color:#0f172a;">신고 게시글 처리</h3>
+      <button onclick="closeModal('modal-post-process')" style="background:none;border:none;font-size:20px;cursor:pointer;color:#64748b;">✕</button>
+    </div>
+    <div style="background:#f8fafc;border-radius:10px;padding:14px;margin-bottom:16px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:13.5px;">
+        <div><span style="color:#94a3b8;">제목:</span> <strong id="pp-title"></strong></div>
+        <div><span style="color:#94a3b8;">작성자:</span> <span id="pp-author"></span></div>
+        <div><span style="color:#94a3b8;">카테고리:</span> <span id="pp-cat"></span></div>
+        <div><span style="color:#94a3b8;">신고 횟수:</span> <strong id="pp-count" style="color:#b91c1c;"></strong></div>
+      </div>
+      <div style="margin-top:10px;padding-top:10px;border-top:1px solid #e2e8f0;">
+        <p style="font-size:12px;font-weight:600;color:#94a3b8;margin-bottom:4px;">신고 사유:</p>
+        <p id="pp-reasons" style="font-size:13px;color:#334155;white-space:pre-line;line-height:1.6;"></p>
+      </div>
+    </div>
+    <div style="margin-bottom:16px;">
+      <label style="margin-bottom:6px;">게시글 내용 (미리보기)</label>
+      <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px;font-size:13px;color:#64748b;">[게시글 본문 미리보기 영역]</div>
+    </div>
+    <div style="margin-bottom:20px;">
+      <label style="margin-bottom:8px;">처리 선택</label>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:500;margin:0;font-size:13.5px;"><input type="radio" name="pp-action" value="유지"> 유지 — 신고 기각</label>
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:500;margin:0;font-size:13.5px;"><input type="radio" name="pp-action" value="숨김" checked> 숨김 — 게시글 비공개 처리</label>
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:500;margin:0;font-size:13.5px;"><input type="radio" name="pp-action" value="삭제"> 삭제 — 게시글 영구 삭제</label>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:flex-end;gap:10px;">
+      <button class="btn btn-secondary" onclick="closeModal('modal-post-process')">취소</button>
+      <button class="btn btn-danger" onclick="processPost()">처리</button>
+    </div>
+  </div>
+</div>
+
+<!-- Report status confirm modal -->
+<div id="modal-report-status" class="modal-backdrop">
+  <div class="modal-backdrop-inner" style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;">
+    <div class="modal-box" style="width:420px; padding:28px;">
+      <h3 style="font-size:16px;font-weight:700;color:#0f172a;margin-bottom:12px;">신고 상태 변경</h3>
+      <p id="rs-msg" style="color:#475569;margin-bottom:12px;line-height:1.6;"></p>
+      <label style="display:flex;align-items:center;gap:8px;margin:0 0 20px;cursor:pointer;font-weight:500;font-size:13.5px;"><input type="checkbox" id="rs-notify"> 신고자에게 알림 발송</label>
+      <div style="display:flex;justify-content:flex-end;gap:10px;">
+        <button class="btn btn-secondary" onclick="closeModal('modal-report-status')">취소</button>
+        <button class="btn btn-primary" onclick="finalSaveReport()">확인</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+// ===== STATE =====
+let currentScreen = 'dashboard';
+let currentReportData = {};
+let pendingMemberStatus = null;
+let currentEventName = '';
+
+// ===== NAVIGATION =====
+function navigate(screen) {
+  // Hide all screens
+  document.querySelectorAll('#admin-shell .screen').forEach(s => s.classList.remove('active'));
+  const el = document.getElementById('screen-' + screen);
+  if (el) el.classList.add('active');
+
+  // Update sidebar
+  document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+  const link = document.querySelector(`.sidebar-link[data-screen="${screen}"]`);
+  if (link) link.classList.add('active');
+
+  currentScreen = screen;
+}
+
+// ===== AUTH =====
+function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const pw = document.getElementById('login-pw').value;
+  const errEmail = document.getElementById('err-email');
+  const errPw = document.getElementById('err-pw');
+  const loginErr = document.getElementById('login-error');
+
+  errEmail.style.display = 'none';
+  errPw.style.display = 'none';
+  loginErr.style.display = 'none';
+
+  let valid = true;
+  if (!email) { errEmail.style.display = 'block'; valid = false; }
+  if (!pw) { errPw.style.display = 'block'; valid = false; }
+  if (!valid) return;
+
+  if (email !== 'admin@patrol.co' && !email.includes('admin')) {
+    loginErr.textContent = '등록되지 않은 이메일입니다.';
+    loginErr.style.display = 'block';
+    return;
+  }
+  if (pw.length < 4) {
+    loginErr.textContent = '비밀번호가 일치하지 않습니다.';
+    loginErr.style.display = 'block';
+    return;
+  }
+
+  // Success
+  document.getElementById('screen-login').style.display = 'none';
+  const shell = document.getElementById('admin-shell');
+  shell.style.display = 'flex';
+  navigate('dashboard');
+}
+
+function doLogout() {
+  document.getElementById('admin-shell').style.display = 'none';
+  document.getElementById('screen-login').style.display = 'flex';
+  document.getElementById('screen-login').style.flexDirection = 'column';
+  document.getElementById('screen-login').style.alignItems = 'center';
+  document.getElementById('screen-login').style.justifyContent = 'center';
+  document.getElementById('login-pw').value = '';
+  document.getElementById('login-error').style.display = 'none';
+  closeAdminDropdown();
+}
+
+// ===== ADMIN DROPDOWN =====
+function toggleAdminDropdown() {
+  document.getElementById('admin-dropdown').classList.toggle('open');
+}
+function closeAdminDropdown() {
+  document.getElementById('admin-dropdown').classList.remove('open');
+}
+document.addEventListener('click', function(e) {
+  if (!document.getElementById('admin-dropdown-wrap').contains(e.target)) {
+    closeAdminDropdown();
+  }
+});
+
+// ===== MODAL HELPERS =====
+function openModal(id) {
+  document.getElementById(id).classList.add('open');
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+
+// ===== TOAST =====
+let toastTimer = null;
+function showToast(msg, type = 'success') {
+  const t = document.getElementById('toast');
+  t.textContent = (type === 'success' ? '✓ ' : type === 'error' ? '✕ ' : 'ℹ ') + msg;
+  t.className = 'toast show ' + type;
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { t.className = 'toast'; }, 3000);
+}
+
+// ===== MEMBERS =====
+function showMemberList() {
+  document.getElementById('member-list-view').style.display = 'block';
+  document.getElementById('member-detail-view').style.display = 'none';
+}
+
+function showMemberDetail(name, email, phone, join, patrols, dist, points, status) {
+  document.getElementById('member-list-view').style.display = 'none';
+  document.getElementById('member-detail-view').style.display = 'block';
+  document.getElementById('d-name').textContent = name;
+  document.getElementById('d-email').textContent = email;
+  document.getElementById('d-phone').textContent = phone;
+  document.getElementById('d-join').textContent = join;
+  document.getElementById('d-patrol').textContent = patrols + '회 | ' + dist + 'km';
+  document.getElementById('d-points').textContent = points + 'pt';
+  const sel = document.getElementById('d-status');
+  for (let opt of sel.options) { if (opt.value === status || opt.text === status) sel.value = opt.value; }
+  pendingMemberStatus = { name, currentStatus: status };
+}
+
+function saveMemberStatus() {
+  const newStatus = document.getElementById('d-status').value;
+  const msg = `${pendingMemberStatus.name} 대원의 상태를 "${pendingMemberStatus.currentStatus}" → "${newStatus}"로 변경하시겠습니까?`;
+  document.getElementById('modal-member-msg').textContent = msg;
+  pendingMemberStatus.newStatus = newStatus;
+  openModal('modal-member-status');
+}
+
+function confirmMemberStatus() {
+  closeModal('modal-member-status');
+  showToast('대원 상태가 변경되었습니다.', 'success');
+}
+
+// ===== REPORTS =====
+function setReportTab(btn, tab) {
+  document.querySelectorAll('.status-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function openReportPanel(id, date, user, email, cat, desc, loc, status) {
+  currentReportData = { id, date, user, email, cat, desc, loc, status };
+  document.getElementById('rp-id').textContent = id;
+  document.getElementById('rp-date').textContent = date;
+  document.getElementById('rp-user').textContent = user + ' (' + email + ')';
+  document.getElementById('rp-cat').textContent = cat;
+  document.getElementById('rp-desc').textContent = desc;
+  document.getElementById('rp-loc').textContent = loc;
+  document.getElementById('rp-status').value = status;
+  document.getElementById('rp-memo').value = '';
+  const histMap = {
+    'submitted': '● submitted  ' + date,
+    'in_progress': '● submitted  ' + date + '\n● in_progress  ' + date.replace('10','11'),
+    'resolved': '● submitted  2026-03-06\n● in_progress  2026-03-06\n● resolved  ' + date
+  };
+  document.getElementById('rp-history').style.whiteSpace = 'pre-line';
+  document.getElementById('rp-history').textContent = histMap[status] || '● ' + status + '  ' + date;
+  document.getElementById('report-panel').classList.add('open');
+  document.getElementById('report-backdrop').classList.add('open');
+}
+
+function closeReportPanel() {
+  document.getElementById('report-panel').classList.remove('open');
+  document.getElementById('report-backdrop').classList.remove('open');
+}
+
+function saveReport() {
+  const newStatus = document.getElementById('rp-status').value;
+  const msg = `${currentReportData.id} 건의 상태를 "${currentReportData.status}" → "${newStatus}"로 변경하시겠습니까?`;
+  document.getElementById('rs-msg').textContent = msg;
+  openModal('modal-report-status');
+}
+
+function finalSaveReport() {
+  closeModal('modal-report-status');
+  showToast('신고 상태가 업데이트되었습니다.', 'success');
+  closeReportPanel();
+}
+
+// ===== EVENTS =====
+function showEventList() {
+  document.getElementById('event-list-view').style.display = 'block';
+  document.getElementById('event-form-view').style.display = 'none';
+}
+
+function showEventForm(data) {
+  document.getElementById('event-list-view').style.display = 'none';
+  document.getElementById('event-form-view').style.display = 'block';
+  if (data) {
+    document.getElementById('event-form-title').textContent = '이벤트 수정';
+    document.getElementById('ev-title').value = data.title;
+    document.getElementById('ev-desc').value = data.desc;
+    document.getElementById('ev-start').value = data.start;
+    document.getElementById('ev-end').value = data.end;
+    document.getElementById('ev-mult').value = data.mult;
+  } else {
+    document.getElementById('event-form-title').textContent = '이벤트 등록';
+    document.getElementById('ev-title').value = '';
+    document.getElementById('ev-desc').value = '';
+    document.getElementById('ev-start').value = '';
+    document.getElementById('ev-end').value = '';
+    document.getElementById('ev-mult').value = '1.0';
+  }
+}
+
+function saveEvent() {
+  const title = document.getElementById('ev-title').value.trim();
+  const start = document.getElementById('ev-start').value;
+  const end = document.getElementById('ev-end').value;
+  if (!title || !start || !end) { showToast('필수 항목을 입력해주세요.', 'error'); return; }
+  if (end < start) { showToast('종료일은 시작일 이후여야 합니다.', 'error'); return; }
+  showToast('이벤트가 저장되었습니다.', 'success');
+  showEventList();
+}
+
+function openEventDeleteModal(name) {
+  currentEventName = name;
+  document.getElementById('event-delete-msg').textContent = `"${name}"을 삭제하시겠습니까?`;
+  openModal('modal-event-delete');
+}
+
+function deleteEvent() {
+  closeModal('modal-event-delete');
+  showToast(`"${currentEventName}"이 삭제되었습니다.`, 'success');
+}
+
+// ===== POINTS =====
+function handlePointSearch(val) {
+  const ac = document.getElementById('pt-autocomplete');
+  ac.style.display = val.length >= 2 ? 'block' : 'none';
+}
+
+function selectPointUser(name, email, points) {
+  document.getElementById('pt-search').value = name + ' (' + email + ')';
+  document.getElementById('pt-autocomplete').style.display = 'none';
+  document.getElementById('pt-user-card').style.display = 'block';
+  document.getElementById('pt-name').textContent = name;
+  document.getElementById('pt-email').textContent = email;
+  document.getElementById('pt-cur').textContent = points + ' pt';
+  window._ptUser = { name, email, points: parseInt(points.replace(',','')) };
+}
+
+function applyPoints() {
+  if (!window._ptUser) { showToast('대상을 선택해주세요.', 'error'); return; }
+  const amount = parseInt(document.getElementById('pt-amount').value);
+  const reason = document.getElementById('pt-reason').value.trim();
+  const type = document.querySelector('input[name="pt-type"]:checked').value;
+  if (!amount || amount <= 0) { showToast('금액을 입력해주세요.', 'error'); return; }
+  if (!reason) { showToast('사유를 입력해주세요.', 'error'); return; }
+
+  const cur = window._ptUser.points;
+  const after = type === '지급' ? cur + amount : cur - amount;
+  document.getElementById('pt-modal-title').textContent = '포인트 ' + type + ' 확인';
+  document.getElementById('pt-conf-name').textContent = window._ptUser.name;
+  document.getElementById('pt-conf-type').textContent = type;
+  document.getElementById('pt-conf-amount').textContent = (type === '지급' ? '+' : '-') + amount.toLocaleString() + ' pt';
+  document.getElementById('pt-conf-reason').textContent = reason;
+  document.getElementById('pt-conf-after').textContent = cur.toLocaleString() + ' → ' + after.toLocaleString() + 'pt';
+  openModal('modal-points-confirm');
+}
+
+function confirmPoints() {
+  closeModal('modal-points-confirm');
+  showToast('포인트가 적용되었습니다.', 'success');
+  document.getElementById('pt-amount').value = '';
+  document.getElementById('pt-reason').value = '';
+}
+
+// ===== PUSH =====
+function openPushModal() {
+  document.getElementById('push-title').value = '';
+  document.getElementById('push-body').value = '';
+  updatePushPreview();
+  openModal('modal-push');
+}
+
+function togglePushGroup(radio) {
+  document.getElementById('push-group-opts').style.display = radio.value === 'group' ? 'block' : 'none';
+}
+
+function updatePushPreview() {
+  const t = document.getElementById('push-title').value || '알림 제목이 여기 표시됩니다';
+  const b = document.getElementById('push-body').value || '알림 내용이 여기 표시됩니다.';
+  document.getElementById('push-preview-title').textContent = t;
+  document.getElementById('push-preview-body').textContent = b;
+}
+
+function openPushConfirmModal() {
+  const t = document.getElementById('push-title').value.trim();
+  const b = document.getElementById('push-body').value.trim();
+  if (!t || !b) { showToast('제목과 내용을 입력해주세요.', 'error'); return; }
+  closeModal('modal-push');
+  openModal('modal-push-confirm');
+}
+
+function sendPush() {
+  closeModal('modal-push-confirm');
+  showToast('알림이 발송되었습니다.', 'success');
+}
+
+function openPushDetailModal(title, body, target, date, count) {
+  document.getElementById('pd-title').textContent = title;
+  document.getElementById('pd-body').textContent = body;
+  document.getElementById('pd-target').textContent = target;
+  document.getElementById('pd-date').textContent = date;
+  document.getElementById('pd-count').textContent = count + '명';
+  openModal('modal-push-detail');
+}
+
+// ===== STATISTICS =====
+function setPeriod(btn) {
+  document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// ===== CONTENT =====
+function setContentTab(btn, tab) {
+  document.querySelectorAll('#screen-content .tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('content-video').style.display = tab === 'video' ? 'block' : 'none';
+  document.getElementById('content-board').style.display = tab === 'board' ? 'block' : 'none';
+}
+
+function openVideoModal(data) {
+  document.getElementById('video-modal-title').textContent = data ? '영상 수정' : '영상 등록';
+  document.getElementById('vid-title').value = data ? data.title : '';
+  document.getElementById('vid-url').value = data ? data.url : '';
+  const cats = document.querySelectorAll('input[name="vid-cat"]');
+  cats.forEach(r => r.checked = (r.value === (data ? data.cat : '교육')));
+  openModal('modal-video');
+}
+
+function saveVideo() {
+  const t = document.getElementById('vid-title').value.trim();
+  const u = document.getElementById('vid-url').value.trim();
+  if (!t || !u) { showToast('필수 항목을 입력해주세요.', 'error'); return; }
+  closeModal('modal-video');
+  showToast('영상이 저장되었습니다.', 'success');
+}
+
+function confirmDeleteVideo(title) {
+  if (confirm(`"${title}"을 삭제하시겠습니까?`)) {
+    showToast(`"${title}"이 삭제되었습니다.`, 'success');
+  }
+}
+
+function openPostProcessModal(title, author, email, cat, count, reasons) {
+  document.getElementById('pp-title').textContent = title;
+  document.getElementById('pp-author').textContent = author + ' (' + email + ')';
+  document.getElementById('pp-cat').textContent = cat;
+  document.getElementById('pp-count').textContent = count + '회';
+  document.getElementById('pp-reasons').textContent = reasons;
+  openModal('modal-post-process');
+}
+
+function processPost() {
+  const action = document.querySelector('input[name="pp-action"]:checked').value;
+  closeModal('modal-post-process');
+  showToast(`게시글이 "${action}" 처리되었습니다.`, 'success');
+}
+
+// ===== SETTINGS =====
+function setSettingsTab(btn, tab) {
+  document.querySelectorAll('#screen-settings .tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('settings-points-policy').style.display = tab === 'points-policy' ? 'block' : 'none';
+  document.getElementById('settings-anti-abuse').style.display = tab === 'anti-abuse' ? 'block' : 'none';
+  document.getElementById('settings-general').style.display = tab === 'general' ? 'block' : 'none';
+}
+
+// ===== INIT =====
+// Show login by default (already done by class "active" on screen-login)
+// The admin shell starts hidden
+</script>
+</body>
+</html>
