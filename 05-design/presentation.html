@@ -1250,77 +1250,83 @@
 </div>
 
 <!-- ─────────────────────────────────────────────────────────── -->
-<!-- SLIDE 17 · GPS 백그라운드 전략                                -->
+<!-- SLIDE 17 · GPS 백그라운드 전략 (강화)                          -->
 <!-- ─────────────────────────────────────────────────────────── -->
 <div class="slide" id="s17">
   <div class="slide-inner" style="background:#f8fdf8;">
-    <div class="flex items-center px-14 pt-10 pb-0 shrink-0">
+    <div class="flex items-center px-14 pt-8 pb-0 shrink-0">
       <div class="section-pill" style="background:#dcfce7;color:#166534;border:1px solid #bbf7d0">SECTION 4 · 기술 스택</div>
     </div>
-    <div class="flex flex-col flex-1 px-14 pb-10">
-      <h2 class="font-black mt-5 mb-7" style="font-size:clamp(1.5rem,2.8vw,2.2rem);color:#1B5E20;">
+    <div class="flex flex-col flex-1 px-14 pb-8">
+      <h2 class="font-black mt-4 mb-5" style="font-size:clamp(1.4rem,2.6vw,2rem);color:#1B5E20;">
         <span class="heading-line">GPS 백그라운드 트래킹 전략</span>
       </h2>
-      <div class="grid grid-cols-2 gap-5">
+      <div class="grid grid-cols-2 gap-4">
         <!-- iOS -->
-        <div class="rounded-2xl p-6" style="background:#fff;border:1.5px solid #bbf7d0;box-shadow:0 4px 20px #1B5E2010;">
-          <div class="flex items-center gap-2 mb-4">
+        <div class="rounded-2xl p-5" style="background:#fff;border:1.5px solid #bbf7d0;box-shadow:0 4px 20px #1B5E2010;">
+          <div class="flex items-center gap-2 mb-3">
             <span class="text-2xl"></span>
-            <span class="font-bold text-base" style="color:#1B5E20">iOS — Background Modes</span>
+            <span class="font-bold text-sm" style="color:#1B5E20">iOS — Background Modes + CLLocationManager</span>
           </div>
-          <div class="space-y-3">
-            <div class="rounded-lg p-3" style="background:#f0fdf0;border:1px solid #bbf7d0;">
-              <div class="text-xs font-bold mb-1" style="color:#166534">Background Modes 활성화</div>
-              <div class="text-xs text-gray-600">"Location updates" 체크 필수</div>
+          <div class="space-y-2">
+            <div class="rounded-lg p-2.5" style="background:#f0fdf0;border:1px solid #bbf7d0;">
+              <div class="text-xs font-bold mb-0.5" style="color:#166534">핵심 설정</div>
+              <div class="text-xs font-mono text-gray-600">pausesLocationUpdatesAutomatically = false</div>
+              <div class="text-xs text-gray-500 mt-0.5">→ true면 iOS가 임의로 수집 중단 (가장 흔한 이슈)</div>
             </div>
-            <div class="rounded-lg p-3" style="background:#f0fdf0;border:1px solid #bbf7d0;">
-              <div class="text-xs font-bold mb-1" style="color:#166534">CLLocationManager 설정</div>
-              <div class="text-xs font-mono text-gray-600">allowsBackgroundLocationUpdates = true</div>
+            <div class="rounded-lg p-2.5" style="background:#f0fdf0;border:1px solid #bbf7d0;">
+              <div class="text-xs font-bold mb-0.5" style="color:#166534">OS 강제 종료 대응</div>
+              <div class="text-xs text-gray-600">significantLocationChange로 앱 재시작 트리거 → 트래킹 자동 복원</div>
             </div>
-            <div class="rounded-lg p-3" style="background:#f0fdf0;border:1px solid #bbf7d0;">
-              <div class="text-xs font-bold mb-1" style="color:#166534">절전 모드 옵션</div>
-              <div class="text-xs text-gray-600">significant-change API — 배터리 절약형 (정확도 낮음)</div>
+            <div class="rounded-lg p-2.5" style="background:#f0fdf0;border:1px solid #bbf7d0;">
+              <div class="text-xs font-bold mb-0.5" style="color:#166534">App Store 심사 전략</div>
+              <div class="text-xs text-gray-600">showsBackgroundLocationIndicator = true (파란 바 표시) + 명확한 사유 설명</div>
             </div>
           </div>
         </div>
         <!-- Android -->
-        <div class="rounded-2xl p-6" style="background:#fff;border:1.5px solid #bbf7d0;box-shadow:0 4px 20px #1B5E2010;">
-          <div class="flex items-center gap-2 mb-4">
+        <div class="rounded-2xl p-5" style="background:#fff;border:1.5px solid #bbf7d0;box-shadow:0 4px 20px #1B5E2010;">
+          <div class="flex items-center gap-2 mb-3">
             <span class="text-2xl">🤖</span>
-            <span class="font-bold text-base" style="color:#1B5E20">Android — Foreground Service</span>
+            <span class="font-bold text-sm" style="color:#1B5E20">Android — Foreground Service</span>
           </div>
-          <div class="space-y-3">
-            <div class="rounded-lg p-3" style="background:#f0fdf0;border:1px solid #bbf7d0;">
-              <div class="text-xs font-bold mb-1" style="color:#166534">Foreground Service 필수</div>
-              <div class="text-xs text-gray-600">상태 표시줄 알림 (Notification) 필수 표시</div>
+          <div class="space-y-2">
+            <div class="rounded-lg p-2.5" style="background:#f0fdf0;border:1px solid #bbf7d0;">
+              <div class="text-xs font-bold mb-0.5" style="color:#166534">핵심 메커니즘</div>
+              <div class="text-xs text-gray-600">startForeground() → 상단 알림 상시 표시 → OS가 앱을 "사용 중"으로 분류 → 강제 종료 방지</div>
             </div>
-            <div class="rounded-lg p-3" style="background:#f0fdf0;border:1px solid #bbf7d0;">
-              <div class="text-xs font-bold mb-1" style="color:#166534">Android 14+ 권한</div>
-              <div class="text-xs font-mono text-gray-600">FOREGROUND_SERVICE_LOCATION</div>
+            <div class="rounded-lg p-2.5" style="background:#f0fdf0;border:1px solid #bbf7d0;">
+              <div class="text-xs font-bold mb-0.5" style="color:#166534">버전별 대응</div>
+              <div class="text-xs text-gray-600">Android 10+: ACCESS_BACKGROUND_LOCATION<br>Android 12+: foregroundServiceType="location"<br>Android 14+: 정확한 위치 권한 UX</div>
             </div>
-            <div class="rounded-lg p-3" style="background:#f0fdf0;border:1px solid #bbf7d0;">
-              <div class="text-xs font-bold mb-1" style="color:#166534">Doze 모드 대응</div>
-              <div class="text-xs text-gray-600">배터리 최적화 예외 등록 권장</div>
+            <div class="rounded-lg p-2.5" style="background:#f0fdf0;border:1px solid #bbf7d0;">
+              <div class="text-xs font-bold mb-0.5" style="color:#166534">확장형 알림 UX</div>
+              <div class="text-xs text-gray-600">거리/시간/속도 실시간 표시 + [일시정지][종료] 액션 버튼</div>
             </div>
           </div>
         </div>
         <!-- 공통 전략 -->
-        <div class="col-span-2 rounded-2xl p-6" style="background:#1B5E20;">
-          <div class="grid grid-cols-3 gap-6">
+        <div class="col-span-2 rounded-2xl p-5" style="background:#1B5E20;">
+          <div class="grid grid-cols-4 gap-5">
             <div>
-              <div class="text-xl mb-2">⏱️</div>
-              <div class="font-bold text-white text-sm mb-1">수집 간격</div>
-              <div class="text-xs" style="color:#86efac">5~10m 이동 시 <em>또는</em> 10초 간격<br>(배터리 vs 정확도 트레이드오프)</div>
+              <div class="text-lg mb-1">⏱️</div>
+              <div class="font-bold text-white text-xs mb-1">수집 간격</div>
+              <div class="text-xs" style="color:#86efac">5m 이동 or 10초 간격<br>(먼저 충족 시 수집)</div>
             </div>
             <div>
-              <div class="text-xl mb-2">💾</div>
-              <div class="font-bold text-white text-sm mb-1">로컬 버퍼링</div>
-              <div class="text-xs" style="color:#86efac">네트워크 불안정 시 로컬 유지<br>→ 복구 시 배치 전송 (배터리 최적화)</div>
+              <div class="text-lg mb-1">💾</div>
+              <div class="font-bold text-white text-xs mb-1">로컬 버퍼링</div>
+              <div class="text-xs" style="color:#86efac">Room/CoreData 로컬 저장<br>→ 30초~1분 배치 전송</div>
             </div>
             <div>
-              <div class="text-xl mb-2">🔍</div>
-              <div class="font-bold text-white text-sm mb-1">GPS 손실 대응</div>
-              <div class="text-xs" style="color:#86efac">실내/지하 진입 시 마지막 유효 좌표 유지<br>복구 시 자동 이어서 기록</div>
+              <div class="text-lg mb-1">🔋</div>
+              <div class="font-bold text-white text-xs mb-1">배터리 예상</div>
+              <div class="text-xs" style="color:#86efac">1시간 순찰 기준<br>약 8~12% 소모</div>
+            </div>
+            <div>
+              <div class="text-lg mb-1">🚫</div>
+              <div class="font-bold text-white text-xs mb-1">어뷰징 방지</div>
+              <div class="text-xs" style="color:#86efac">도보 ≤6km/h, 자전거 ≤25km/h<br>차량 ≥40km/h → 포인트 미지급</div>
             </div>
           </div>
         </div>
@@ -1330,9 +1336,164 @@
 </div>
 
 <!-- ─────────────────────────────────────────────────────────── -->
-<!-- SLIDE 18 · 개발 범위 요약                                     -->
+<!-- SLIDE 18 · iOS Live Activity + Dynamic Island                -->
 <!-- ─────────────────────────────────────────────────────────── -->
 <div class="slide" id="s18">
+  <div class="slide-inner" style="background:linear-gradient(145deg,#0a2610,#1B5E20 60%,#0f3d18);">
+    <div class="paw-bg" aria-hidden="true" style="opacity:.04">
+      <span style="position:absolute;top:8%;right:10%">🐾</span>
+      <span style="position:absolute;bottom:15%;left:6%">🐾</span>
+    </div>
+    <div class="flex items-center px-14 pt-8 pb-0 shrink-0">
+      <div class="section-pill" style="background:rgba(74,222,128,.15);color:#86efac;border:1px solid rgba(74,222,128,.3)">SECTION 4 · 기술 스택</div>
+    </div>
+    <div class="flex flex-col flex-1 px-14 pb-8">
+      <h2 class="font-black text-white mt-4 mb-6" style="font-size:clamp(1.4rem,2.6vw,2rem);">
+        <span class="heading-line">iOS Live Activity &amp; Dynamic Island</span>
+      </h2>
+      <div class="grid grid-cols-2 gap-5">
+        <!-- Dynamic Island 시뮬레이션 -->
+        <div class="flex flex-col items-center gap-4">
+          <!-- 축소 상태 -->
+          <div>
+            <div class="text-xs font-bold mb-2" style="color:#86efac">Dynamic Island — 축소 상태</div>
+            <div class="rounded-full px-5 py-2 flex items-center gap-3" style="background:#000;min-width:260px;">
+              <span class="text-sm">🐕</span>
+              <span class="text-xs font-bold text-white">2.3km</span>
+              <span class="text-xs" style="color:#86efac">⏱ 00:32:15</span>
+              <span class="ml-auto w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+            </div>
+          </div>
+          <!-- 확장 상태 -->
+          <div>
+            <div class="text-xs font-bold mb-2" style="color:#86efac">Dynamic Island — 확장 상태 (길게 누르기)</div>
+            <div class="rounded-3xl p-5" style="background:#000;min-width:300px;">
+              <div class="flex items-center justify-between mb-3">
+                <span class="text-sm font-bold text-white">🐕 순찰 중</span>
+                <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+              </div>
+              <div class="grid grid-cols-2 gap-3 mb-3">
+                <div class="text-center rounded-xl py-2" style="background:#1a1a1a">
+                  <div class="text-lg font-black" style="color:#4ade80">2.3 km</div>
+                  <div class="text-xs text-gray-500">거리</div>
+                </div>
+                <div class="text-center rounded-xl py-2" style="background:#1a1a1a">
+                  <div class="text-lg font-black text-white">00:32:15</div>
+                  <div class="text-xs text-gray-500">시간</div>
+                </div>
+              </div>
+              <div class="grid grid-cols-2 gap-3 mb-3">
+                <div class="text-center rounded-xl py-2" style="background:#1a1a1a">
+                  <div class="text-sm font-bold text-white">⚡ 4.3 km/h</div>
+                  <div class="text-xs text-gray-500">속도</div>
+                </div>
+                <div class="text-center rounded-xl py-2" style="background:#1a1a1a">
+                  <div class="text-sm font-bold text-white">📍 3건</div>
+                  <div class="text-xs text-gray-500">마킹</div>
+                </div>
+              </div>
+              <div class="flex gap-2">
+                <button class="flex-1 rounded-xl py-2 text-xs font-bold" style="background:#333;color:#fbbf24">⏸ 일시정지</button>
+                <button class="flex-1 rounded-xl py-2 text-xs font-bold" style="background:#7f1d1d;color:#fca5a5">⏹ 종료</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- 잠금 화면 + 설명 -->
+        <div class="flex flex-col gap-4">
+          <!-- 잠금 화면 위젯 -->
+          <div>
+            <div class="text-xs font-bold mb-2" style="color:#86efac">잠금 화면 위젯 (모든 iOS 16.1+ 기기)</div>
+            <div class="rounded-2xl p-4" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);backdrop-filter:blur(10px);">
+              <div class="flex items-center gap-2 mb-3">
+                <span>🐕</span>
+                <span class="text-xs font-bold text-white">반려견순찰대 — 순찰 진행 중</span>
+              </div>
+              <div class="grid grid-cols-3 gap-2 mb-3">
+                <div class="text-center">
+                  <div class="text-base font-black" style="color:#4ade80">2.3 km</div>
+                  <div class="text-xs" style="color:rgba(255,255,255,.5)">거리</div>
+                </div>
+                <div class="text-center">
+                  <div class="text-base font-black text-white">00:32:15</div>
+                  <div class="text-xs" style="color:rgba(255,255,255,.5)">시간</div>
+                </div>
+                <div class="text-center">
+                  <div class="text-base font-black text-white">4.3</div>
+                  <div class="text-xs" style="color:rgba(255,255,255,.5)">km/h</div>
+                </div>
+              </div>
+              <div class="flex gap-3 text-xs" style="color:rgba(255,255,255,.6)">
+                <span>📍 마킹 3건</span>
+                <span>🚨 신고 1건</span>
+              </div>
+              <div class="mt-2 h-1 rounded-full" style="background:rgba(255,255,255,.1)">
+                <div class="h-full rounded-full" style="background:#4ade80;width:65%"></div>
+              </div>
+            </div>
+          </div>
+          <!-- 장점 목록 -->
+          <div class="space-y-2">
+            <div class="flex items-start gap-2">
+              <span class="text-xs mt-0.5" style="color:#4ade80">✓</span>
+              <div class="text-xs text-white"><strong>앱 미열어도 상태 확인</strong> — 잠금 화면에서 거리/시간 즉시 확인</div>
+            </div>
+            <div class="flex items-start gap-2">
+              <span class="text-xs mt-0.5" style="color:#4ade80">✓</span>
+              <div class="text-xs text-white"><strong>프리미엄 UX</strong> — Dynamic Island 활용 (iPhone 14 Pro+)</div>
+            </div>
+            <div class="flex items-start gap-2">
+              <span class="text-xs mt-0.5" style="color:#4ade80">✓</span>
+              <div class="text-xs text-white"><strong>잠금 화면에서 제어</strong> — 일시정지/종료 바로 가능</div>
+            </div>
+            <div class="flex items-start gap-2">
+              <span class="text-xs mt-0.5" style="color:#4ade80">✓</span>
+              <div class="text-xs text-white"><strong>App Store 심사 유리</strong> — 백그라운드 위치 사용의 명확한 가치 증명</div>
+            </div>
+            <div class="flex items-start gap-2">
+              <span class="text-xs mt-0.5" style="color:#fbbf24">⚠</span>
+              <div class="text-xs" style="color:rgba(255,255,255,.7)">iOS 16.1+ 전용 (이전 버전은 기존 알림 폴백) / 8시간 제한</div>
+            </div>
+          </div>
+        </div>
+        <!-- 아키텍처 다이어그램 -->
+        <div class="col-span-2 rounded-2xl p-4" style="background:rgba(255,255,255,.06);border:1px solid rgba(74,222,128,.2);">
+          <div class="text-xs font-bold mb-3" style="color:#86efac">데이터 흐름: GPS → Live Activity</div>
+          <div class="flex items-center justify-center gap-2 text-xs">
+            <div class="rounded-lg px-3 py-2 text-center" style="background:rgba(74,222,128,.15);border:1px solid rgba(74,222,128,.3)">
+              <div style="color:#4ade80" class="font-bold">GPS 센서</div>
+            </div>
+            <span style="color:#4ade80">→</span>
+            <div class="rounded-lg px-3 py-2 text-center" style="background:rgba(74,222,128,.15);border:1px solid rgba(74,222,128,.3)">
+              <div style="color:#4ade80" class="font-bold">CLLocationManager</div>
+              <div style="color:rgba(255,255,255,.4)">백그라운드 수집</div>
+            </div>
+            <span style="color:#4ade80">→</span>
+            <div class="rounded-lg px-3 py-2 text-center" style="background:rgba(74,222,128,.15);border:1px solid rgba(74,222,128,.3)">
+              <div style="color:#4ade80" class="font-bold">거리/속도 계산</div>
+              <div style="color:rgba(255,255,255,.4)">어뷰징 검증</div>
+            </div>
+            <span style="color:#4ade80">→</span>
+            <div class="rounded-lg px-3 py-2 text-center" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2)">
+              <div class="text-white font-bold">로컬 DB 저장</div>
+              <div style="color:rgba(255,255,255,.4)">Room / CoreData</div>
+            </div>
+            <span style="color:#4ade80">→</span>
+            <div class="rounded-lg px-3 py-2 text-center" style="background:rgba(74,222,128,.25);border:1px solid rgba(74,222,128,.5)">
+              <div style="color:#4ade80" class="font-bold">ActivityKit.update()</div>
+              <div style="color:rgba(255,255,255,.4)">Live Activity 갱신</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─────────────────────────────────────────────────────────── -->
+<!-- SLIDE 19 · 개발 범위 요약                                     -->
+<!-- ─────────────────────────────────────────────────────────── -->
+<div class="slide" id="s19">
   <div class="slide-inner" style="background:linear-gradient(145deg,#0a2610,#1B5E20 60%,#0f3d18);">
     <div class="paw-bg" aria-hidden="true">
       <span style="position:absolute;top:8%;right:8%">🐾</span>
@@ -1429,9 +1590,9 @@
 </div>
 
 <!-- ─────────────────────────────────────────────────────────── -->
-<!-- SLIDE 19 · 최종 추천 기술 스택                                -->
+<!-- SLIDE 20 · 최종 추천 기술 스택                                -->
 <!-- ─────────────────────────────────────────────────────────── -->
-<div class="slide" id="s19">
+<div class="slide" id="s20">
   <div class="slide-inner" style="background:#f8fdf8;">
     <div class="flex items-center px-14 pt-10 pb-0 shrink-0">
       <div class="section-pill" style="background:#dcfce7;color:#166534;border:1px solid #bbf7d0">SECTION 5 · 프로젝트 실행</div>
@@ -1495,9 +1656,9 @@
 </div>
 
 <!-- ─────────────────────────────────────────────────────────── -->
-<!-- SLIDE 20 · 다음 단계                                         -->
+<!-- SLIDE 21 · 다음 단계                                         -->
 <!-- ─────────────────────────────────────────────────────────── -->
-<div class="slide" id="s20">
+<div class="slide" id="s21">
   <div class="slide-inner" style="background:linear-gradient(145deg,#0a2610,#1B5E20 60%,#0f3d18);">
     <div class="paw-bg" aria-hidden="true">
       <span style="position:absolute;top:12%;left:6%">🐾</span>
@@ -1543,9 +1704,9 @@
 </div>
 
 <!-- ─────────────────────────────────────────────────────────── -->
-<!-- SLIDE 21 · Q&A / 감사합니다                                   -->
+<!-- SLIDE 22 · Q&A / 감사합니다                                   -->
 <!-- ─────────────────────────────────────────────────────────── -->
-<div class="slide" id="s21">
+<div class="slide" id="s22">
   <div class="slide-inner" style="background:linear-gradient(150deg,#061a08 0%,#1B5E20 50%,#0a2610 100%);">
     <div class="paw-bg" aria-hidden="true" style="opacity:.06">
       <span style="position:absolute;top:5%;left:4%">🐾</span>
@@ -1603,7 +1764,7 @@
 <!-- Navigation -->
 <div id="nav">
   <button class="nav-btn" id="btn-prev" onclick="navigate(-1)" title="이전 (←)">&#8592;</button>
-  <span id="counter">1 / 21</span>
+  <span id="counter">1 / 22</span>
   <button class="nav-btn" id="btn-next" onclick="navigate(1)" title="다음 (→)">&#8594;</button>
 </div>
 
