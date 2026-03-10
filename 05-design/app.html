@@ -970,13 +970,18 @@
   .desktop-sidebar {
     position: fixed;
     left: 24px;
-    top: 50%;
-    transform: translateY(-50%);
+    top: 16px;
+    bottom: 16px;
     display: flex;
     flex-direction: column;
     gap: 6px;
     z-index: 100;
+    overflow-y: auto;
+    padding-right: 6px;
   }
+  .desktop-sidebar::-webkit-scrollbar { width: 4px; }
+  .desktop-sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
+  .desktop-sidebar::-webkit-scrollbar-track { background: transparent; }
   .sidebar-btn {
     background: rgba(255,255,255,0.08);
     border: 1px solid rgba(255,255,255,0.12);
