@@ -1068,8 +1068,13 @@
   <button class="sidebar-btn" onclick="showScreen('u00d')">U00d 비밀번호</button>
   <div class="sidebar-section">홈/순찰</div>
   <button class="sidebar-btn" onclick="showScreen('u02')">U02 홈/지도</button>
+  <button class="sidebar-btn" onclick="_origShow('u02-empty')">U02e 미등록</button>
   <button class="sidebar-btn" onclick="showScreen('u03')">U03 순찰중</button>
   <button class="sidebar-btn" onclick="showScreen('u04')">U04 일시정지</button>
+  <button class="sidebar-btn" onclick="showScreen('u25')">U25 산책일지</button>
+  <div class="sidebar-section">반려견</div>
+  <button class="sidebar-btn" onclick="_origShow('u24')">U24 반려견등록</button>
+  <button class="sidebar-btn" onclick="_origShow('u24a')">U24a 견종선택</button>
   <div class="sidebar-section">순찰 상세</div>
   <button class="sidebar-btn" onclick="showScreen('u05')">U05 현장마킹</button>
   <button class="sidebar-btn" onclick="showScreen('u06')">U06 신고작성</button>
@@ -1321,6 +1326,11 @@
             🔔<span class="notif-badge" style="position:absolute; top:-2px; right:-4px; font-size:9px; height:14px; padding:0 4px; line-height:14px;">3</span>
           </button>
         </div>
+        <!-- Sub-tab bar -->
+        <div style="display:flex; border-bottom:1px solid #e8e8e8; background:#fff; flex-shrink:0;">
+          <div style="flex:1; text-align:center; padding:12px 0; font-weight:700; color:#f97316; border-bottom:2px solid #f97316; font-size:14px;">순찰하기</div>
+          <div style="flex:1; text-align:center; padding:12px 0; color:#9ca3af; font-size:14px; cursor:pointer;" onclick="showScreen('u25')">산책 일지</div>
+        </div>
         <!-- Map -->
         <div class="map-area" style="flex:1; min-height:0;">
           <div class="map-pin" style="top:52%; left:50%;">📍</div>
@@ -1378,6 +1388,7 @@
           <span class="nav-title">순찰 진행 중 🟢</span>
           <span style="width:48px;"></span>
         </div>
+        <div style="background:rgba(55,65,81,0.8); color:#fff; text-align:center; padding:8px 0; font-size:13px; flex-shrink:0;">🐾 ○○와 행복한 순찰 중이에요!</div>
         <div class="info-bar">
           <div class="info-bar-item">🕐 <span id="patrol-time">00:23:45</span></div>
           <div class="info-bar-item">📏 1.2km</div>
@@ -1422,7 +1433,7 @@
         <!-- End patrol modal -->
         <div class="modal-overlay" id="modal-patrol-end">
           <div class="modal-box">
-            <div class="modal-title">순찰을 종료하시겠습니까?</div>
+            <div class="modal-title">○○와의 순찰을 종료하시겠습니까?</div>
             <div class="modal-text">총 거리: 1.2km<br>총 시간: 00:23:45</div>
             <div class="modal-btns">
               <button class="modal-btn-cancel" onclick="document.getElementById('modal-patrol-end').classList.remove('show')">취소</button>
@@ -1479,7 +1490,7 @@
         </div>
         <div class="modal-overlay" id="modal-pause-end">
           <div class="modal-box">
-            <div class="modal-title">순찰을 종료하시겠습니까?</div>
+            <div class="modal-title">○○와의 순찰을 종료하시겠습니까?</div>
             <div class="modal-text">지금까지의 기록이 저장됩니다.</div>
             <div class="modal-btns">
               <button class="modal-btn-cancel" onclick="document.getElementById('modal-pause-end').classList.remove('show')">취소</button>
@@ -2357,6 +2368,10 @@
           </div>
           <!-- Menu -->
           <div style="margin:0 16px 24px; background:#fff; border-radius:14px; overflow:hidden; box-shadow:0 1px 6px rgba(0,0,0,0.06);">
+            <div class="menu-item" onclick="showDogScreen()">
+              <div class="menu-item-left"><span style="font-size:20px;">🐕</span> 반려견 관리</div>
+              <span class="menu-item-right">›</span>
+            </div>
             <div class="menu-item" onclick="showScreen('u16')">
               <div class="menu-item-left"><span style="font-size:20px;">📋</span> 활동 내역</div>
               <span class="menu-item-right">›</span>
@@ -2732,6 +2747,291 @@
         </div>
       </div>
 
+      <!-- ============================================================
+           U02-EMPTY: HOME / NO DOG REGISTERED
+      ============================================================ -->
+      <div class="screen" id="screen-u02-empty">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons"><span>📶</span><span>🔋</span></div>
+        </div>
+        <div class="app-header">
+          <div class="app-header-title">🐕‍🦺 <span>순찰대앱</span></div>
+          <button style="background:none; border:none; cursor:pointer; font-size:22px; position:relative;" onclick="showScreen('u09')">
+            🔔<span class="notif-badge" style="position:absolute; top:-2px; right:-4px; font-size:9px; height:14px; padding:0 4px; line-height:14px;">3</span>
+          </button>
+        </div>
+        <!-- Sub-tab bar -->
+        <div style="display:flex; border-bottom:1px solid #e8e8e8; background:#fff; flex-shrink:0;">
+          <div style="flex:1; text-align:center; padding:12px 0; font-weight:700; color:#f97316; border-bottom:2px solid #f97316; font-size:14px;">순찰하기</div>
+          <div style="flex:1; text-align:center; padding:12px 0; color:#9ca3af; font-size:14px; cursor:pointer;" onclick="showScreen('u25')">산책 일지</div>
+        </div>
+        <!-- Empty state -->
+        <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:0 32px; background:#f5f5f5;">
+          <div style="font-size:72px; margin-bottom:20px;">🐾</div>
+          <div style="font-size:18px; font-weight:700; color:#222; text-align:center; margin-bottom:10px;">아직 등록된 반려견이 없어요.</div>
+          <div style="font-size:14px; color:#888; text-align:center; line-height:1.6;">반려견 등록 하고 산책을 시작해보세요!</div>
+        </div>
+        <!-- Bottom fixed button -->
+        <div style="padding:16px; background:#fff; border-top:1px solid #e8e8e8; flex-shrink:0;">
+          <button style="width:100%; padding:15px; background:#f97316; color:#fff; border:none; border-radius:9999px; font-size:16px; font-weight:700; font-family:inherit; cursor:pointer;" onclick="_origShow('u24')">반려견 등록하기</button>
+        </div>
+        <div class="tab-bar">
+          <button class="tab-item active" onclick="showTab('u02', this)"><span class="tab-icon">🏠</span><span class="tab-label">홈</span></button>
+          <button class="tab-item" onclick="showTab('u10', this)"><span class="tab-icon">💬</span><span class="tab-label">커뮤니티</span></button>
+          <button class="tab-item" onclick="showTab('u14', this)"><span class="tab-icon">🏆</span><span class="tab-label">랭킹</span></button>
+          <button class="tab-item" onclick="showTab('u15', this)"><span class="tab-icon">👤</span><span class="tab-label">마이</span></button>
+        </div>
+      </div>
+
+      <!-- ============================================================
+           U24: DOG REGISTRATION FORM
+      ============================================================ -->
+      <div class="screen" id="screen-u24" style="background:#f5f5f5;">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons"><span>📶</span><span>🔋</span></div>
+        </div>
+        <div class="nav-bar">
+          <button class="nav-back" onclick="showScreen('u02')">← 뒤로</button>
+          <span class="nav-title">신규 반려견 추가</span>
+          <span style="width:60px;"></span>
+        </div>
+        <div class="scroll-area" style="padding-bottom:90px;">
+          <!-- Photo area -->
+          <div style="display:flex; flex-direction:column; align-items:center; padding:24px 0 20px;">
+            <div style="position:relative; cursor:pointer;">
+              <div style="width:88px; height:88px; border-radius:50%; background:#e5e7eb; display:flex; align-items:center; justify-content:center; font-size:44px;">🐾</div>
+              <div style="position:absolute; bottom:0; right:0; width:28px; height:28px; background:#f97316; border-radius:50%; border:2px solid #fff; display:flex; align-items:center; justify-content:center; font-size:14px;">📷</div>
+            </div>
+          </div>
+          <!-- Form -->
+          <div style="background:#fff; border-radius:14px; margin:0 16px 12px; overflow:hidden; box-shadow:0 1px 6px rgba(0,0,0,0.06);">
+            <!-- 이름 -->
+            <div style="padding:14px 16px; border-bottom:1px solid #f0f0f0;">
+              <div style="font-size:12px; font-weight:600; color:#f97316; margin-bottom:6px;">* 반려견 이름</div>
+              <input type="text" placeholder="이름을 입력해주세요." style="width:100%; border:none; outline:none; font-size:15px; color:#111; font-family:inherit; background:transparent;">
+            </div>
+            <!-- 견종 -->
+            <div style="padding:14px 16px; border-bottom:1px solid #f0f0f0; display:flex; align-items:center; justify-content:space-between; cursor:pointer;" onclick="_origShow('u24a')">
+              <div>
+                <div style="font-size:12px; font-weight:600; color:#f97316; margin-bottom:4px;">* 반려견 견종</div>
+                <div style="font-size:15px; color:#aaa;">견종을 선택해주세요.</div>
+              </div>
+              <span style="color:#bbb; font-size:18px;">›</span>
+            </div>
+            <!-- 성별 -->
+            <div style="padding:14px 16px; border-bottom:1px solid #f0f0f0;">
+              <div style="font-size:12px; font-weight:600; color:#f97316; margin-bottom:8px;">* 성별</div>
+              <div style="display:flex; gap:10px;">
+                <button style="flex:1; padding:10px; border:1.5px solid #f97316; border-radius:8px; background:#fff; font-size:14px; font-weight:600; color:#f97316; font-family:inherit; cursor:pointer;">남아</button>
+                <button style="flex:1; padding:10px; border:1.5px solid #e0e0e0; border-radius:8px; background:#fff; font-size:14px; font-weight:600; color:#999; font-family:inherit; cursor:pointer;">여아</button>
+              </div>
+            </div>
+            <!-- 생년월일 -->
+            <div style="padding:14px 16px; border-bottom:1px solid #f0f0f0;">
+              <div style="font-size:12px; font-weight:600; color:#f97316; margin-bottom:8px;">* 생년월일</div>
+              <div style="display:flex; gap:8px;">
+                <input type="text" placeholder="년도" style="flex:2; padding:10px; border:1.5px solid #e0e0e0; border-radius:8px; font-size:14px; font-family:inherit; text-align:center; outline:none;">
+                <input type="text" placeholder="월" style="flex:1; padding:10px; border:1.5px solid #e0e0e0; border-radius:8px; font-size:14px; font-family:inherit; text-align:center; outline:none;">
+                <input type="text" placeholder="일" style="flex:1; padding:10px; border:1.5px solid #e0e0e0; border-radius:8px; font-size:14px; font-family:inherit; text-align:center; outline:none;">
+              </div>
+            </div>
+            <!-- 중성화 -->
+            <div style="padding:14px 16px; border-bottom:1px solid #f0f0f0;">
+              <div style="font-size:12px; font-weight:600; color:#f97316; margin-bottom:8px;">* 중성화 여부</div>
+              <div style="display:flex; gap:10px;">
+                <button style="flex:1; padding:10px; border:1.5px solid #e0e0e0; border-radius:8px; background:#fff; font-size:14px; font-weight:600; color:#999; font-family:inherit; cursor:pointer;">예</button>
+                <button style="flex:1; padding:10px; border:1.5px solid #e0e0e0; border-radius:8px; background:#fff; font-size:14px; font-weight:600; color:#999; font-family:inherit; cursor:pointer;">아니오</button>
+              </div>
+            </div>
+            <!-- 예방접종 -->
+            <div style="padding:14px 16px; border-bottom:1px solid #f0f0f0;">
+              <div style="font-size:12px; font-weight:600; color:#f97316; margin-bottom:8px;">* 예방접종 여부</div>
+              <div style="display:flex; gap:10px;">
+                <button style="flex:1; padding:10px; border:1.5px solid #e0e0e0; border-radius:8px; background:#fff; font-size:14px; font-weight:600; color:#999; font-family:inherit; cursor:pointer;">예</button>
+                <button style="flex:1; padding:10px; border:1.5px solid #e0e0e0; border-radius:8px; background:#fff; font-size:14px; font-weight:600; color:#999; font-family:inherit; cursor:pointer;">아니오</button>
+              </div>
+            </div>
+            <!-- 성격 및 특징 -->
+            <div style="padding:14px 16px;">
+              <div style="font-size:12px; font-weight:600; color:#555; margin-bottom:8px;">성격 및 특징</div>
+              <textarea placeholder="우리 아이의 성격이나 특징을 입력해주세요. (선택, 최대 200자)" style="width:100%; border:1.5px solid #e0e0e0; border-radius:8px; padding:10px; font-size:14px; font-family:inherit; resize:none; height:80px; outline:none; color:#111;"></textarea>
+            </div>
+          </div>
+        </div>
+        <!-- Bottom fixed button -->
+        <div style="position:absolute; bottom:0; left:0; right:0; padding:16px; background:#fff; border-top:1px solid #e8e8e8;">
+          <button style="width:100%; padding:15px; background:#f97316; color:#fff; border:none; border-radius:9999px; font-size:16px; font-weight:700; font-family:inherit; cursor:pointer;" onclick="registerDog()">반려견 등록하기</button>
+        </div>
+      </div>
+
+      <!-- ============================================================
+           U24a: BREED SELECTION
+      ============================================================ -->
+      <div class="screen" id="screen-u24a" style="background:#fff;">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons"><span>📶</span><span>🔋</span></div>
+        </div>
+        <!-- Search bar -->
+        <div style="display:flex; align-items:center; padding:10px 12px; gap:8px; border-bottom:1px solid #e8e8e8; flex-shrink:0;">
+          <button style="background:none; border:none; font-size:20px; color:#555; cursor:pointer; padding:4px;" onclick="_origShow('u24')">←</button>
+          <input type="text" placeholder="견종을 입력해주세요" style="flex:1; padding:10px 14px; background:#f5f5f5; border:none; border-radius:8px; font-size:15px; font-family:inherit; outline:none; color:#111;">
+          <button style="background:none; border:none; font-size:18px; color:#888; cursor:pointer; padding:4px;" onclick="_origShow('u24')">✕</button>
+        </div>
+        <div class="scroll-area">
+          <!-- 직접 입력 -->
+          <div style="padding:16px; border-bottom:1px solid #e8e8e8; cursor:pointer; font-size:15px; font-weight:700; color:#111;" onclick="_origShow('u24')">직접 입력</div>
+          <div style="height:1px; background:#e8e8e8; margin:0 16px;"></div>
+          <!-- Breed list -->
+          <div style="padding:14px 16px; border-bottom:1px solid #f0f0f0; cursor:pointer; font-size:15px; color:#222;" onclick="_origShow('u24')">골든리트리버</div>
+          <div style="padding:14px 16px; border-bottom:1px solid #f0f0f0; cursor:pointer; font-size:15px; color:#222;" onclick="_origShow('u24')">그레이트데인</div>
+          <div style="padding:14px 16px; border-bottom:1px solid #f0f0f0; cursor:pointer; font-size:15px; color:#222;" onclick="_origShow('u24')">그레이하운드</div>
+          <div style="padding:14px 16px; border-bottom:1px solid #f0f0f0; cursor:pointer; font-size:15px; color:#222;" onclick="_origShow('u24')">꼬똥 드 툴레아</div>
+          <div style="padding:14px 16px; border-bottom:1px solid #f0f0f0; cursor:pointer; font-size:15px; color:#222;" onclick="_origShow('u24')">닥스훈트</div>
+          <div style="padding:14px 16px; border-bottom:1px solid #f0f0f0; cursor:pointer; font-size:15px; color:#222;" onclick="_origShow('u24')">달마시안</div>
+          <div style="padding:14px 16px; border-bottom:1px solid #f0f0f0; cursor:pointer; font-size:15px; color:#222;" onclick="_origShow('u24')">도베르만</div>
+          <div style="padding:14px 16px; border-bottom:1px solid #f0f0f0; cursor:pointer; font-size:15px; color:#222;" onclick="_origShow('u24')">래브라도 리트리버</div>
+          <div style="padding:14px 16px; border-bottom:1px solid #f0f0f0; cursor:pointer; font-size:15px; color:#222;" onclick="_origShow('u24')">말라뮤트</div>
+          <div style="padding:14px 16px; border-bottom:1px solid #f0f0f0; cursor:pointer; font-size:15px; color:#222;" onclick="_origShow('u24')">말티즈</div>
+          <div style="padding:14px 16px; border-bottom:1px solid #f0f0f0; cursor:pointer; font-size:15px; color:#222;" onclick="_origShow('u24')">미니어처 불테리어</div>
+          <div style="padding:14px 16px; border-bottom:1px solid #f0f0f0; cursor:pointer; font-size:15px; color:#222;" onclick="_origShow('u24')">미니핀</div>
+          <div style="padding:14px 16px; border-bottom:1px solid #f0f0f0; cursor:pointer; font-size:15px; color:#222;" onclick="_origShow('u24')">믹스</div>
+          <div style="padding:14px 16px; border-bottom:1px solid #f0f0f0; cursor:pointer; font-size:15px; color:#222;" onclick="_origShow('u24')">바셋하운드</div>
+          <div style="padding:14px 16px; border-bottom:1px solid #f0f0f0; cursor:pointer; font-size:15px; color:#222;" onclick="_origShow('u24')">베들링턴테리어</div>
+          <div style="padding:14px 16px; border-bottom:1px solid #f0f0f0; cursor:pointer; font-size:15px; color:#222;" onclick="_origShow('u24')">보더콜리</div>
+          <div style="padding:14px 16px; border-bottom:1px solid #f0f0f0; cursor:pointer; font-size:15px; color:#222;" onclick="_origShow('u24')">비숑프리제</div>
+          <div style="padding:14px 16px; border-bottom:1px solid #f0f0f0; cursor:pointer; font-size:15px; color:#222;" onclick="_origShow('u24')">시바이누</div>
+          <div style="padding:14px 16px; border-bottom:1px solid #f0f0f0; cursor:pointer; font-size:15px; color:#222;" onclick="_origShow('u24')">시츄</div>
+          <div style="padding:14px 16px; border-bottom:1px solid #f0f0f0; cursor:pointer; font-size:15px; color:#222;" onclick="_origShow('u24')">웰시코기</div>
+          <div style="padding:14px 16px; border-bottom:1px solid #f0f0f0; cursor:pointer; font-size:15px; color:#222;" onclick="_origShow('u24')">요크셔테리어</div>
+          <div style="padding:14px 16px; border-bottom:1px solid #f0f0f0; cursor:pointer; font-size:15px; color:#222;" onclick="_origShow('u24')">치와와</div>
+          <div style="padding:14px 16px; border-bottom:1px solid #f0f0f0; cursor:pointer; font-size:15px; color:#222;" onclick="_origShow('u24')">포메라니안</div>
+          <div style="padding:14px 16px; border-bottom:1px solid #f0f0f0; cursor:pointer; font-size:15px; color:#222;" onclick="_origShow('u24')">푸들</div>
+        </div>
+      </div>
+
+      <!-- ============================================================
+           U25: PATROL DIARY (산책 일지)
+      ============================================================ -->
+      <div class="screen" id="screen-u25" style="background:#f5f5f5;">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons"><span>📶</span><span>🔋</span></div>
+        </div>
+        <div class="app-header">
+          <div class="app-header-title">🐕‍🦺 <span>순찰</span></div>
+          <button style="background:none; border:none; cursor:pointer; font-size:22px; position:relative;" onclick="showScreen('u09')">
+            🔔<span class="notif-badge" style="position:absolute; top:-2px; right:-4px; font-size:9px; height:14px; padding:0 4px; line-height:14px;">3</span>
+          </button>
+        </div>
+        <!-- Sub-tab bar -->
+        <div style="display:flex; border-bottom:1px solid #e8e8e8; background:#fff; flex-shrink:0;">
+          <div style="flex:1; text-align:center; padding:12px 0; color:#9ca3af; font-size:14px; cursor:pointer;" onclick="showScreen('u02')">순찰하기</div>
+          <div style="flex:1; text-align:center; padding:12px 0; font-weight:700; color:#f97316; border-bottom:2px solid #f97316; font-size:14px;">산책 일지</div>
+        </div>
+        <div class="scroll-area">
+          <!-- Stats card -->
+          <div style="background:#fff; border-radius:14px; margin:16px; padding:16px; box-shadow:0 1px 8px rgba(0,0,0,0.07);">
+            <div style="display:flex; align-items:flex-start; justify-content:space-between;">
+              <div>
+                <div style="font-size:15px; font-weight:700; color:#111; line-height:1.5;">○○의<br>산책기록이에요.</div>
+                <div style="display:inline-block; margin-top:8px; padding:4px 10px; background:#ffedd5; color:#f97316; border-radius:20px; font-size:12px; font-weight:700;">상위 — %</div>
+              </div>
+              <div style="width:56px; height:56px; border-radius:50%; background:#f3f4f6; display:flex; align-items:center; justify-content:center; font-size:28px;">🐾</div>
+            </div>
+            <!-- Stats row -->
+            <div style="display:flex; border-top:1px solid #f0f0f0; margin-top:14px; padding-top:12px;">
+              <div style="flex:1; text-align:center;">
+                <div style="font-size:20px; font-weight:700; color:#111;">0</div>
+                <div style="font-size:11px; color:#999; margin-top:2px;">총 횟수(회)</div>
+              </div>
+              <div style="width:1px; background:#f0f0f0;"></div>
+              <div style="flex:1; text-align:center;">
+                <div style="font-size:20px; font-weight:700; color:#111;">0.0km</div>
+                <div style="font-size:11px; color:#999; margin-top:2px;">총 거리(km)</div>
+              </div>
+              <div style="width:1px; background:#f0f0f0;"></div>
+              <div style="flex:1; text-align:center;">
+                <div style="font-size:20px; font-weight:700; color:#111;">0:00</div>
+                <div style="font-size:11px; color:#999; margin-top:2px;">총 시간</div>
+              </div>
+            </div>
+          </div>
+          <!-- Calendar section -->
+          <div style="background:#fff; border-radius:14px; margin:0 16px 16px; padding:16px; box-shadow:0 1px 8px rgba(0,0,0,0.07);">
+            <!-- Calendar header -->
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
+              <div style="font-size:15px; font-weight:700; color:#111; cursor:pointer;">2026년 3월 ∨</div>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span style="font-size:16px;">📅</span>
+                <span style="font-size:12px; color:#888;">0.0 | 0시간 0분</span>
+              </div>
+            </div>
+            <!-- Weekday header -->
+            <div style="display:grid; grid-template-columns:repeat(7,1fr); text-align:center; margin-bottom:6px;">
+              <div style="font-size:12px; color:#ef4444; font-weight:600; padding:4px 0;">일</div>
+              <div style="font-size:12px; color:#555; font-weight:600; padding:4px 0;">월</div>
+              <div style="font-size:12px; color:#555; font-weight:600; padding:4px 0;">화</div>
+              <div style="font-size:12px; color:#555; font-weight:600; padding:4px 0;">수</div>
+              <div style="font-size:12px; color:#555; font-weight:600; padding:4px 0;">목</div>
+              <div style="font-size:12px; color:#555; font-weight:600; padding:4px 0;">금</div>
+              <div style="font-size:12px; color:#6b7280; font-weight:600; padding:4px 0;">토</div>
+            </div>
+            <!-- Date grid: March 2026 starts on Sunday -->
+            <div style="display:grid; grid-template-columns:repeat(7,1fr); text-align:center; gap:2px;">
+              <!-- Row 1: 1–7 -->
+              <div style="padding:6px 2px; font-size:13px; color:#222; position:relative; cursor:pointer;">1<span style="display:block; width:5px; height:5px; background:#ef4444; border-radius:50%; margin:1px auto 0;"></span></div>
+              <div style="padding:6px 2px; font-size:13px; color:#222; cursor:pointer;">2</div>
+              <div style="padding:6px 2px; font-size:13px; color:#222; cursor:pointer;">3</div>
+              <div style="padding:6px 2px; font-size:13px; color:#222; cursor:pointer;">4</div>
+              <div style="padding:6px 2px; font-size:13px; color:#222; cursor:pointer;">5</div>
+              <div style="padding:6px 2px; font-size:13px; color:#222; position:relative; cursor:pointer;">6<span style="display:block; width:5px; height:5px; background:#ef4444; border-radius:50%; margin:1px auto 0;"></span></div>
+              <div style="padding:6px 2px; font-size:13px; color:#6b7280; cursor:pointer;">7</div>
+              <!-- Row 2: 8–14 -->
+              <div style="padding:6px 2px; font-size:13px; color:#222; cursor:pointer;">8</div>
+              <div style="padding:6px 2px; font-size:13px; color:#222; cursor:pointer;">9</div>
+              <div style="padding:6px 2px; font-size:13px; font-weight:700; color:#f97316; cursor:pointer; background:#ffedd5; border-radius:50%;">10</div>
+              <div style="padding:6px 2px; font-size:13px; color:#222; cursor:pointer;">11</div>
+              <div style="padding:6px 2px; font-size:13px; color:#222; cursor:pointer;">12</div>
+              <div style="padding:6px 2px; font-size:13px; color:#222; cursor:pointer;">13</div>
+              <div style="padding:6px 2px; font-size:13px; color:#6b7280; cursor:pointer;">14</div>
+              <!-- Row 3: 15–21 -->
+              <div style="padding:6px 2px; font-size:13px; color:#222; cursor:pointer;">15</div>
+              <div style="padding:6px 2px; font-size:13px; color:#222; cursor:pointer;">16</div>
+              <div style="padding:6px 2px; font-size:13px; color:#222; cursor:pointer;">17</div>
+              <div style="padding:6px 2px; font-size:13px; color:#222; cursor:pointer;">18</div>
+              <div style="padding:6px 2px; font-size:13px; color:#222; cursor:pointer;">19</div>
+              <div style="padding:6px 2px; font-size:13px; color:#222; cursor:pointer;">20</div>
+              <div style="padding:6px 2px; font-size:13px; color:#6b7280; cursor:pointer;">21</div>
+              <!-- Row 4: 22–28 -->
+              <div style="padding:6px 2px; font-size:13px; color:#222; cursor:pointer;">22</div>
+              <div style="padding:6px 2px; font-size:13px; color:#222; cursor:pointer;">23</div>
+              <div style="padding:6px 2px; font-size:13px; color:#222; cursor:pointer;">24</div>
+              <div style="padding:6px 2px; font-size:13px; color:#222; cursor:pointer;">25</div>
+              <div style="padding:6px 2px; font-size:13px; color:#222; cursor:pointer;">26</div>
+              <div style="padding:6px 2px; font-size:13px; color:#222; cursor:pointer;">27</div>
+              <div style="padding:6px 2px; font-size:13px; color:#6b7280; cursor:pointer;">28</div>
+              <!-- Row 5: 29–31 -->
+              <div style="padding:6px 2px; font-size:13px; color:#222; cursor:pointer;">29</div>
+              <div style="padding:6px 2px; font-size:13px; color:#222; cursor:pointer;">30</div>
+              <div style="padding:6px 2px; font-size:13px; color:#222; cursor:pointer;">31</div>
+              <div style="padding:6px 2px;"></div>
+              <div style="padding:6px 2px;"></div>
+              <div style="padding:6px 2px;"></div>
+              <div style="padding:6px 2px;"></div>
+            </div>
+          </div>
+        </div>
+        <div class="tab-bar">
+          <button class="tab-item active" onclick="showTab('u02', this)"><span class="tab-icon">🏠</span><span class="tab-label">홈</span></button>
+          <button class="tab-item" onclick="showTab('u10', this)"><span class="tab-icon">💬</span><span class="tab-label">커뮤니티</span></button>
+          <button class="tab-item" onclick="showTab('u14', this)"><span class="tab-icon">🏆</span><span class="tab-label">랭킹</span></button>
+          <button class="tab-item" onclick="showTab('u15', this)"><span class="tab-icon">👤</span><span class="tab-label">마이</span></button>
+        </div>
+      </div>
+
       <!-- TOAST -->
       <div class="toast" id="toast"></div>
 
@@ -2743,6 +3043,15 @@
   // --- Screen Management ---
   let currentScreen = 'u00';
   const screenHistory = ['u00'];
+
+  function showDogScreen() {
+    const titleEl = document.querySelector('#screen-u24 .nav-bar span.nav-title') ||
+                    document.querySelector('#screen-u24 .nav-bar span:not([style])');
+    if (titleEl) {
+      titleEl.textContent = dogRegistered ? '반려견 정보 수정' : '신규 반려견 추가';
+    }
+    showScreen('u24');
+  }
 
   function showScreen(id) {
     // Hide all
@@ -2859,9 +3168,6 @@
     }, 1000);
   }
 
-  // Start timer when patrol screen is shown
-  const origShowScreen = showScreen;
-
   // Override history.go for back navigation
   window.history.go = function() {
     if (screenHistory.length > 1) {
@@ -2885,6 +3191,26 @@
       startTimer();
     }
   });
+
+  // Dog registration state
+  let dogRegistered = false;
+
+  // Wrap showScreen for u02 routing
+  const _origShow = showScreen;
+  showScreen = function(id) {
+    if (id === 'u02' && !dogRegistered) {
+      _origShow('u02-empty');
+      return;
+    }
+    _origShow(id);
+  };
+
+  // Register dog
+  function registerDog() {
+    dogRegistered = true;
+    showToast('반려견이 등록되었습니다!');
+    showScreen('u02');
+  }
 
   // Show initial screen
   showScreen('u00');

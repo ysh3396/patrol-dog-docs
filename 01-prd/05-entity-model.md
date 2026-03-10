@@ -19,6 +19,7 @@
 | 7 | Ranking | 랭킹 집계 |
 | 8 | Event | 이벤트 |
 | 9 | PushNotification | Push 알림 |
+| 10 | Dog | 반려견 |
 
 ---
 
@@ -48,6 +49,7 @@
 - has many → Comment
 - has many → Report
 - has one → Ranking (기간별)
+- has many → Dog
 
 ---
 
@@ -65,12 +67,14 @@
 | distance_km | Float | X | 총 이동 거리 (km, 소수점 2자리) |
 | avg_speed_kmh | Float | X | 평균 속도 (km/h) |
 | points_earned | Integer | X | 이번 순찰로 획득한 포인트 |
+| dog_id | UUID (FK) | X | 순찰 대상 반려견 (미선택 시 null) |
 | note | String | X | 활동 일지 (최대 500자) |
 | created_at | Timestamp | O | 레코드 생성일시 |
 | updated_at | Timestamp | O | 수정일시 |
 
 **관계**:
 - belongs to → User
+- belongs to → Dog
 - has many → PatrolMark
 
 **상태 전이**:
@@ -231,6 +235,28 @@ submitted → in_progress → resolved
 
 ---
 
+### 2.10 Dog (반려견)
+
+| 필드 | 타입 | 필수 | 설명 |
+|------|------|------|------|
+| id | UUID | O | 고유 식별자 |
+| user_id | UUID (FK) | O | 반려견 보호자 |
+| photo | String | X | 반려견 사진 URL |
+| name | String | O | 반려견 이름 (최대 20자) |
+| breed | String | O | 견종 |
+| gender | Enum | O | 성별: `male`, `female` |
+| birthday | Date | X | 생년월일 |
+| is_neutered | Boolean | O | 중성화 여부 (기본값: false) |
+| is_vaccinated | Boolean | O | 예방접종 여부 (기본값: false) |
+| personality | String | X | 성격/특이사항 (최대 200자) |
+| created_at | Timestamp | O | 등록일시 |
+| updated_at | Timestamp | O | 수정일시 |
+
+**관계**:
+- belongs to → User
+
+---
+
 ## 3. 엔티티 관계 다이어그램 (텍스트 기반 ER)
 
 ```
@@ -239,27 +265,34 @@ submitted → in_progress → resolved
 │          │                  │          │                 │             │
 │ id       │                  │ id       │                 │ id          │
 │ email    │                  │ user_id  │                 │ patrol_id   │
-│ name     │                  │ status   │                 │ lat, lng    │
-│ role     │                  │ route    │                 │ type        │
-│ points   │                  │ distance │                 │ photo_urls  │
-└──────────┘                  └──────────┘                 └─────────────┘
-     │                                                           │
-     │ 1:N                                                       │ 1:1
-     │                                                           │ (type='report')
-     ▼                                                           ▼
+│ name     │                  │ dog_id   │                 │ lat, lng    │
+│ role     │                  │ status   │                 │ type        │
+│ points   │                  │ route    │                 │ photo_urls  │
+└──────────┘                  │ distance │                 └─────────────┘
+     │                        └──────────┘                      │
+     │ 1:N                         ▲                            │ 1:1
+     │                             │ 1:N                        │ (type='report')
+     ▼                             │                            ▼
+┌──────────┐                  ┌──────────┐                ┌──────────┐
+│   Dog    │─────────────────▶│  Patrol  │                │  Report  │
+│          │  1:N             │          │                │          │
+│ id       │                  └──────────┘                │ id       │
+│ user_id  │                                              │ mark_id  │
+│ name     │                                              │ user_id  │
+│ breed    │                                              │ category │
+│ gender   │                                              │ status   │
+└──────────┘                                              └──────────┘
+
 ┌──────────┐                                              ┌──────────┐
-│   Post   │                                              │  Report  │
-│          │                                              │          │
-│ id       │       1:N       ┌──────────┐                 │ id       │
-│ user_id  │────────────────▶│ Comment  │                 │ mark_id  │
-│ board_ty │                 │          │                 │ user_id  │
-│ likes_ct │                 │ id       │                 │ category │
-└──────────┘                 │ post_id  │                 │ status   │
-                             │ user_id  │                 └──────────┘
+│   Post   │                                              │ Comment  │
+│          │       1:N       ┌──────────┐                 │          │
+│ id       │────────────────▶│ Comment  │                 │ id       │
+│ user_id  │                 │          │                 │ post_id  │
+│ board_ty │                 │ id       │                 │ user_id  │
+│ likes_ct │                 │ post_id  │                 └──────────┘
+└──────────┘                 │ user_id  │
                              └──────────┘
-     │
-     │ (User 1:N)
-     │
+
 ┌──────────┐                 ┌──────────────────┐
 │ Ranking  │                 │ PushNotification │
 │          │                 │                  │
@@ -285,6 +318,8 @@ submitted → in_progress → resolved
 | 관계 | 유형 | 설명 |
 |------|------|------|
 | User → Patrol | 1:N | 한 사용자가 여러 순찰을 수행 |
+| User → Dog | 1:N | 한 사용자가 여러 반려견을 등록 |
+| Dog → Patrol | 1:N | 한 반려견이 여러 순찰에 참여 |
 | Patrol → PatrolMark | 1:N | 한 순찰에 여러 마킹이 생성됨 |
 | PatrolMark → Report | 1:1 | 마킹 유형이 'report'이면 신고 연결 |
 | User → Report | 1:N | 한 사용자가 여러 신고를 접수 |
