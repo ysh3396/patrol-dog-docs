@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>반려견순찰대 — 발표 대본 및 예상 Q&A</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: { sans: ['Noto Sans KR', 'sans-serif'] },
+        colors: {
+          forest: {
+            50:  '#f0fdf0',
+            100: '#dcfce7',
+            200: '#bbf7d0',
+            300: '#86efac',
+            400: '#4ade80',
+            500: '#22c55e',
+            600: '#16a34a',
+            700: '#2d7a3a',
+            800: '#1B5E20',
+            900: '#14451a',
+            950: '#0a2610',
+          },
+          sage: '#4a7c59',
+          lime: '#a8d5a2',
+          cream: '#fafdf6',
+          charcoal: '#1a1f1a',
+        }
+      }
+    }
+  }
+</script>
+<style>
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background: #fafdf6;
+    color: #1a1f1a;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* ── Sidebar TOC ── */
+  #toc {
+    position: fixed;
+    top: 0; left: 0;
+    width: 260px;
+    height: 100vh;
+    background: #1B5E20;
+    overflow-y: auto;
+    z-index: 50;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease;
+  }
+  #toc::-webkit-scrollbar { width: 4px; }
+  #toc::-webkit-scrollbar-track { background: transparent; }
+  #toc::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 2px; }
+
+  .toc-header {
+    padding: 24px 20px 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.12);
+    flex-shrink: 0;
+  }
+  .toc-section-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.45);
+    padding: 16px 20px 6px;
+  }
+  .toc-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 20px;
+    color: rgba(255,255,255,0.75);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1.4;
+    transition: background 0.15s, color 0.15s;
+    border-left: 3px solid transparent;
+  }
+  .toc-link:hover {
+    background: rgba(255,255,255,0.08);
+    color: #fff;
+    border-left-color: #a8d5a2;
+  }
+  .toc-link.active {
+    background: rgba(168,213,162,0.15);
+    color: #a8d5a2;
+    border-left-color: #a8d5a2;
+    font-weight: 600;
+  }
+  .toc-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 50%;
+    font-size: 10px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.6);
+    flex-shrink: 0;
+  }
+  .toc-link.active .toc-num {
+    background: rgba(168,213,162,0.25);
+    color: #a8d5a2;
+  }
+
+  /* ── Main content ── */
+  #main {
+    margin-left: 260px;
+    min-height: 100vh;
+  }
+
+  /* ── Page header ── */
+  .page-header {
+    background: linear-gradient(135deg, #1B5E20 0%, #2d7a3a 50%, #4a7c59 100%);
+    padding: 56px 56px 48px;
+    position: relative;
+    overflow: hidden;
+  }
+  .page-header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+
+  /* ── Script cards ── */
+  .slide-card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 2px 12px rgba(27,94,32,0.07), 0 1px 3px rgba(0,0,0,0.05);
+    overflow: hidden;
+    transition: box-shadow 0.2s;
+    scroll-margin-top: 24px;
+  }
+  .slide-card:hover {
+    box-shadow: 0 8px 32px rgba(27,94,32,0.12), 0 2px 8px rgba(0,0,0,0.06);
+  }
+
+  .slide-card-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 24px;
+    border-bottom: 1px solid #f0f7f0;
+    background: linear-gradient(to right, #f8fdf8, #fff);
+  }
+
+  .slide-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, #1B5E20, #2d7a3a);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    border-radius: 50%;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(27,94,32,0.3);
+  }
+
+  .slide-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1B5E20;
+    margin: 0;
+  }
+
+  .slide-script {
+    padding: 20px 24px;
+    background: #fff;
+  }
+
+  /* Script blockquote style */
+  .script-block {
+    background: linear-gradient(to right, #f0fdf0, #fafdf6);
+    border-left: 4px solid #4a7c59;
+    border-radius: 0 10px 10px 0;
+    padding: 18px 20px;
+    margin: 0;
+    line-height: 1.9;
+    font-size: 15px;
+    color: #1a2e1a;
+    position: relative;
+  }
+  .script-block::before {
+    content: '"';
+    position: absolute;
+    top: -4px;
+    left: 12px;
+    font-size: 48px;
+    color: #a8d5a2;
+    font-family: Georgia, serif;
+    line-height: 1;
+    opacity: 0.6;
+  }
+  .script-block p {
+    margin: 0 0 12px;
+    padding-left: 8px;
+  }
+  .script-block p:last-child { margin-bottom: 0; }
+
+  /* Demo note */
+  .demo-note {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #fff3cd;
+    border: 1px solid #ffc107;
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-size: 13px;
+    color: #856404;
+    margin-top: 12px;
+  }
+
+  /* ── Q&A cards ── */
+  .qa-card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 2px 12px rgba(27,94,32,0.07), 0 1px 3px rgba(0,0,0,0.05);
+    overflow: hidden;
+    scroll-margin-top: 24px;
+  }
+  .qa-card:hover {
+    box-shadow: 0 8px 32px rgba(27,94,32,0.12), 0 2px 8px rgba(0,0,0,0.06);
+  }
+
+  .qa-question-btn {
+    width: 100%;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 20px 24px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.15s;
+  }
+  .qa-question-btn:hover { background: #f8fdf8; }
+
+  .qa-q-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, #2d7a3a, #4a7c59);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    border-radius: 8px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .qa-question-text {
+    flex: 1;
+    font-size: 15px;
+    font-weight: 700;
+    color: #1B5E20;
+    line-height: 1.5;
+  }
+
+  .qa-chevron {
+    width: 20px;
+    height: 20px;
+    color: #4a7c59;
+    flex-shrink: 0;
+    transition: transform 0.25s ease;
+    margin-top: 6px;
+  }
+  .qa-card.open .qa-chevron { transform: rotate(180deg); }
+
+  .qa-answer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s ease, padding 0.25s ease;
+  }
+  .qa-card.open .qa-answer { max-height: 1200px; }
+
+  .qa-answer-inner {
+    padding: 0 24px 24px;
+    border-top: 1px solid #f0f7f0;
+  }
+  .qa-answer-inner p {
+    margin: 12px 0 0;
+    line-height: 1.85;
+    font-size: 14.5px;
+    color: #2a3a2a;
+  }
+  .qa-answer-inner ul {
+    margin: 10px 0 0 0;
+    padding-left: 0;
+    list-style: none;
+  }
+  .qa-answer-inner li {
+    position: relative;
+    padding-left: 16px;
+    margin-bottom: 6px;
+    font-size: 14.5px;
+    line-height: 1.75;
+    color: #2a3a2a;
+  }
+  .qa-answer-inner li::before {
+    content: '•';
+    position: absolute;
+    left: 0;
+    color: #4a7c59;
+    font-weight: 700;
+  }
+
+  /* ── Tips section ── */
+  .tip-card {
+    background: linear-gradient(135deg, #1B5E20 0%, #2d7a3a 100%);
+    border-radius: 16px;
+    padding: 32px 36px;
+    color: #fff;
+  }
+  .tip-item {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 16px;
+  }
+  .tip-item:last-child { margin-bottom: 0; }
+  .tip-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: rgba(168,213,162,0.2);
+    border: 1.5px solid rgba(168,213,162,0.4);
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 700;
+    color: #a8d5a2;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .tip-text {
+    font-size: 14.5px;
+    line-height: 1.75;
+    color: rgba(255,255,255,0.88);
+  }
+
+  /* ── Section titles ── */
+  .section-title {
+    font-size: 22px;
+    font-weight: 900;
+    color: #1B5E20;
+    margin: 0 0 4px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-subtitle {
+    font-size: 14px;
+    color: #4a7c59;
+    margin: 0 0 24px;
+  }
+  .section-divider {
+    height: 3px;
+    background: linear-gradient(to right, #1B5E20, #a8d5a2, transparent);
+    border-radius: 2px;
+    margin-bottom: 28px;
+  }
+
+  /* ── Mobile overlay & toggle ── */
+  #toc-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 40;
+  }
+  #toc-toggle {
+    display: none;
+    position: fixed;
+    bottom: 24px;
+    left: 24px;
+    z-index: 60;
+    width: 48px;
+    height: 48px;
+    background: #1B5E20;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(27,94,32,0.4);
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    transition: background 0.2s, transform 0.15s;
+  }
+  #toc-toggle:hover { background: #2d7a3a; transform: scale(1.05); }
+
+  /* ── Back to top ── */
+  #back-top {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 60;
+    width: 44px;
+    height: 44px;
+    background: #1B5E20;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(27,94,32,0.35);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s, transform 0.15s, opacity 0.25s;
+    opacity: 0;
+  }
+  #back-top.visible { display: flex; opacity: 1; }
+  #back-top:hover { background: #2d7a3a; transform: scale(1.05); }
+
+  /* ── Print styles ── */
+  @media print {
+    #toc, #toc-toggle, #toc-overlay, #back-top, #print-btn { display: none !important; }
+    #main { margin-left: 0 !important; }
+    .page-header { background: #1B5E20 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .slide-card, .qa-card { break-inside: avoid; box-shadow: none; border: 1px solid #ddd; }
+    .qa-answer { max-height: none !important; }
+    .qa-chevron { display: none; }
+    .tip-card { background: #1B5E20 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    body { background: #fff; }
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 768px) {
+    #toc {
+      transform: translateX(-100%);
+    }
+    #toc.mobile-open {
+      transform: translateX(0);
+    }
+    #toc-overlay.visible { display: block; }
+    #toc-toggle { display: flex; }
+    #main { margin-left: 0; }
+    .page-header { padding: 40px 24px 36px; }
+    #content { padding: 24px 16px; }
+    #back-top { bottom: 88px; }
+  }
+
+  /* ── Bold/inline styles in script ── */
+  .script-block strong {
+    color: #1B5E20;
+    font-weight: 700;
+  }
+</style>
+</head>
+<body>
+
+<!-- ── Sidebar TOC ── -->
+<nav id="toc" aria-label="목차">
+  <div class="toc-header">
+    <a href="index.html" style="text-decoration:none;display:flex;align-items:center;gap:8px;margin-bottom:14px;">
+      <span style="font-size:20px;">🐕</span>
+      <span style="color:rgba(255,255,255,0.6);font-size:12px;font-weight:500;">반려견순찰대</span>
+    </a>
+    <div style="color:#fff;font-size:15px;font-weight:700;line-height:1.4;">발표 대본</div>
+    <div style="color:rgba(255,255,255,0.5);font-size:12px;margin-top:3px;">및 예상 Q&amp;A</div>
+  </div>
+
+  <div class="toc-section-label">발표 대본</div>
+  <a href="#slide-1"  class="toc-link" data-target="slide-1"><span class="toc-num">1</span>타이틀</a>
+  <a href="#slide-2"  class="toc-link" data-target="slide-2"><span class="toc-num">2</span>프로젝트 배경</a>
+  <a href="#slide-3"  class="toc-link" data-target="slide-3"><span class="toc-num">3</span>프로젝트 목적</a>
+  <a href="#slide-4"  class="toc-link" data-target="slide-4"><span class="toc-num">4</span>4대 기능 영역</a>
+  <a href="#slide-5"  class="toc-link" data-target="slide-5"><span class="toc-num">5</span>순찰 트래킹 상세</a>
+  <a href="#slide-6"  class="toc-link" data-target="slide-6"><span class="toc-num">6</span>포인트 & 게이미피케이션</a>
+  <a href="#slide-7"  class="toc-link" data-target="slide-7"><span class="toc-num">7</span>커뮤니티 & 미디어</a>
+  <a href="#slide-8"  class="toc-link" data-target="slide-8"><span class="toc-num">8</span>관리자 웹</a>
+  <a href="#slide-9"  class="toc-link" data-target="slide-9"><span class="toc-num">9</span>정보 구조 (IA)</a>
+  <a href="#slide-10" class="toc-link" data-target="slide-10"><span class="toc-num">10</span>전체 화면 목록</a>
+  <a href="#slide-11" class="toc-link" data-target="slide-11"><span class="toc-num">11</span>와이어프레임</a>
+  <a href="#slide-12" class="toc-link" data-target="slide-12"><span class="toc-num">12</span>앱 프레임워크 비교</a>
+  <a href="#slide-13" class="toc-link" data-target="slide-13"><span class="toc-num">13</span>서버 & DB</a>
+  <a href="#slide-14" class="toc-link" data-target="slide-14"><span class="toc-num">14</span>인프라 & 외부 API</a>
+  <a href="#slide-15" class="toc-link" data-target="slide-15"><span class="toc-num">15</span>시스템 아키텍처</a>
+  <a href="#slide-16" class="toc-link" data-target="slide-16"><span class="toc-num">16</span>GPS 백그라운드 전략</a>
+  <a href="#slide-17" class="toc-link" data-target="slide-17"><span class="toc-num">17</span>Live Activity</a>
+  <a href="#slide-18" class="toc-link" data-target="slide-18"><span class="toc-num">18</span>개발 범위 요약</a>
+  <a href="#slide-19" class="toc-link" data-target="slide-19"><span class="toc-num">19</span>기술 스택 최종</a>
+  <a href="#slide-20" class="toc-link" data-target="slide-20"><span class="toc-num">20</span>다음 단계</a>
+  <a href="#slide-21" class="toc-link" data-target="slide-21"><span class="toc-num">21</span>감사합니다</a>
+
+  <div class="toc-section-label">예상 Q&amp;A</div>
+  <a href="#qa-1"  class="toc-link" data-target="qa-1"><span class="toc-num" style="border-radius:6px;">Q1</span>배터리 소모</a>
+  <a href="#qa-2"  class="toc-link" data-target="qa-2"><span class="toc-num" style="border-radius:6px;">Q2</span>앱 심사 리젝</a>
+  <a href="#qa-3"  class="toc-link" data-target="qa-3"><span class="toc-num" style="border-radius:6px;">Q3</span>어뷰징 방지</a>
+  <a href="#qa-4"  class="toc-link" data-target="qa-4"><span class="toc-num" style="border-radius:6px;">Q4</span>Flutter vs RN</a>
+  <a href="#qa-5"  class="toc-link" data-target="qa-5"><span class="toc-num" style="border-radius:6px;">Q5</span>네이버 지도</a>
+  <a href="#qa-6"  class="toc-link" data-target="qa-6"><span class="toc-num" style="border-radius:6px;">Q6</span>개인정보 보호</a>
+  <a href="#qa-7"  class="toc-link" data-target="qa-7"><span class="toc-num" style="border-radius:6px;">Q7</span>서버 확장성</a>
+  <a href="#qa-8"  class="toc-link" data-target="qa-8"><span class="toc-num" style="border-radius:6px;">Q8</span>개발 기간·비용</a>
+  <a href="#qa-9"  class="toc-link" data-target="qa-9"><span class="toc-num" style="border-radius:6px;">Q9</span>수익 모델</a>
+  <a href="#qa-10" class="toc-link" data-target="qa-10"><span class="toc-num" style="border-radius:6px;">Q10</span>차별점</a>
+  <a href="#qa-11" class="toc-link" data-target="qa-11"><span class="toc-num" style="border-radius:6px;">Q11</span>PostgreSQL</a>
+
+  <div class="toc-section-label">기타</div>
+  <a href="#tips" class="toc-link" data-target="tips">
+    <span style="width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;">💡</span>
+    발표 팁
+  </a>
+
+  <div style="height:24px;flex-shrink:0;"></div>
+</nav>
+
+<!-- ── Mobile TOC overlay ── -->
+<div id="toc-overlay" onclick="closeToc()"></div>
+
+<!-- ── Mobile TOC toggle ── -->
+<button id="toc-toggle" onclick="toggleToc()" aria-label="목차 열기">
+  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+    <line x1="3" y1="5" x2="17" y2="5"/>
+    <line x1="3" y1="10" x2="17" y2="10"/>
+    <line x1="3" y1="15" x2="17" y2="15"/>
+  </svg>
+</button>
+
+<!-- ── Main content ── -->
+<div id="main">
+
+  <!-- Page Header -->
+  <header class="page-header">
+    <div style="position:relative;z-index:1;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
+        <a href="index.html" style="color:rgba(255,255,255,0.6);text-decoration:none;font-size:13px;display:flex;align-items:center;gap:6px;transition:color 0.15s;" onmouseover="this.style.color='rgba(255,255,255,0.9)'" onmouseout="this.style.color='rgba(255,255,255,0.6)'">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 2 4 7 9 12"/></svg>
+          홈으로
+        </a>
+        <span style="color:rgba(255,255,255,0.25);">/</span>
+        <span style="color:rgba(255,255,255,0.5);font-size:13px;">발표 대본</span>
+      </div>
+
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:20px;">
+        <div>
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+            <span style="font-size:36px;line-height:1;">🐕</span>
+            <div>
+              <h1 style="color:#fff;font-size:26px;font-weight:900;margin:0;line-height:1.2;">반려견순찰대 앱 개발 제안서</h1>
+              <p style="color:rgba(168,213,162,0.9);font-size:14px;margin:4px 0 0;font-weight:500;">발표 대본 및 예상 Q&amp;A</p>
+            </div>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;">
+            <span style="background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.85);font-size:12px;font-weight:500;padding:4px 12px;border-radius:20px;border:1px solid rgba(255,255,255,0.15);">슬라이드 21개</span>
+            <span style="background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.85);font-size:12px;font-weight:500;padding:4px 12px;border-radius:20px;border:1px solid rgba(255,255,255,0.15);">예상 질문 11개</span>
+            <span style="background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.85);font-size:12px;font-weight:500;padding:4px 12px;border-radius:20px;border:1px solid rgba(255,255,255,0.15);">발표 약 20–25분</span>
+          </div>
+        </div>
+        <button id="print-btn" onclick="window.print()" style="display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.12);color:#fff;border:1.5px solid rgba(255,255,255,0.25);border-radius:10px;padding:10px 18px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;transition:background 0.2s,border-color 0.2s;white-space:nowrap;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.12)'">
+          <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 7 3 12 12 12 12 7"/><path d="M3 7V3h9v4"/><line x1="5" y1="10" x2="10" y2="10"/></svg>
+          인쇄하기
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Content area -->
+  <div id="content" style="max-width:800px;margin:0 auto;padding:40px 40px 80px;">
+
+    <!-- ══════════════════════════════
+         발표 대본 섹션
+    ══════════════════════════════ -->
+    <section style="margin-bottom:60px;">
+      <div style="margin-bottom:28px;">
+        <h2 class="section-title">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#1B5E20" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h16M3 10h16M3 15h10"/></svg>
+          발표 대본
+        </h2>
+        <p class="section-subtitle">슬라이드별 낭독 스크립트 — 녹색 인용 블록이 실제 발화 내용입니다</p>
+        <div class="section-divider"></div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:16px;">
+
+        <!-- Slide 1 -->
+        <div class="slide-card" id="slide-1">
+          <div class="slide-card-header">
+            <span class="slide-badge">1</span>
+            <h3 class="slide-title">타이틀</h3>
+          </div>
+          <div class="slide-script">
+            <blockquote class="script-block">
+              <p>안녕하세요. 반려견순찰대 GPS 트래킹 및 커뮤니티 앱 프로젝트 제안서 발표를 시작하겠습니다.</p>
+              <p>이 프로젝트는 모바일 앱(iOS/Android)과 관리자 웹으로 구성된 서비스로, 총 37개 화면, 4대 핵심 기능 영역, 그리고 실시간 GPS 트래킹을 중심으로 설계되었습니다.</p>
+            </blockquote>
+          </div>
+        </div>
+
+        <!-- Slide 2 -->
+        <div class="slide-card" id="slide-2">
+          <div class="slide-card-header">
+            <span class="slide-badge">2</span>
+            <h3 class="slide-title">프로젝트 배경</h3>
+          </div>
+          <div class="slide-script">
+            <blockquote class="script-block">
+              <p>현재 도시의 안전 사각지대는 점점 늘어나고 있지만, 기존 방범 활동은 종이 기록과 수기 출석 체크에 머물러 데이터 활용이 불가능한 상태입니다.</p>
+              <p>그런데 반려견주는 매일 1~2회 산책을 합니다. 이 산책 경로가 곧 지역 방범 순찰 경로가 될 수 있다는 점에 착안했습니다.</p>
+              <p>순찰 거리, 시간, 횟수를 자동으로 집계하는 도구가 없어 활동량 파악이나 우수 대원 평가가 어려운 현실입니다.</p>
+              <p>반려견순찰대 앱은 개인의 건강관리, 동네 방범, 커뮤니티 소속감을 <strong>하나의 앱으로 통합</strong>하는 사회적 가치를 가진 플랫폼입니다.</p>
+            </blockquote>
+          </div>
+        </div>
+
+        <!-- Slide 3 -->
+        <div class="slide-card" id="slide-3">
+          <div class="slide-card-header">
+            <span class="slide-badge">3</span>
+            <h3 class="slide-title">프로젝트 목적</h3>
+          </div>
+          <div class="slide-script">
+            <blockquote class="script-block">
+              <p>이 프로젝트의 핵심 목적은 4가지입니다.</p>
+              <p><strong>첫째</strong>, 실시간 GPS 트래킹으로 산책 및 순찰 경로를 기록하고 지도 위에 시각화합니다.<br>
+              <strong>둘째</strong>, 순찰 거리·시간·횟수를 자동 집계하여 개인, 팀, 지역 단위 통계를 제공합니다.<br>
+              <strong>셋째</strong>, 활동 인증, 정보 공유, 자유 게시판으로 대원 간 소통과 동기부여를 촉진합니다.<br>
+              <strong>넷째</strong>, 포인트와 랭킹 시스템으로 지속적인 참여를 유도합니다.</p>
+              <p>목표 KPI로는 3개월 내 MAU 1,000명, 주 3회 이상 평균 순찰 횟수, 회당 평균 2km 이상 순찰 거리, 그리고 7일 이탈률 30% 이하를 설정했습니다.</p>
+            </blockquote>
+          </div>
+        </div>
+
+        <!-- Slide 4 -->
+        <div class="slide-card" id="slide-4">
+          <div class="slide-card-header">
+            <span class="slide-badge">4</span>
+            <h3 class="slide-title">4대 기능 영역 개요</h3>
+          </div>
+          <div class="slide-script">
+            <blockquote class="script-block">
+              <p>핵심 기능은 크게 4가지 영역으로 나뉩니다.</p>
+              <p><strong>순찰 트래킹 시스템</strong> — GPS 실시간 경로 기록, 백그라운드 실행, 현장 마킹과 신고 기능입니다. P0 필수 기능입니다.</p>
+              <p><strong>포인트 &amp; 게이미피케이션</strong> — 1km당 100포인트 자동 지급, 실시간/주간/월간 리더보드, 어뷰징 방지 시스템을 포함합니다.</p>
+              <p><strong>커뮤니티 &amp; 미디어</strong> — 활동인증, 정보공유, 자유 게시판과 Push 알림, 영상 콘텐츠 기능입니다.</p>
+              <p><strong>관리자 웹 대시보드</strong> — 대원 관리, 신고 처리, 이벤트 등록, 통계 CSV 추출 등 운영 기능을 제공합니다.</p>
+            </blockquote>
+          </div>
+        </div>
+
+        <!-- Slide 5 -->
+        <div class="slide-card" id="slide-5">
+          <div class="slide-card-header">
+            <span class="slide-badge">5</span>
+            <h3 class="slide-title">순찰 트래킹 시스템 상세</h3>
+          </div>
+          <div class="slide-script">
+            <blockquote class="script-block">
+              <p>순찰 트래킹의 핵심 기능을 자세히 보겠습니다.</p>
+              <p><strong>GPS 실시간 트래킹</strong>은 P0 필수 기능으로, 지도 위에 폴리라인으로 경로를 실시간 렌더링하고, 거리 누적, 경과 시간, 이동 속도를 표시합니다.</p>
+              <p><strong>백그라운드 실행</strong> 역시 P0입니다. 5~10미터 이동 시 또는 10초 간격으로 위치를 수집하며, iOS는 Background Location Updates, Android는 Foreground Service를 활용합니다. GPS 신호 유실 시 자동 복구되고, 로컬 버퍼링 후 배치 전송으로 배터리를 최적화합니다.</p>
+              <p><strong>현장 마킹</strong>은 사진 최대 3장과 메모 200자를 기록할 수 있고, GPS 좌표가 자동으로 기록됩니다.</p>
+              <p><strong>활동 일지</strong>에서는 순찰 결과를 거리, 시간, 마킹 수, 포인트로 요약하고, 30분 이상 정지 시 자동 종료를 안내합니다.</p>
+            </blockquote>
+          </div>
+        </div>
+
+        <!-- Slide 6 -->
+        <div class="slide-card" id="slide-6">
+          <div class="slide-card-header">
+            <span class="slide-badge">6</span>
+            <h3 class="slide-title">포인트 &amp; 게이미피케이션</h3>
+          </div>
+          <div class="slide-script">
+            <blockquote class="script-block">
+              <p>포인트 시스템은 <strong>1km = 100포인트</strong>로 단순명확합니다. 0.1km 단위로 비례 계산하며, 일일 최대 1,000포인트 상한이 있습니다. 이벤트 시 보너스 배율도 적용 가능합니다.</p>
+              <p>랭킹은 실시간, 주간, 월간 3종으로 운영하며, 누적 순찰 거리 기준입니다.</p>
+              <p>어뷰징 방지가 중요한데요. 도보 6km/h 초과 시 경고, 자전거 25km/h 초과 시 경고, 차량 40km/h 이상이면 포인트 미지급으로 처리합니다. 위치 점프(순간이동)도 감지하여 해당 구간을 무효 처리합니다. 정확한 임계값은 베타 테스트 후 확정할 예정입니다.</p>
+            </blockquote>
+          </div>
+        </div>
+
+        <!-- Slide 7 -->
+        <div class="slide-card" id="slide-7">
+          <div class="slide-card-header">
+            <span class="slide-badge">7</span>
+            <h3 class="slide-title">커뮤니티 &amp; 미디어</h3>
+          </div>
+          <div class="slide-script">
+            <blockquote class="script-block">
+              <p>커뮤니티는 활동인증, 정보공유, 자유 게시판 3개로 구성됩니다. 이미지 최대 5장 첨부, 댓글과 좋아요, 부적절 게시글 신고 기능을 갖추고 있습니다.</p>
+              <p>동영상 콘텐츠는 P2 부가 기능으로, YouTube나 Vimeo를 임베드하는 방식이라 자체 호스팅 비용이 없습니다. 관리자만 영상을 등록할 수 있습니다.</p>
+              <p>Push 알림은 FCM 단일 연동으로 iOS와 Android를 동시에 지원합니다. 관리자 웹에서 전체 또는 특정 그룹 대상으로 발송하며, 딥링크로 해당 화면으로 바로 이동합니다.</p>
+            </blockquote>
+          </div>
+        </div>
+
+        <!-- Slide 8 -->
+        <div class="slide-card" id="slide-8">
+          <div class="slide-card-header">
+            <span class="slide-badge">8</span>
+            <h3 class="slide-title">관리자 웹</h3>
+          </div>
+          <div class="slide-script">
+            <blockquote class="script-block">
+              <p>관리자 웹은 6개 핵심 메뉴로 구성됩니다.</p>
+              <p><strong>대시보드</strong>에서 총 대원 수, 금일/금주 순찰 횟수, 누적 거리, 미처리 신고 등 KPI를 한눈에 볼 수 있습니다.<br>
+              <strong>대원 관리</strong>에서 검색, 필터, 정렬과 개별 순찰 이력 조회, CSV 다운로드가 가능합니다.<br>
+              <strong>신고 관리</strong>에서는 접수 → 처리중 → 해결 상태 전이를 관리합니다.<br>
+              그 외 이벤트 관리, 포인트 수동 지급/차감, 기간별 통계와 히트맵 기능이 있습니다.</p>
+            </blockquote>
+          </div>
+        </div>
+
+        <!-- Slide 9 -->
+        <div class="slide-card" id="slide-9">
+          <div class="slide-card-header">
+            <span class="slide-badge">9</span>
+            <h3 class="slide-title">정보 구조 (IA)</h3>
+          </div>
+          <div class="slide-script">
+            <blockquote class="script-block">
+              <p>앱의 정보 구조를 보겠습니다.</p>
+              <p>모바일 앱은 <strong>4개 탭</strong> 구조입니다. 홈(순찰) 탭에 7개 화면, 커뮤니티 탭에 4개, 랭킹 탭 1개, 마이페이지 탭에 6개 화면이 배치됩니다. 여기에 온보딩과 공통 화면을 합쳐 총 27개입니다.</p>
+              <p>관리자 웹은 대시보드부터 설정까지 10개 화면으로 구성됩니다.</p>
+            </blockquote>
+          </div>
+        </div>
+
+        <!-- Slide 10 -->
+        <div class="slide-card" id="slide-10">
+          <div class="slide-card-header">
+            <span class="slide-badge">10</span>
+            <h3 class="slide-title">전체 화면 목록</h3>
+          </div>
+          <div class="slide-script">
+            <blockquote class="script-block">
+              <p>이 슬라이드에서 전체 37개 화면 목록을 확인하실 수 있습니다.</p>
+              <p>앱 27개 화면은 U00부터 U23까지, 관리자 웹 10개는 A01부터 A10까지 번호가 부여되어 있어 향후 개발 시 화면 단위로 명확하게 커뮤니케이션이 가능합니다.</p>
+            </blockquote>
+          </div>
+        </div>
+
+        <!-- Slide 11 -->
+        <div class="slide-card" id="slide-11">
+          <div class="slide-card-header">
+            <span class="slide-badge">11</span>
+            <h3 class="slide-title">와이어프레임 프로토타입</h3>
+          </div>
+          <div class="slide-script">
+            <blockquote class="script-block">
+              <p>와이어프레임 프로토타입은 브라우저에서 바로 확인 가능한 인터랙티브 형태로 제작했습니다.</p>
+              <p>앱 프로토타입과 관리자 프로토타입을 각각 분리하여 제공하며, 개발사에서 실제 구현 시 참고하실 수 있도록 ASCII 와이어프레임 형식으로 설계했습니다.</p>
+            </blockquote>
+            <div class="demo-note">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="7 1 1 13 13 13"/><line x1="7" y1="6" x2="7" y2="9"/><line x1="7" y1="11" x2="7.01" y2="11"/></svg>
+              이 시점에서 실제 프로토타입을 브라우저에서 시연하면 설득력이 크게 올라갑니다
+            </div>
+          </div>
+        </div>
+
+        <!-- Slide 12 -->
+        <div class="slide-card" id="slide-12">
+          <div class="slide-card-header">
+            <span class="slide-badge">12</span>
+            <h3 class="slide-title">앱 프레임워크 비교</h3>
+          </div>
+          <div class="slide-script">
+            <blockquote class="script-block">
+              <p>기술 스택 선정을 위해 3가지 프레임워크를 비교했습니다.</p>
+              <p><strong>React Native</strong>, <strong>Flutter</strong>, <strong>Native(Kotlin+Swift)</strong> 세 가지입니다.</p>
+              <p>GPS 백그라운드 안정성은 세 옵션 모두 충분하지만, 개발 비용과 기간 면에서 크로스플랫폼이 유리합니다. React Native는 OTA 업데이트(CodePush)가 가능하다는 큰 장점이 있어, 버그 발생 시 앱 스토어 심사 없이 바로 배포할 수 있습니다.</p>
+              <p><strong>React Native를 추천</strong>합니다. JS/TS 팀으로 빠른 MVP 출시가 가능하고, GPS 백그라운드 트래킹은 검증된 서드파티 모듈이 존재합니다.</p>
+            </blockquote>
+          </div>
+        </div>
+
+        <!-- Slide 13 -->
+        <div class="slide-card" id="slide-13">
+          <div class="slide-card-header">
+            <span class="slide-badge">13</span>
+            <h3 class="slide-title">서버 &amp; DB 비교</h3>
+          </div>
+          <div class="slide-script">
+            <blockquote class="script-block">
+              <p>서버 프레임워크는 Node.js, Spring Boot, NestJS를 비교했습니다. <strong>Node.js</strong>가 실시간 처리, 개발 속도, JS 풀스택 구성 면에서 가장 적합합니다.</p>
+              <p>데이터베이스는 <strong>PostgreSQL + PostGIS</strong>를 추천합니다. GPS 경로 데이터의 공간 쿼리 성능이 최강이고, 포인트 지급 같은 금전성 트랜잭션에 필요한 ACID를 완벽히 지원합니다.</p>
+            </blockquote>
+          </div>
+        </div>
+
+        <!-- Slide 14 -->
+        <div class="slide-card" id="slide-14">
+          <div class="slide-card-header">
+            <span class="slide-badge">14</span>
+            <h3 class="slide-title">인프라 &amp; 외부 API</h3>
+          </div>
+          <div class="slide-script">
+            <blockquote class="script-block">
+              <p>지도 API는 <strong>네이버 지도</strong>를 추천합니다. 국내 서비스 특성상 한국 도로와 건물 데이터 정확도가 최우선이기 때문입니다.</p>
+              <p>클라우드 인프라는 <strong>AWS 서울 리전</strong>입니다. 풍부한 관리형 서비스(RDS, ECS, Lambda)로 운영 부담을 줄이고, 오토스케일링으로 사용자 증가에 유연하게 대응할 수 있습니다.</p>
+            </blockquote>
+          </div>
+        </div>
+
+        <!-- Slide 15 -->
+        <div class="slide-card" id="slide-15">
+          <div class="slide-card-header">
+            <span class="slide-badge">15</span>
+            <h3 class="slide-title">시스템 아키텍처</h3>
+          </div>
+          <div class="slide-script">
+            <blockquote class="script-block">
+              <p>전체 시스템 아키텍처입니다.</p>
+              <p>클라이언트 레이어에 iOS앱, Android앱, 관리자 웹이 있고, HTTPS와 WebSocket으로 API Gateway에 연결됩니다. API Gateway에서 인증 검증, 라우팅, Rate Limiting을 처리합니다.</p>
+              <p>서비스 레이어에는 App Server(위치수신, 순찰, 커뮤니티, 포인트, 인증), Push Service(FCM/APNs), Map API(네이버 지도)가 있습니다.</p>
+              <p>데이터 레이어는 PostgreSQL + PostGIS로 사용자, 순찰 경로, 위치 이력, 커뮤니티, 포인트 데이터를 관리합니다.</p>
+            </blockquote>
+          </div>
+        </div>
+
+        <!-- Slide 16 -->
+        <div class="slide-card" id="slide-16">
+          <div class="slide-card-header">
+            <span class="slide-badge">16</span>
+            <h3 class="slide-title">GPS 백그라운드 전략</h3>
+          </div>
+          <div class="slide-script">
+            <blockquote class="script-block">
+              <p>GPS 백그라운드 트래킹은 이 앱의 가장 핵심이자 기술적 난이도가 높은 부분입니다.</p>
+              <p><strong>iOS</strong>에서는 <code style="background:#e8f5e9;color:#1B5E20;padding:1px 6px;border-radius:4px;font-size:0.9em;">pausesLocationUpdatesAutomatically = false</code> 설정이 핵심입니다. 이걸 true로 두면 iOS가 임의로 수집을 중단하는데, 이것이 가장 흔한 이슈입니다. OS 강제 종료 시에는 significantLocationChange로 앱을 재시작하여 트래킹을 자동 복원합니다. App Store 심사를 위해 파란 바 표시와 명확한 사유 설명이 필요합니다.</p>
+              <p><strong>Android</strong>에서는 Foreground Service로 상단 알림을 상시 표시하여 OS가 앱을 강제 종료하지 않도록 합니다. Android 10, 12, 14 각 버전별 권한 대응도 설계에 포함했습니다.</p>
+              <p>공통 전략으로 5m 이동 또는 10초 간격 수집, 로컬 버퍼링 후 30초~1분 배치 전송, 1시간 순찰 기준 약 <strong>8~12% 배터리 소모</strong>를 예상합니다.</p>
+            </blockquote>
+          </div>
+        </div>
+
+        <!-- Slide 17 -->
+        <div class="slide-card" id="slide-17">
+          <div class="slide-card-header">
+            <span class="slide-badge">17</span>
+            <h3 class="slide-title">iOS Live Activity &amp; Dynamic Island</h3>
+          </div>
+          <div class="slide-script">
+            <blockquote class="script-block">
+              <p>차별화 기능으로 iOS Live Activity와 Dynamic Island를 제안합니다.</p>
+              <p>잠금 화면에서 앱을 열지 않아도 순찰 거리, 시간, 속도를 바로 확인할 수 있고, Dynamic Island에서 일시정지와 종료도 가능합니다.</p>
+              <p>이 기능은 App Store 심사에서도 유리합니다. 백그라운드 위치 사용의 명확한 가치를 증명할 수 있기 때문입니다.</p>
+              <p>iOS 16.1 이상에서만 지원되며, 이전 버전은 기존 알림으로 폴백합니다.</p>
+            </blockquote>
+          </div>
+        </div>
+
+        <!-- Slide 18 -->
+        <div class="slide-card" id="slide-18">
+          <div class="slide-card-header">
+            <span class="slide-badge">18</span>
+            <h3 class="slide-title">개발 범위 요약</h3>
+          </div>
+          <div class="slide-script">
+            <blockquote class="script-block">
+              <p>개발 범위를 정리하면, P0 필수 기능은 GPS 트래킹, 백그라운드 실행, 포인트 시스템, 대원 관리입니다. 이것이 MVP 핵심입니다.</p>
+              <p>P1 중요 기능은 마킹, 신고, 랭킹, 커뮤니티, Push 알림 등 런칭 목표 기능이고, P2 부가 기능인 동영상은 런칭 후 추가합니다.</p>
+              <p>전체 화면 수는 앱 27개 + 관리자 웹 10개 = <strong>총 37개</strong>입니다.</p>
+            </blockquote>
+          </div>
+        </div>
+
+        <!-- Slide 19 -->
+        <div class="slide-card" id="slide-19">
+          <div class="slide-card-header">
+            <span class="slide-badge">19</span>
+            <h3 class="slide-title">제안 기술 스택 (최종)</h3>
+          </div>
+          <div class="slide-script">
+            <blockquote class="script-block">
+              <p>최종 추천 기술 스택을 정리하겠습니다.</p>
+              <p><strong>앱</strong>: React Native — iOS/Android 동시 개발, 코드 공유율 70~80%, OTA 업데이트 가능<br>
+              <strong>서버</strong>: Node.js — JS 풀스택, 비동기 I/O로 다수 GPS 동시 처리<br>
+              <strong>DB</strong>: PostgreSQL + PostGIS — 공간 쿼리와 ACID 트랜잭션<br>
+              <strong>인프라</strong>: AWS 서울 리전 — ECS/RDS 관리형 서비스<br>
+              <strong>지도</strong>: 네이버 지도 — 국내 최고 데이터 정확도<br>
+              <strong>Push</strong>: FCM — 단일 연동으로 양 플랫폼 지원</p>
+            </blockquote>
+          </div>
+        </div>
+
+        <!-- Slide 20 -->
+        <div class="slide-card" id="slide-20">
+          <div class="slide-card-header">
+            <span class="slide-badge">20</span>
+            <h3 class="slide-title">다음 단계</h3>
+          </div>
+          <div class="slide-script">
+            <blockquote class="script-block">
+              <p>앞으로의 진행 단계입니다.</p>
+              <p><strong>1단계</strong>: 개발사 팀 구성을 고려한 최종 기술 스택 확정 및 API 계약 검토<br>
+              <strong>2단계</strong>: Figma 하이파이 목업, 디자인 시스템 구축, 운영 정책 확정<br>
+              <strong>3단계</strong>: P0 기능 중심 MVP 스프린트 계획, 개인정보처리방침 수립</p>
+            </blockquote>
+          </div>
+        </div>
+
+        <!-- Slide 21 -->
+        <div class="slide-card" id="slide-21" style="border: 2px solid #a8d5a2;">
+          <div class="slide-card-header" style="background:linear-gradient(to right, #f0fdf0, #e8f5e9);">
+            <span class="slide-badge" style="background:linear-gradient(135deg,#4a7c59,#2d7a3a);">21</span>
+            <h3 class="slide-title">감사합니다 / Q&amp;A</h3>
+            <span style="margin-left:auto;font-size:12px;color:#4a7c59;font-weight:600;background:#e8f5e9;padding:3px 10px;border-radius:20px;border:1px solid #a8d5a2;">마무리</span>
+          </div>
+          <div class="slide-script">
+            <blockquote class="script-block" style="border-left-color:#2d7a3a;">
+              <p>이상으로 반려견순찰대 GPS 트래킹 및 커뮤니티 앱 제안서 발표를 마치겠습니다.</p>
+              <p>37개 화면, 4대 기능 영역, iOS와 Android 크로스플랫폼으로 설계된 이 프로젝트에 대해 궁금하신 점이 있으시면 질문 부탁드립니다.</p>
+              <p>감사합니다.</p>
+            </blockquote>
+          </div>
+        </div>
+
+      </div><!-- end slides -->
+    </section>
+
+    <!-- ══════════════════════════════
+         예상 Q&A 섹션
+    ══════════════════════════════ -->
+    <section style="margin-bottom:60px;">
+      <div style="margin-bottom:28px;">
+        <h2 class="section-title">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#1B5E20" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="9"/><path d="M9 8.5a2 2 0 0 1 4 .667c0 1.333-2 2-2 2"/><line x1="11" y1="15" x2="11.01" y2="15" stroke-width="2.5" stroke-linecap="round"/></svg>
+          예상 질문 및 답변
+        </h2>
+        <p class="section-subtitle">클릭하여 답변을 펼쳐보세요</p>
+        <div class="section-divider"></div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:12px;">
+
+        <!-- Q1 -->
+        <div class="qa-card" id="qa-1">
+          <button class="qa-question-btn" onclick="toggleQA(this)" aria-expanded="false">
+            <span class="qa-q-badge">Q1</span>
+            <span class="qa-question-text">GPS 백그라운드 트래킹이 배터리를 너무 많이 소모하지 않나요?</span>
+            <svg class="qa-chevron" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 8 10 13 15 8"/></svg>
+          </button>
+          <div class="qa-answer">
+            <div class="qa-answer-inner">
+              <p>좋은 질문입니다. 저희는 이 부분을 설계 단계부터 중점적으로 고려했습니다.</p>
+              <p>첫째, <strong>수집 간격을 최적화</strong>했습니다. 5미터 이동 또는 10초 간격 중 먼저 충족되는 조건으로 수집하여 불필요한 수집을 줄입니다.</p>
+              <p>둘째, <strong>로컬 버퍼링 후 배치 전송</strong> 방식을 사용합니다. 매번 서버로 전송하지 않고 로컬에 저장한 뒤 30초~1분 단위로 묶어서 전송하므로 네트워크 사용량이 크게 줄어듭니다.</p>
+              <p>1시간 순찰 기준 약 <strong>8~12% 배터리 소모</strong>를 예상하고 있으며, 이는 네이버 지도나 카카오내비 같은 위치 기반 앱과 유사한 수준입니다. 베타 테스트에서 실측 후 추가 최적화할 예정입니다.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Q2 -->
+        <div class="qa-card" id="qa-2">
+          <button class="qa-question-btn" onclick="toggleQA(this)" aria-expanded="false">
+            <span class="qa-q-badge">Q2</span>
+            <span class="qa-question-text">App Store(iOS) 심사에서 백그라운드 위치 권한이 리젝될 수 있지 않나요?</span>
+            <svg class="qa-chevron" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 8 10 13 15 8"/></svg>
+          </button>
+          <div class="qa-answer">
+            <div class="qa-answer-inner">
+              <p>충분히 우려하실 수 있는 부분입니다. 저희는 세 가지 전략을 마련했습니다.</p>
+              <p><strong>첫째</strong>, <code style="background:#e8f5e9;color:#1B5E20;padding:1px 6px;border-radius:4px;font-size:0.9em;">showsBackgroundLocationIndicator = true</code> 설정으로 상단에 파란 바를 표시합니다. Apple이 권장하는 투명성 가이드라인을 준수하는 것입니다.</p>
+              <p><strong>둘째</strong>, <strong>Live Activity</strong>를 구현합니다. 잠금 화면에서 순찰 상태를 실시간으로 보여주므로, 백그라운드 위치 사용의 명확한 가치를 증명할 수 있습니다.</p>
+              <p><strong>셋째</strong>, 심사 메모에 "방범 순찰 목적의 GPS 경로 기록 앱"이라는 <strong>명확한 사유</strong>를 기재합니다. 건강/피트니스 카테고리의 러닝 앱들과 동일한 사용 패턴이므로 심사 통과에 문제가 없을 것으로 판단합니다.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Q3 -->
+        <div class="qa-card" id="qa-3">
+          <button class="qa-question-btn" onclick="toggleQA(this)" aria-expanded="false">
+            <span class="qa-q-badge">Q3</span>
+            <span class="qa-question-text">어뷰징 방지가 정말 효과적인가요? 우회할 수 있지 않나요?</span>
+            <svg class="qa-chevron" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 8 10 13 15 8"/></svg>
+          </button>
+          <div class="qa-answer">
+            <div class="qa-answer-inner">
+              <p>완벽한 방지는 어렵지만, <strong>다층 방어 전략</strong>을 적용합니다.</p>
+              <ul>
+                <li><strong>1차 방어</strong>: 속도 임계값 — 도보 6km/h, 자전거 25km/h 초과 시 경고, 차량 40km/h 이상 시 포인트 미지급</li>
+                <li><strong>2차 방어</strong>: 위치 점프 감지 — 순간이동(GPS 조작) 시 해당 구간 무효 처리</li>
+                <li><strong>3차 방어</strong>: 일일 최대 1,000포인트 상한으로 극단적 어뷰징의 실익 제한</li>
+              </ul>
+              <p>정확한 임계값은 베타 테스트에서 실제 데이터를 수집한 후 확정합니다. 또한 관리자가 의심 활동을 조회하고 포인트를 수동 차감할 수 있는 관리 기능도 포함되어 있습니다.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Q4 -->
+        <div class="qa-card" id="qa-4">
+          <button class="qa-question-btn" onclick="toggleQA(this)" aria-expanded="false">
+            <span class="qa-q-badge">Q4</span>
+            <span class="qa-question-text">React Native가 아니라 Flutter로 개발하면 안 되나요?</span>
+            <svg class="qa-chevron" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 8 10 13 15 8"/></svg>
+          </button>
+          <div class="qa-answer">
+            <div class="qa-answer-inner">
+              <p>Flutter도 충분히 좋은 선택입니다. 두 프레임워크 모두 GPS 백그라운드를 지원하고 크로스플랫폼 개발이 가능합니다.</p>
+              <p>React Native를 추천한 이유는 크게 세 가지입니다.</p>
+              <ul>
+                <li><strong>OTA 업데이트(CodePush)</strong>가 가능합니다. GPS 트래킹 앱 특성상 다양한 디바이스에서 예기치 않은 버그가 발생할 수 있는데, 앱 스토어 심사 없이 즉시 수정 배포할 수 있습니다.</li>
+                <li><strong>npm 생태계</strong>가 훨씬 크기 때문에 서드파티 모듈 선택지가 많습니다.</li>
+                <li>서버도 Node.js를 사용하면 <strong>프론트-백 JS 풀스택</strong>으로 팀 구성이 효율적입니다.</li>
+              </ul>
+              <p>다만, 개발사의 팀 역량에 따라 Flutter가 더 적합할 수 있으므로, 기술 스택 확정 단계에서 개발사와 함께 최종 결정하는 것을 권장합니다.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Q5 -->
+        <div class="qa-card" id="qa-5">
+          <button class="qa-question-btn" onclick="toggleQA(this)" aria-expanded="false">
+            <span class="qa-q-badge">Q5</span>
+            <span class="qa-question-text">왜 네이버 지도인가요? Google Maps가 더 범용적이지 않나요?</span>
+            <svg class="qa-chevron" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 8 10 13 15 8"/></svg>
+          </button>
+          <div class="qa-answer">
+            <div class="qa-answer-inner">
+              <p>국내 서비스라는 점이 핵심입니다.</p>
+              <p><strong>네이버 지도</strong>는 한국 내 도로, 건물, 골목길 데이터의 정확도가 가장 높습니다. 순찰 경로가 주로 골목길과 주택가인 점을 고려하면, 세밀한 지도 데이터가 매우 중요합니다.</p>
+              <p>Google Maps는 글로벌 확장을 고려한다면 좋은 선택이지만, 현 단계에서는 국내 지역 방범이 목적이므로 네이버 지도가 최적입니다.</p>
+              <p>향후 글로벌 확장 시에는 지도 API를 교체하거나 병행할 수 있도록 <strong>추상화 레이어</strong>를 설계에 반영할 수 있습니다.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Q6 -->
+        <div class="qa-card" id="qa-6">
+          <button class="qa-question-btn" onclick="toggleQA(this)" aria-expanded="false">
+            <span class="qa-q-badge">Q6</span>
+            <span class="qa-question-text">개인정보 보호 이슈는 어떻게 대응하나요? 위치 데이터가 민감하지 않나요?</span>
+            <svg class="qa-chevron" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 8 10 13 15 8"/></svg>
+          </button>
+          <div class="qa-answer">
+            <div class="qa-answer-inner">
+              <p>매우 중요한 질문입니다. 위치 데이터는 개인정보보호법상 민감 정보에 해당합니다.</p>
+              <ul>
+                <li><strong>위치기반서비스사업 신고</strong>가 필요합니다. 방송통신위원회에 사업 신고를 진행해야 합니다.</li>
+                <li>개인정보처리방침에 위치 데이터 수집 목적, 보관 기간, 제3자 제공 여부를 명시합니다.</li>
+                <li>기술적 보호 조치로 <strong>데이터 전송 시 TLS 암호화</strong>, 서버 저장 시 위치 데이터 익명화/가명화 옵션을 제공합니다.</li>
+                <li>사용자가 언제든 위치 기록 삭제를 요청할 수 있는 기능을 마이페이지에 포함합니다.</li>
+              </ul>
+              <p>이 부분은 개발 착수 전 법률 자문을 받아 정책을 확정하는 것을 권장합니다.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Q7 -->
+        <div class="qa-card" id="qa-7">
+          <button class="qa-question-btn" onclick="toggleQA(this)" aria-expanded="false">
+            <span class="qa-q-badge">Q7</span>
+            <span class="qa-question-text">동시 접속자가 많아지면 서버가 버틸 수 있나요?</span>
+            <svg class="qa-chevron" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 8 10 13 15 8"/></svg>
+          </button>
+          <div class="qa-answer">
+            <div class="qa-answer-inner">
+              <p>AWS의 관리형 서비스를 활용하여 <strong>오토스케일링</strong>을 적용합니다.</p>
+              <p><strong>GPS 데이터 수집</strong>은 로컬 버퍼링 후 배치 전송이므로 실시간 부하가 분산됩니다. 30초~1분마다 한 번 서버에 전송하는 구조라서, 동시 순찰자 1,000명 기준으로도 초당 요청 수는 관리 가능한 수준입니다.</p>
+              <p><strong>ECS(컨테이너)</strong> 기반으로 트래픽 증가 시 자동으로 서버 인스턴스를 추가하고, <strong>RDS Read Replica</strong>로 읽기 쿼리를 분산합니다.</p>
+              <p>초기에는 소규모로 시작하고, MAU가 증가함에 따라 점진적으로 인프라를 확장하면 됩니다. 비용도 사용량 기반이라 초기 부담이 적습니다.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Q8 -->
+        <div class="qa-card" id="qa-8">
+          <button class="qa-question-btn" onclick="toggleQA(this)" aria-expanded="false">
+            <span class="qa-q-badge">Q8</span>
+            <span class="qa-question-text">개발 기간과 비용은 어느 정도 예상하시나요?</span>
+            <svg class="qa-chevron" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 8 10 13 15 8"/></svg>
+          </button>
+          <div class="qa-answer">
+            <div class="qa-answer-inner">
+              <p>이 제안서는 기획/설계 단계의 산출물이며, 구체적인 개발 기간과 비용은 <strong>개발사의 팀 규모와 역량</strong>에 따라 달라집니다.</p>
+              <p>다만, 참고 기준을 말씀드리면:</p>
+              <ul>
+                <li><strong>P0 MVP</strong> (GPS 트래킹 + 포인트 + 관리자 기본): 약 3~4개월 예상</li>
+                <li><strong>P1 포함</strong> (커뮤니티, 랭킹, 마킹, Push 등): 추가 2~3개월</li>
+                <li><strong>안정화 및 QA</strong>: 1~2개월</li>
+              </ul>
+              <p>총 <strong>6~9개월</strong> 정도를 예상하지만, 이는 풀타임 3~4인 팀 기준이며 개발사와 구체적으로 협의해야 합니다.</p>
+              <p>이 제안서에는 화면 목록 37개, 와이어프레임, 기능 명세가 모두 포함되어 있어 개발사가 정확한 견적을 산출하는 데 충분한 자료가 될 것입니다.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Q9 -->
+        <div class="qa-card" id="qa-9">
+          <button class="qa-question-btn" onclick="toggleQA(this)" aria-expanded="false">
+            <span class="qa-q-badge">Q9</span>
+            <span class="qa-question-text">수익 모델은 어떻게 되나요?</span>
+            <svg class="qa-chevron" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 8 10 13 15 8"/></svg>
+          </button>
+          <div class="qa-answer">
+            <div class="qa-answer-inner">
+              <p>이 앱은 기본적으로 <strong>공익/사회 서비스</strong> 성격이 강합니다. 직접적인 수익 모델보다는 지자체 예산 또는 후원 기반으로 운영되는 것이 일반적입니다.</p>
+              <p>다만, 향후 확장 가능한 수익 모델은:</p>
+              <ul>
+                <li><strong>지자체 용역/SaaS 모델</strong>: 각 시/구에 관리자 웹을 제공하고 월정액 또는 연단위 계약</li>
+                <li><strong>포인트 교환</strong>: 지역 상점 할인 쿠폰, 지자체 혜택과 연계하여 광고/제휴 수익</li>
+                <li><strong>프리미엄 기능</strong>: 상세 통계 분석, 데이터 리포트 등 부가 서비스</li>
+                <li><strong>데이터 활용</strong>: 익명화된 순찰 커버리지 데이터를 방범 정책 수립에 활용 (지자체 대상 B2G)</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Q10 -->
+        <div class="qa-card" id="qa-10">
+          <button class="qa-question-btn" onclick="toggleQA(this)" aria-expanded="false">
+            <span class="qa-q-badge">Q10</span>
+            <span class="qa-question-text">기존 유사 서비스와의 차별점은 무엇인가요?</span>
+            <svg class="qa-chevron" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 8 10 13 15 8"/></svg>
+          </button>
+          <div class="qa-answer">
+            <div class="qa-answer-inner">
+              <p>기존 러닝앱(Nike Run, 스트라바 등)은 개인 운동 기록에 초점이 맞춰져 있고, 기존 방범 앱은 단순 출석 체크 수준입니다.</p>
+              <p>반려견순찰대 앱의 핵심 차별점은:</p>
+              <ul>
+                <li>개인의 일상 산책을 <strong>지역 사회 안전 활동</strong>으로 연결하는 유일한 플랫폼입니다.</li>
+                <li>GPS 트래킹 + 포인트 + 커뮤니티 + 관리자 대시보드가 <strong>하나의 통합 시스템</strong>입니다.</li>
+                <li>어뷰징 방지와 공정한 랭킹으로 <strong>건전한 경쟁</strong> 환경을 만듭니다.</li>
+                <li>관리자 웹에서 통계·신고·이벤트를 관리할 수 있어 <strong>행정 효율성</strong>을 높입니다.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Q11 -->
+        <div class="qa-card" id="qa-11">
+          <button class="qa-question-btn" onclick="toggleQA(this)" aria-expanded="false">
+            <span class="qa-q-badge">Q11</span>
+            <span class="qa-question-text">왜 PostgreSQL인가요? Firebase나 MongoDB가 더 빠르게 개발할 수 있지 않나요?</span>
+            <svg class="qa-chevron" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 8 10 13 15 8"/></svg>
+          </button>
+          <div class="qa-answer">
+            <div class="qa-answer-inner">
+              <p>빠른 프로토타이핑에는 Firebase나 MongoDB가 유리한 것이 맞습니다.</p>
+              <p>하지만 이 앱에는 두 가지 핵심 요구사항이 있습니다.</p>
+              <ul>
+                <li><strong>공간 쿼리</strong>: GPS 경로를 저장하고 "특정 영역 내 순찰 커버리지 분석" 같은 쿼리를 수행해야 하는데, <strong>PostGIS</strong>는 이 분야에서 업계 최고입니다.</li>
+                <li><strong>트랜잭션</strong>: 포인트 지급은 금전적 가치를 가지므로, "순찰 완료 → 거리 계산 → 포인트 지급"이 원자적(atomic)으로 처리되어야 합니다. PostgreSQL의 <strong>ACID 트랜잭션</strong>이 이를 안정적으로 보장합니다.</li>
+              </ul>
+              <p>MongoDB 4.0 이상도 트랜잭션을 지원하지만, 공간 쿼리 성능과 트랜잭션 안정성 모두에서 PostgreSQL이 이 프로젝트에 더 적합합니다.</p>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- end qa list -->
+    </section>
+
+    <!-- ══════════════════════════════
+         발표 팁 섹션
+    ══════════════════════════════ -->
+    <section id="tips" style="scroll-margin-top:24px;">
+      <div style="margin-bottom:24px;">
+        <h2 class="section-title">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#1B5E20" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="9" r="6"/><path d="M9 16h4M11 16v3"/></svg>
+          발표 팁
+        </h2>
+        <div class="section-divider"></div>
+      </div>
+
+      <div class="tip-card">
+        <div style="margin-bottom:24px;">
+          <span style="background:rgba(168,213,162,0.2);color:#a8d5a2;font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:4px 10px;border-radius:20px;border:1px solid rgba(168,213,162,0.3);">발표자 노트</span>
+        </div>
+        <div class="tip-item">
+          <span class="tip-num">1</span>
+          <p class="tip-text"><strong style="color:#a8d5a2;">시간 배분</strong>: 총 20~25분 발표 기준으로, 슬라이드당 평균 1분. 기술 스택 비교(슬라이드 12~16)와 GPS 전략(슬라이드 16~17)은 상대에 따라 깊이 조절.</p>
+        </div>
+        <div class="tip-item">
+          <span class="tip-num">2</span>
+          <p class="tip-text"><strong style="color:#a8d5a2;">청중 맞춤</strong>: 발주처가 기술에 익숙하지 않다면 슬라이드 5~8(기능 설명)에 시간을 더 할애. 기술 담당자가 있다면 슬라이드 12~17(기술 스택)에 집중.</p>
+        </div>
+        <div class="tip-item">
+          <span class="tip-num">3</span>
+          <p class="tip-text"><strong style="color:#a8d5a2;">프로토타입 데모</strong>: 슬라이드 11에서 실제 프로토타입을 브라우저에서 보여주면 설득력이 크게 올라감.</p>
+        </div>
+        <div class="tip-item">
+          <span class="tip-num">4</span>
+          <p class="tip-text"><strong style="color:#a8d5a2;">자신감 있는 태도</strong>: "추천합니다"가 아닌 "이것이 최적의 선택입니다"라는 확신을 보여줄 것.</p>
+        </div>
+        <div class="tip-item">
+          <span class="tip-num">5</span>
+          <p class="tip-text"><strong style="color:#a8d5a2;">질문 유도</strong>: "GPS 백그라운드 트래킹이 이 앱의 핵심인데, 이 부분에 대해 궁금하신 점이 있으시면..."처럼 능동적으로 질문을 유도.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer style="margin-top:60px;padding-top:32px;border-top:1px solid #e8f0e8;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+      <a href="index.html" style="display:inline-flex;align-items:center;gap:8px;color:#4a7c59;text-decoration:none;font-size:14px;font-weight:600;transition:color 0.15s;" onmouseover="this.style.color='#1B5E20'" onmouseout="this.style.color='#4a7c59'">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="10 3 5 8 10 13"/></svg>
+        프로토타입 홈으로 돌아가기
+      </a>
+      <span style="color:#aac4aa;font-size:12px;">반려견순찰대 GPS 트래킹 & 커뮤니티 앱 개발 제안서</span>
+    </footer>
+
+  </div><!-- end #content -->
+</div><!-- end #main -->
+
+<!-- Back to top button -->
+<button id="back-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="맨 위로">
+  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 11 9 6 14 11"/></svg>
+</button>
+
+<script>
+  // ── Q&A accordion ──
+  function toggleQA(btn) {
+    const card = btn.closest('.qa-card');
+    const isOpen = card.classList.contains('open');
+    card.classList.toggle('open', !isOpen);
+    btn.setAttribute('aria-expanded', String(!isOpen));
+  }
+
+  // ── Mobile TOC ──
+  function toggleToc() {
+    const toc = document.getElementById('toc');
+    const overlay = document.getElementById('toc-overlay');
+    const isOpen = toc.classList.contains('mobile-open');
+    toc.classList.toggle('mobile-open', !isOpen);
+    overlay.classList.toggle('visible', !isOpen);
+  }
+  function closeToc() {
+    document.getElementById('toc').classList.remove('mobile-open');
+    document.getElementById('toc-overlay').classList.remove('visible');
+  }
+
+  // ── Back to top visibility ──
+  window.addEventListener('scroll', () => {
+    const btn = document.getElementById('back-top');
+    btn.classList.toggle('visible', window.scrollY > 400);
+  }, { passive: true });
+
+  // ── Active TOC highlight (IntersectionObserver) ──
+  const tocLinks = document.querySelectorAll('.toc-link[data-target]');
+  const sections = [];
+  tocLinks.forEach(link => {
+    const id = link.dataset.target;
+    const el = document.getElementById(id);
+    if (el) sections.push({ id, el, link });
+  });
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        tocLinks.forEach(l => l.classList.remove('active'));
+        const match = sections.find(s => s.el === entry.target);
+        if (match) match.link.classList.add('active');
+      }
+    });
+  }, {
+    rootMargin: '-20% 0px -70% 0px',
+    threshold: 0
+  });
+
+  sections.forEach(s => observer.observe(s.el));
+
+  // ── Close TOC on link click (mobile) ──
+  tocLinks.forEach(link => {
+    link.addEventListener('click', () => {
+      if (window.innerWidth <= 768) closeToc();
+    });
+  });
+</script>
+
+</body>
+</html>
