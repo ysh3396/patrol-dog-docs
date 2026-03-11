@@ -1273,20 +1273,20 @@
     <!-- Alwalk -->
     <div class="project-card reverse fade-up">
       <div class="project-info">
-        <div class="project-tag app">MOBILE APP — IN-APP SERVICE</div>
+        <div class="project-tag app">0→1 직접 기획 · 개발 (2022~2023)</div>
         <h3>올워크 (Alwalk)</h3>
         <p>
-          Alwayz 앱 내 만보기 서비스. 0→1으로 기획하고 MERN + Native 모듈로 직접 개발.
-          걸음수 트래킹, 상자 보상, 연속출석, 미션 시스템, 캐시 포인트로
-          MAU 310만을 달성.
+          Alwayz(가입자 700만 이커머스) 앱 내 만보기 서비스를 처음부터 직접 만들었습니다.
+          MERN 스택으로 서비스를 구축하고, Native 만보기 모듈(Android: Java / iOS: Objective-C)을
+          직접 개발. 걸음수 트래킹, 상자 보상, 골드 시스템, 일일 미션으로 MAU 310만을 달성.
         </p>
         <div class="project-features">
-          <div class="project-feature"><span class="check">>></span> Native 만보기 모듈 (Java / Objective-C)</div>
-          <div class="project-feature"><span class="check">>></span> 걸음수 + 칼로리 + 거리 + 시간 트래킹</div>
-          <div class="project-feature"><span class="check">>></span> 상자 보상 시스템 (걸음 달성 시 랜덤 상자)</div>
-          <div class="project-feature"><span class="check">>></span> 연속출석 보상 (4일 사이클, 상자 10개)</div>
-          <div class="project-feature"><span class="check">>></span> 미션 시스템 (쿠팡/광고/걸기/출석/구매)</div>
-          <div class="project-feature"><span class="check">>></span> 캐시 → 실제 상품 교환 (아이스크림, 상품권 등)</div>
+          <div class="project-feature"><span class="check">>></span> Native 만보기 모듈 직접 개발 (Android: Java / iOS: Objective-C)</div>
+          <div class="project-feature"><span class="check">>></span> 걸음수 원형 게이지 + 선물상자 보상 시스템</div>
+          <div class="project-feature"><span class="check">>></span> 골드 포인트 → 골드 상점 교환 (실물 상품)</div>
+          <div class="project-feature"><span class="check">>></span> 출석 달력 + 일일 걷기 미션</div>
+          <div class="project-feature"><span class="check">>></span> 200Kcal · 4,000m 등 건강 지표 트래킹</div>
+          <div class="project-feature"><span class="check">>></span> Alwayz 앱 메인에 올워크 진입점 확보 (타임특가/올팡팡/출석체크/올팜 옆)</div>
         </div>
         <div class="project-tech">
           <span>MongoDB</span>
@@ -1297,55 +1297,130 @@
           <span>Objective-C</span>
         </div>
       </div>
-      <div class="phone-mockup-group">
-        <div class="phone-mockup">
-          <div class="phone-notch"></div>
-          <div class="phone-screen aw-screen">
-            <div class="aw-header">
-              <div class="aw-cash">
-                <div class="aw-cash-icon">$</div>
-                0 캐시
+      <div>
+        <!-- 개발 당시 UI 목업 -->
+        <div class="phone-mockup-group" style="margin-bottom: 20px;">
+          <!-- Alwalk Main Screen (개발 당시) -->
+          <div class="phone-mockup">
+            <div class="phone-notch"></div>
+            <div class="phone-screen" style="background:#f5f5f5; padding:0; min-height:460px;">
+              <!-- Header -->
+              <div style="padding:14px 16px; display:flex; align-items:center; gap:8px;">
+                <span style="font-size:14px; color:#888;">&lt;</span>
+                <span style="font-size:14px; font-weight:700; color:#1a1a1a;">올워크</span>
               </div>
-              <div class="aw-medal">&#x1f949;</div>
+              <div style="padding:0 16px;">
+                <div style="font-size:16px; font-weight:800; color:#1a1a1a; margin-bottom:2px;">하루 <span style="color:#dc2626;">10,000</span> 걸음</div>
+                <div style="font-size:11px; color:#888; margin-bottom:16px;">매일매일 걷고 건강과 보상 모두 챙기세요</div>
+              </div>
+              <!-- Circle with gift box -->
+              <div style="text-align:center; margin-bottom:12px; position:relative;">
+                <div style="width:160px; height:160px; border-radius:50%; border:8px solid #e8e8e8; border-top-color:#dc2626; border-right-color:#dc2626; margin:0 auto; display:flex; align-items:center; justify-content:center; flex-direction:column; transform:rotate(60deg);">
+                  <div style="transform:rotate(-60deg); text-align:center;">
+                    <div style="font-size:10px; color:#999; margin-bottom:2px;">다음 상자까지 89 걸음!</div>
+                    <div style="font-size:28px; font-weight:900; color:#1a1a1a; letter-spacing:-2px;">2,511</div>
+                    <div style="font-size:12px; color:#666;">걸음</div>
+                    <div style="font-size:9px; color:#bbb; margin-top:4px;">선물상자를 터치하세요!</div>
+                  </div>
+                </div>
+                <!-- Gift box -->
+                <div style="text-align:center; margin-top:-8px;">
+                  <div style="display:inline-block; font-size:36px;">&#x1f381;</div>
+                  <div style="display:inline-block; background:#ef4444; color:white; width:20px; height:20px; border-radius:50%; font-size:10px; font-weight:900; line-height:20px; text-align:center; margin-left:-8px; vertical-align:top;">20</div>
+                </div>
+              </div>
+              <!-- Gold -->
+              <div style="text-align:center; margin-bottom:14px;">
+                <span style="display:inline-flex; align-items:center; gap:4px; font-size:13px; font-weight:700; color:#1a1a1a;">
+                  <span style="width:18px; height:18px; background:linear-gradient(135deg,#f59e0b,#fbbf24); border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:8px; color:white;">G</span>
+                  50,000 골드
+                </span>
+              </div>
+              <!-- Bottom tabs -->
+              <div style="display:flex; gap:8px; padding:0 16px; margin-bottom:14px;">
+                <div style="flex:1; border:1px solid #ddd; border-radius:8px; padding:10px; text-align:center; font-size:11px; color:#666; display:flex; align-items:center; justify-content:center; gap:4px;">
+                  <span style="font-size:16px;">&#x1f4c5;</span> 출석 달력
+                </div>
+                <div style="flex:1; border:1px solid #ddd; border-radius:8px; padding:10px; text-align:center; font-size:11px; color:#666; display:flex; align-items:center; justify-content:center; gap:4px;">
+                  <span style="font-size:16px;">&#x1f4b0;</span> 골드 상점
+                </div>
+              </div>
+              <!-- Health stats -->
+              <div style="padding:0 16px;">
+                <div style="background:#fff; border-radius:10px; padding:12px; box-shadow:0 1px 4px rgba(0,0,0,0.04); margin-bottom:8px;">
+                  <div style="display:flex; gap:16px; font-size:11px; color:#888;">
+                    <span>&#x1f525; 200 Kcal 소모</span>
+                    <span>&#x1f463; 4,000 m 걸었어요.</span>
+                  </div>
+                </div>
+              </div>
+              <!-- Sub tabs -->
+              <div style="display:flex; justify-content:space-around; padding:12px 16px; border-top:1px solid #eee; margin-top:8px;">
+                <div style="text-align:center; font-size:9px; color:#888;">
+                  <div style="font-size:16px; margin-bottom:2px;">&#x1f4c5;</div>걷기 기록
+                </div>
+                <div style="text-align:center; font-size:9px; color:#dc2626; font-weight:700;">
+                  <div style="font-size:16px; margin-bottom:2px;">&#x1f525;</div>일일 미션
+                </div>
+                <div style="text-align:center; font-size:9px; color:#888;">
+                  <div style="font-size:16px; margin-bottom:2px;">&#x1f4b0;</div>골드 상점
+                </div>
+              </div>
             </div>
-            <div class="aw-ring">
-              <div class="aw-ring-inner">
-                <div class="aw-ring-label">다음 상자까지 13 걸음!</div>
-                <div class="aw-ring-steps">2,887 <span class="aw-ring-unit">걸음</span></div>
+          </div>
+        </div>
+        <!-- DevTools / Alwayz 앱 메인 (개발 맥락) -->
+        <div class="web-mockup" style="margin-top: 16px;">
+          <div class="web-toolbar">
+            <div class="web-dot r"></div>
+            <div class="web-dot y"></div>
+            <div class="web-dot g"></div>
+            <div class="web-url">localhost:3000 — React DevTools</div>
+          </div>
+          <div style="background:#fff; padding:16px; min-height:200px;">
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
+              <span style="color:#dc2626; font-size:16px; font-weight:900;">Alwayz</span>
+              <span style="font-size:11px; color:#999;">올웨이즈에서 검색하기</span>
+            </div>
+            <div style="display:flex; gap:6px; margin-bottom:12px; font-size:11px;">
+              <span style="color:#999;">신상품</span>
+              <span style="color:#dc2626; font-weight:700; border-bottom:2px solid #dc2626; padding-bottom:2px;">추천</span>
+              <span style="color:#999;">패션</span>
+              <span style="color:#999;">생활</span>
+              <span style="color:#999;">식품</span>
+              <span style="color:#999;">가전</span>
+            </div>
+            <!-- Feature icons row showing 올워크 placement -->
+            <div style="display:flex; gap:12px; justify-content:center; margin-bottom:14px; flex-wrap:wrap;">
+              <div style="text-align:center; font-size:9px; color:#888;">
+                <div style="width:36px;height:36px;background:#fff3cd;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;margin:0 auto 3px;">&#x23f0;</div>
+                타임특가
+              </div>
+              <div style="text-align:center; font-size:9px; color:#888;">
+                <div style="width:36px;height:36px;background:#fce7e7;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;margin:0 auto 3px;">&#x1f3ae;</div>
+                올팡팡
+              </div>
+              <div style="text-align:center; font-size:9px; color:#888;">
+                <div style="width:36px;height:36px;background:#e8f5e9;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;margin:0 auto 3px;">&#x2705;</div>
+                출석체크
+              </div>
+              <div style="text-align:center; font-size:9px; color:#888;">
+                <div style="width:36px;height:36px;background:#e8f5e9;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;margin:0 auto 3px;">&#x1f331;</div>
+                올팜
+              </div>
+              <div style="text-align:center; font-size:9px; color:#dc2626; font-weight:700;">
+                <div style="width:36px;height:36px;background:linear-gradient(135deg,#fef2f2,#fce7e7);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;margin:0 auto 3px;border:1.5px solid #fca5a5;">&#x1f463;</div>
+                올워크
+              </div>
+              <div style="text-align:center; font-size:9px; color:#888;">
+                <div style="width:36px;height:36px;background:#fff3cd;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;margin:0 auto 3px;">&#x1f3c6;</div>
+                베스트
               </div>
             </div>
-            <div class="aw-stats">44Kcal &nbsp;|&nbsp; 29분 &nbsp;|&nbsp; 2.2km</div>
-            <div class="aw-actions">
-              <div class="aw-action">
-                &#x2705; 연속출석
-                <div class="badge"></div>
-              </div>
-              <div class="aw-action">
-                &#x1f4b2; 내일받기
-                <div class="badge"></div>
-              </div>
-            </div>
-            <div class="aw-rewards">
-              <div class="aw-reward">
-                <div class="aw-reward-icon">&#x1f368;</div>
-                <div class="aw-reward-price">$ 100</div>
-              </div>
-              <div class="aw-reward">
-                <div class="aw-reward-icon">&#x1f4b4;</div>
-                <div class="aw-reward-price">$ 500</div>
-              </div>
-              <div class="aw-reward">
-                <div class="aw-reward-icon">&#x1f956;</div>
-                <div class="aw-reward-price">$ 1,000</div>
-              </div>
-            </div>
-            <div class="aw-event">
-              <div class="aw-event-badge">OY</div>
-              <div class="aw-event-text">
-                <div class="aw-event-title">확정 보상 이벤트</div>
-                <div class="aw-event-name">올리브영 모바일 상품권 30,000원</div>
-                <div class="aw-event-desc">게이지 100% 달성 시, 확정 보상 상품 제공</div>
-              </div>
+            <div style="text-align:center; padding:8px; background:#f5f5f5; border-radius:8px;">
+              <span style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#999;">
+                Alwayz 앱 메인 — "올워크" 진입점 확보 (가입자 700만 앱)
+              </span>
             </div>
           </div>
         </div>
