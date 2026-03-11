@@ -1086,67 +1086,184 @@
     <!-- MoneyWalk -->
     <div class="project-card fade-up">
       <div class="project-info">
-        <div class="project-tag app">MOBILE APP</div>
+        <div class="project-tag app">MOBILE APP — 직접 기획 · 개발</div>
         <h3>머니워크</h3>
         <p>
-          걸음수를 포인트로 전환하는 건강 리워드 앱.
-          백그라운드 걸음수 센서, 단계별 보상, 건강 퀴즈,
-          수면 트래킹까지 — 다양한 채널로 사용자 리텐션을 극대화.
+          걸음수 기반 헬스케어 리워드 앱. 한국/일본/미국 3개국 130만 유저.
+          Streaks(연속 목표 달성), 운동 탭, 건강 습관 트래킹 등
+          핵심 기능을 직접 기획하고 개발했습니다.
         </p>
         <div class="project-features">
-          <div class="project-feature"><span class="check">>></span> 실시간 걸음수 트래킹 + 백그라운드 동작</div>
-          <div class="project-feature"><span class="check">>></span> 걸음 포인트 / 수면 포인트 이원화</div>
-          <div class="project-feature"><span class="check">>></span> 건강 퀴즈형 보상 (최대 20pt)</div>
-          <div class="project-feature"><span class="check">>></span> 선물샵 (포인트 → 상품 교환)</div>
-          <div class="project-feature"><span class="check">>></span> 광고 수익 모델 (배너/퀴즈형)</div>
+          <div class="project-feature"><span class="check">>></span> Streaks 시스템 — 연속 목표 달성 + 불꽃 UI (+30% 성장)</div>
+          <div class="project-feature"><span class="check">>></span> 운동 탭 — 걸음수 원형 게이지, 단계별 랜덤 보상(0/1K/2K), 30초 운동</div>
+          <div class="project-feature"><span class="check">>></span> 건강 습관 — 물 마시기, 식사 기록, 건강 퀴즈, 실내 운동, 영양제</div>
+          <div class="project-feature"><span class="check">>></span> 위젯 & 라이프사이클 Push → US opt-in +15%, D7 리텐션 +10%</div>
+          <div class="project-feature"><span class="check">>></span> 글로벌 확장 — Japan Squad Lead, 매출 2배, U.E 흑자 전환</div>
         </div>
         <div class="project-tech">
           <span>iOS</span>
           <span>Android</span>
           <span>Pedometer</span>
+          <span>Streaks</span>
           <span>Push</span>
+          <span>A/B Test</span>
           <span>Ad SDK</span>
         </div>
       </div>
       <div class="phone-mockup-group">
+        <!-- Streaks Screen -->
         <div class="phone-mockup">
           <div class="phone-notch"></div>
-          <div class="phone-screen mw-screen">
-            <div class="mw-header">
-              <div class="mw-points">
-                <div class="mw-coin">P</div>
-                237
+          <div class="phone-screen" style="background:#1a1a1a; padding:16px; min-height:460px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+              <div style="display:flex; align-items:center; gap:6px;">
+                <div style="width:22px;height:22px;background:linear-gradient(135deg,#f59e0b,#fbbf24);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-size:10px;font-weight:900;">P</div>
+                <span style="font-size:18px;font-weight:900;color:#fff;">3,835</span>
               </div>
-              <span style="font-size:14px; color:#bbb;">&#x1f514; &#x2699;</span>
+              <span style="font-size:13px;color:#666;">&#x1f514; &#x2699;</span>
             </div>
-            <div class="mw-tabs">
-              <div class="mw-tab active">&#x2600; 걸음 포인트</div>
-              <div class="mw-tab">수면 포인트</div>
-            </div>
-            <div class="mw-card">
-              <div class="mw-steps-label">걸음 수</div>
-              <div class="mw-steps-num">2,850</div>
-              <div class="mw-cta-btn">&#x24C5; 오늘의 1p 받기</div>
-              <div style="font-size:10px; color:#bbb; text-align:center; margin-bottom:6px;">50걸음 = 1 포인트</div>
-              <div class="mw-progress-bar"><div class="mw-progress-fill"></div></div>
-              <div class="mw-milestones">
-                <span>2,000</span><span>3,000</span><span>4,000</span>
+            <!-- Streak Fire -->
+            <div style="text-align:center; margin-bottom:12px;">
+              <div style="display:inline-block; width:80px; height:96px; background:linear-gradient(to top,#92400e,#f59e0b,#fbbf24);border-radius:50% 50% 50% 50% / 60% 60% 40% 40%;display:flex;align-items:center;justify-content:center;position:relative;">
+                <span style="font-size:36px; font-weight:900; color:#fff; text-shadow:0 2px 4px rgba(0,0,0,0.3); position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);">25</span>
               </div>
             </div>
-            <div class="mw-quiz">
-              <div class="mw-quiz-title">건강 습관 만들면서 포인트 받기</div>
-              <div class="mw-quiz-badge">&#x24C5; 맞히면 최대 20포인트</div>
-              <div class="mw-quiz-q">녹차는 대사율을 높이는 데 도움을 줄 수 있다.</div>
-              <div class="mw-quiz-btns">
-                <div class="mw-quiz-btn yes">&#x25CB;</div>
-                <div class="mw-quiz-btn no">&#x2715;</div>
+            <div style="text-align:center; font-size:16px; font-weight:800; color:#fff; margin-bottom:4px;">일 연속 목표 달성</div>
+            <div style="text-align:center; margin-bottom:16px;">
+              <span style="background:rgba(255,255,255,0.15); color:#fbbf24; font-size:11px; font-weight:700; padding:4px 12px; border-radius:100px;">&#x1f389; 대단해요! 25일 연속 달성!</span>
+            </div>
+            <!-- Progress -->
+            <div style="background:rgba(255,255,255,0.08); border-radius:12px; padding:14px; margin-bottom:12px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                <span style="font-size:12px; color:#f59e0b;">&#x1f463; 7,074</span>
+                <span style="font-size:10px; color:#666;">5,000걸음</span>
+              </div>
+              <div style="height:6px; background:rgba(255,255,255,0.1); border-radius:3px; overflow:hidden;">
+                <div style="height:100%; width:100%; background:linear-gradient(90deg,#92400e,#f59e0b); border-radius:3px;"></div>
               </div>
             </div>
-            <div class="mw-bottom">
-              <div class="mw-nav active"><div class="mw-nav-ico">&#x1f3e0;</div>홈</div>
-              <div class="mw-nav"><div class="mw-nav-ico">P</div>혜택</div>
-              <div class="mw-nav"><div class="mw-nav-ico">&#x1f4ca;</div>건강</div>
-              <div class="mw-nav"><div class="mw-nav-ico">&#x1f6d2;</div>선물샵</div>
+            <!-- Week Streak -->
+            <div style="background:rgba(255,255,255,0.06); border-radius:12px; padding:14px;">
+              <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                <span style="font-size:10px; color:#888;">22일</span>
+                <span style="font-size:10px; color:#888;">23일</span>
+                <span style="font-size:10px; color:#888;">24일</span>
+                <span style="font-size:10px; color:#f59e0b; font-weight:700;">25일</span>
+                <span style="font-size:10px; color:#555;">26일</span>
+                <span style="font-size:10px; color:#555;">27일</span>
+                <span style="font-size:10px; color:#555;">28일</span>
+              </div>
+              <div style="display:flex; justify-content:space-between;">
+                <div style="width:28px;height:28px;background:#f59e0b;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-size:12px;">&#x2713;</div>
+                <div style="width:28px;height:28px;background:#f59e0b;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-size:12px;">&#x2713;</div>
+                <div style="width:28px;height:28px;background:#f59e0b;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-size:12px;">&#x2713;</div>
+                <div style="width:28px;height:28px;background:#f59e0b;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-size:12px;box-shadow:0 0 8px rgba(245,158,11,0.5);">&#x2713;</div>
+                <div style="width:28px;height:28px;background:rgba(255,255,255,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#555;font-size:12px;">&#x2713;</div>
+                <div style="width:28px;height:28px;background:rgba(255,255,255,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#555;font-size:12px;">&#x2713;</div>
+                <div style="width:28px;height:28px;background:rgba(255,255,255,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#555;font-size:12px;">&#x2713;</div>
+              </div>
+              <div style="margin-top:10px; font-size:10px; color:#666; text-align:center;">
+                &#x1f389; 하루 30분 걷기(약 3,000~4,000보)는 뇌혈류를 개선합니다.
+              </div>
+            </div>
+            <!-- Health Habits -->
+            <div style="margin-top:12px; font-size:12px; font-weight:700; color:#fff; margin-bottom:8px;">오늘의 건강 습관</div>
+            <div style="display:flex; flex-direction:column; gap:6px;">
+              <div style="background:rgba(255,255,255,0.05); border-radius:10px; padding:10px 12px; display:flex; align-items:center; justify-content:space-between;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <span style="font-size:16px;">&#x1f4a7;</span>
+                  <div><div style="font-size:11px;color:#aaa;">오늘 마신 물</div><div style="font-size:14px;font-weight:800;color:#fff;">1,000ml</div></div>
+                </div>
+                <div style="background:#f59e0b; color:white; font-size:9px; font-weight:700; padding:5px 10px; border-radius:6px;">P 기록하기</div>
+              </div>
+              <div style="background:rgba(255,255,255,0.05); border-radius:10px; padding:10px 12px; display:flex; align-items:center; justify-content:space-between;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <span style="font-size:16px;">&#x1f34e;</span>
+                  <div><div style="font-size:11px;color:#aaa;">오늘 아침 식사 기록</div><div style="font-size:14px;font-weight:800;color:#fff;">0회 / 4회</div></div>
+                </div>
+                <div style="background:#f59e0b; color:white; font-size:9px; font-weight:700; padding:5px 10px; border-radius:6px;">P 기록하기</div>
+              </div>
+              <div style="background:rgba(255,255,255,0.05); border-radius:10px; padding:10px 12px; display:flex; align-items:center; justify-content:space-between;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <span style="font-size:16px;">&#x1f4a1;</span>
+                  <div><div style="font-size:11px;color:#aaa;">오늘의 건강 퀴즈</div><div style="font-size:14px;font-weight:800;color:#fff;">아직 안 함</div></div>
+                </div>
+                <div style="background:#f59e0b; color:white; font-size:9px; font-weight:700; padding:5px 10px; border-radius:6px;">P 퀴즈 풀기</div>
+              </div>
+              <div style="background:rgba(255,255,255,0.05); border-radius:10px; padding:10px 12px; display:flex; align-items:center; justify-content:space-between;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <span style="font-size:16px;">&#x1f4aa;</span>
+                  <div><div style="font-size:11px;color:#aaa;">간단한 실내 운동</div><div style="font-size:14px;font-weight:800;color:#fff;">0회 / 5회</div></div>
+                </div>
+                <div style="background:#f59e0b; color:white; font-size:9px; font-weight:700; padding:5px 10px; border-radius:6px;">P 운동하기</div>
+              </div>
+              <div style="background:rgba(255,255,255,0.05); border-radius:10px; padding:10px 12px; display:flex; align-items:center; justify-content:space-between;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <span style="font-size:16px;">&#x1f48a;</span>
+                  <div><div style="font-size:11px;color:#aaa;">오늘도 건강 챙겼어요!</div><div style="font-size:14px;font-weight:800;color:#fff;">영양제 섭취 완료</div></div>
+                </div>
+                <div style="background:#f59e0b; color:white; font-size:9px; font-weight:700; padding:5px 10px; border-radius:6px;">P 완료</div>
+              </div>
+            </div>
+            <!-- Bottom Nav -->
+            <div style="display:flex; justify-content:space-around; padding:10px 0 2px; border-top:1px solid rgba(255,255,255,0.08); margin-top:12px;">
+              <div style="text-align:center;font-size:9px;color:#fff;"><div style="font-size:16px;margin-bottom:1px;">&#x1f3e0;</div>홈</div>
+              <div style="text-align:center;font-size:9px;color:#555;"><div style="font-size:16px;margin-bottom:1px;">&#x1f3cb;</div>운동</div>
+              <div style="text-align:center;font-size:9px;color:#555;"><div style="font-size:16px;margin-bottom:1px;">&#x1f374;</div>식단</div>
+              <div style="text-align:center;font-size:9px;color:#555;"><div style="font-size:16px;margin-bottom:1px;">&#x1f319;</div>수면</div>
+              <div style="text-align:center;font-size:9px;color:#555;"><div style="font-size:16px;margin-bottom:1px;">&#x1f381;</div>선물샵</div>
+            </div>
+          </div>
+        </div>
+        <!-- Exercise Screen -->
+        <div class="phone-mockup small">
+          <div class="phone-notch"></div>
+          <div class="phone-screen" style="background:linear-gradient(to bottom, #f59e0b 0%, #f97316 40%, #fff 40%); padding:0; min-height:460px;">
+            <div style="padding:16px; text-align:center; color:#fff;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                <div style="display:flex; align-items:center; gap:5px;">
+                  <div style="width:20px;height:20px;background:rgba(255,255,255,0.3);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:900;">P</div>
+                  <span style="font-size:15px;font-weight:900;">830</span>
+                </div>
+                <span style="font-size:12px;">&#x1f514; &#x2699;</span>
+              </div>
+              <!-- Circle Gauge -->
+              <div style="width:140px;height:140px;border-radius:50%;border:8px solid rgba(255,255,255,0.2);border-top-color:white;border-right-color:white;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;flex-direction:column;transform:rotate(45deg);">
+                <div style="transform:rotate(-45deg);text-align:center;">
+                  <div style="font-size:9px;opacity:0.8;">오늘의 걸음 수</div>
+                  <div style="font-size:28px;font-weight:900;letter-spacing:-2px;">606</div>
+                </div>
+              </div>
+              <div style="font-size:11px;opacity:0.8;margin-bottom:4px;">받을 수 있는 걸음 포인트 : <strong>3p</strong></div>
+              <div style="background:rgba(255,255,255,0.3);border-radius:100px;padding:10px;font-size:12px;font-weight:700;margin-bottom:12px;">P 걸음 포인트 받기</div>
+            </div>
+            <div style="padding:0 14px 14px;">
+              <!-- Step milestones -->
+              <div style="display:flex;gap:6px;margin-bottom:12px;">
+                <div style="flex:1;background:#fff;border-radius:10px;padding:10px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,0.06);">
+                  <div style="font-size:9px;color:#888;">0 걸음부터</div>
+                  <div style="background:#f59e0b;color:white;font-size:9px;font-weight:700;padding:4px 8px;border-radius:100px;margin-top:4px;display:inline-block;">P 랜덤 받기</div>
+                </div>
+                <div style="flex:1;background:#fff;border-radius:10px;padding:10px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,0.06);">
+                  <div style="font-size:9px;color:#888;">1,000 걸음</div>
+                  <div style="font-size:9px;color:#ccc;margin-top:4px;">P 랜덤 받기</div>
+                </div>
+                <div style="flex:1;background:#fff;border-radius:10px;padding:10px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,0.06);">
+                  <div style="font-size:9px;color:#888;">2,000 걸음</div>
+                  <div style="font-size:9px;color:#ccc;margin-top:4px;">P 랜덤 받기</div>
+                </div>
+              </div>
+              <!-- 30s exercise -->
+              <div style="background:#fff;border-radius:12px;padding:12px;box-shadow:0 1px 4px rgba(0,0,0,0.06);">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                  <div style="display:flex;align-items:center;gap:6px;">
+                    <span style="font-size:18px;">&#x1f3cb;</span>
+                    <span style="font-size:12px;font-weight:700;color:#1a1a1a;">30초 운동</span>
+                  </div>
+                  <span style="font-size:10px;color:#999;">0/5회</span>
+                </div>
+                <div style="background:#f59e0b;color:white;border-radius:100px;padding:8px;text-align:center;font-size:11px;font-weight:700;">P 받기</div>
+              </div>
             </div>
           </div>
         </div>
