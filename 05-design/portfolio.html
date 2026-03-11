@@ -569,6 +569,54 @@
     display: block;
   }
 
+  /* ── Team ── */
+  .team-section { background: #f9fafb; }
+  .team-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  .team-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    padding: 28px 24px;
+    text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .team-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.06);
+  }
+  .team-card .team-name {
+    font-size: 18px; font-weight: 800; color: #111827;
+    margin-bottom: 2px;
+  }
+  .team-card .team-role {
+    font-size: 13px; font-weight: 600; color: #059669;
+    margin-bottom: 12px;
+  }
+  .team-card .team-edu {
+    font-size: 13px; color: #9ca3af;
+    margin-bottom: 12px;
+  }
+  .team-card .team-exp {
+    font-size: 13px; color: #6b7280;
+    line-height: 1.7;
+    text-align: left;
+    margin-bottom: 14px;
+  }
+  .team-card .team-stack {
+    display: flex; gap: 5px; flex-wrap: wrap; justify-content: center;
+  }
+  .team-card .team-stack span {
+    font-size: 11px; color: #6b7280;
+    background: #f3f4f6;
+    border: 1px solid #e5e7eb;
+    border-radius: 5px;
+    padding: 3px 8px;
+  }
+
   /* ── Footer ── */
   footer {
     background: #f9fafb;
@@ -988,6 +1036,75 @@
         <h4>Auth</h4>
         <p>JWT / OAuth 2.0<br>카카오 / 네이버 / Google / Apple</p>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- Team -->
+<section class="team-section" id="team">
+  <div class="section-inner">
+    <div class="section-label">팀 소개</div>
+    <div class="section-title">원클릭사이트제작 개발팀</div>
+    <p class="section-desc">각 분야에서 검증된 경력을 보유한 엔지니어 팀입니다.</p>
+    <div class="team-grid">
+
+      <div class="team-card fade-up">
+        <div class="team-name">양승현</div>
+        <div class="team-role">대표 / Product Engineer</div>
+        <div class="team-edu">고려대학교 화학과 (GPA 4.48/4.5)<br>경기과학고등학교</div>
+        <div class="team-exp">
+          Gravity Labs (머니워크) Product Lead<br>
+          Levit &mdash; 올워크 0&rarr;1 풀스택 개발<br>
+          Doeat (두잇) Product Owner<br>
+          Stealth Startup Co-Founder
+        </div>
+        <div class="team-stack">
+          <span>React Native</span>
+          <span>Node.js</span>
+          <span>MongoDB</span>
+          <span>Java</span>
+          <span>Objective-C</span>
+        </div>
+      </div>
+
+      <div class="team-card fade-up">
+        <div class="team-name">Iwan</div>
+        <div class="team-role">Lead Engineer</div>
+        <div class="team-edu">KAIST 정보통신공학</div>
+        <div class="team-exp">
+          Coupang Engineering Manager<br>
+          Gravity Labs Lead Software Engineer<br>
+          Kasa Backend Chapter Leader<br>
+          15년+ 개발 경력
+        </div>
+        <div class="team-stack">
+          <span>Node.js</span>
+          <span>TypeScript</span>
+          <span>MongoDB</span>
+          <span>AWS</span>
+          <span>Kubernetes</span>
+          <span>React Native</span>
+        </div>
+      </div>
+
+      <div class="team-card fade-up">
+        <div class="team-name">Shiro</div>
+        <div class="team-role">Software Engineer</div>
+        <div class="team-edu">KAIST 석사 (AI/Meta Learning)<br>성균관대학교 산업공학</div>
+        <div class="team-exp">
+          Gravity Labs Software Developer<br>
+          Doeat (두잇) Software Developer<br>
+          TMAXSOFT Software Developer
+        </div>
+        <div class="team-stack">
+          <span>Spring</span>
+          <span>Kotlin</span>
+          <span>Node.js</span>
+          <span>MongoDB</span>
+          <span>Java</span>
+        </div>
+      </div>
+
     </div>
   </div>
 </section>
